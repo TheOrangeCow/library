@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import  session, render_template, redirect, url_for
 from core import app, socketio
 from functools import wraps
