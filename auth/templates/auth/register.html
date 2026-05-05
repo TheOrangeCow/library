@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Register</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="lobby-box">
+        <h2>Create Account</h2>
+
+        {% if error %}
+        <div class="lobby-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="field">
+                <label>Username</label>
+                <input class="index" type="text" name="username" required autofocus />
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input class="index" type="password" name="password" required />
+            </div>
+            <div class="field">
+                <label>Confirm Password</label>
+                <input class="index" type="password" name="confirm" required />
+            </div>
+            <div class="field">
+                <label>Join Code </label>
+                <input class="index" type="password" name="join_code" required />
+            </div>
+            <div class="btn-row">
+                <button class="index" type="submit">Register</button>
+            </div>
+        </form>
+
+        <hr class="index">
+        <p style="font-size:0.78rem; color:#7a6030; text-align:center;">
+            Already have an account? <a href="{{ url_for('auth.login') }}" style="color:var(--gold);">Login</a>
+        </p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Slots</title>
+    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('slots.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div id="header">
+        <h1>Slots <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· Room</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b> · {{ chips }} chips</span>
+        <div class="hbtns">
+            <button class="hbtn" onclick="window.location.href='/'">Back</button>
+        </div>
+    </div>
+
+    <div id="slots-wrap">
+        <div id="machine">
+            <div id="machine-top">
+                <span class="machine-title">S L O T S</span>
+            </div>
+
+            <div id="reels-wrap">
+                <div class="reel-window">
+                    <div class="reel" id="reel-0">
+                        {% if spin_result %}
+                        <div class="reel-symbol landed">{{ spin_result.reels[0] }}</div>
+                        {% else %}
+                        <div class="reel-symbol">🎰</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="reel-divider"></div>
+                <div class="reel-window">
+                    <div class="reel" id="reel-1">
+                        {% if spin_result %}
+                        <div class="reel-symbol landed">{{ spin_result.reels[1] }}</div>
+                        {% else %}
+                        <div class="reel-symbol">🎰</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="reel-divider"></div>
+                <div class="reel-window">
+                    <div class="reel" id="reel-2">
+                        {% if spin_result %}
+                        <div class="reel-symbol landed">{{ spin_result.reels[2] }}</div>
+                        {% else %}
+                        <div class="reel-symbol">🎰</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div id="win-line"></div>
+
+            <div id="result-display">
+                {% if spin_result %}
+                {% if spin_result.result == "jackpot" %}
+                <div class="result-jackpot">JACKPOT! +{{ spin_result.winnings }} chips!</div>
+                {% elif spin_result.winnings > 0 %}
+                <div class="result-win">✓ Win! +{{ spin_result.winnings }} chips</div>
+                {% else %}
+                <div class="result-lose">✗ No win</div>
+                {% endif %}
+                {% endif %}
+                {% if error %}
+                <div class="result-lose">{{ error }}</div>
+                {% endif %}
+            </div>
+
+            <form method="POST" id="spin-form">
+                <div id="bet-controls">
+                    <button type="button" class="bet-btn" onclick="changeBet(-10)">−10</button>
+                    <button type="button" class="bet-btn" onclick="changeBet(-1)">−1</button>
+                    <div id="bet-display">
+                        <span id="bet-label">Bet</span>
+                        <input type="number" name="bet" id="bet-input" value="10" min="1" max="{{ chips }}" />
+                    </div>
+                    <button type="button" class="bet-btn" onclick="changeBet(1)">+1</button>
+                    <button type="button" class="bet-btn" onclick="changeBet(10)">+10</button>
+                </div>
+                <br>
+                <button type="submit" id="spin-btn" onclick="startSpin()">
+                    <span id="spin-btn-text">SPIN</span>
+                </button>
+            </form>
+
+            <div id="chips-display">{{ chips }} chips</div>
+        </div>
+
+        <div id="payout-table">
+            <h3>Payouts</h3>
+            <div class="pt-section-label">3 of a kind</div>
+            {% for sym, mult in payouts.items() | sort(attribute='1') | reverse %}
+            <div class="pt-row">
+                <span class="pt-sym">{{ sym }} {{ sym }} {{ sym }}</span>
+                <span class="pt-mult">× {{ mult }}</span>
+            </div>
+            {% endfor %}
+            <div class="pt-section-label" style="margin-top:0.8rem;">2 of a kind</div>
+            {% for sym, mult in two_payouts.items() %}
+            {% if mult > 0 %}
+            <div class="pt-row">
+                <span class="pt-sym">{{ sym }} {{ sym }}</span>
+                <span class="pt-mult">× {{ mult }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('slots.static', filename='script.js') }}"></script>
+</body>
+
+</html>

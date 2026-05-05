@@ -1,0 +1,59 @@
+from flask import  session, render_template, redirect, url_for
+from core import app, socketio
+from functools import wraps
+from pooheads.pooheads import pooheads_bp
+from sevens.sevens import sevens_bp
+from auth.auth import auth_bp, get_chips, load_users, get_achievements, get_recent_players,  get_join_code
+from blackjack.blackjack import blackjack_bp
+from slots.slots import slots_bp
+from poker.poker import poker_bp 
+
+app.register_blueprint(poker_bp)
+app.register_blueprint(slots_bp)
+app.register_blueprint(blackjack_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(pooheads_bp)
+app.register_blueprint(sevens_bp)
+
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if "username" not in session:
+            return redirect(url_for("auth.login"))
+        return f(*args, **kwargs)
+    return decorated
+
+@app.route("/")
+@login_required
+def home():
+    username = session["username"]
+    data = load_users()
+    user = data["users"].get(username, {})
+    stats = user.get("stats", {})
+
+    history = list(reversed(user.get("history", [])))[:5]
+
+    chips = get_chips(username)
+
+    leaderboard = sorted(
+        [{"username": u, "chips": d["chips"]} for u, d in data["users"].items()],
+        key=lambda x: x["chips"], reverse=True
+    )[:5]
+
+
+    achievements   = get_achievements(username)
+    recent_players = get_recent_players(username)
+
+    return render_template("index.html",
+        username=username,
+        chips=chips,
+        leaderboard=leaderboard,
+        join_code=get_join_code(),
+        stats=stats,
+        history=history,
+        achievements=achievements,
+        recent_players=recent_players
+    )
+
+if __name__ == "__main__":
+    socketio.run(app, debug=True)

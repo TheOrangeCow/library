@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Sevens – Room {{ roomCode }}</title>
+    <link rel="stylesheet" href="{{ url_for('sevens.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+
+    <div id="notif"></div>
+
+    <div id="header">
+        <h1>Sevens <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· {{ roomCode }}</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <div class="hbtns">
+            <button class="hbtn"
+                onclick="navigator.clipboard.writeText(window.location.href);showNotif('Link copied!')">Copy
+                Link</button>
+            <button class="hbtn" onclick="startGame()">Start Game</button>
+            <button class="hbtn" onclick="window.location.href='/sevens'">Back</button>
+        </div>
+    </div>
+
+    <div id="arena">
+        <div id="table">
+            <div id="board">
+                <div class="suit-row" id="row-S">
+                    <div class="suit-label">♠</div>
+                    <div class="suit-low" id="low-S"></div>
+                    <div class="suit-seven" id="seven-S"><span>7</span></div>
+                    <div class="suit-high" id="high-S"></div>
+                </div>
+                <div class="suit-row" id="row-D">
+                    <div class="suit-label red">♦</div>
+                    <div class="suit-low" id="low-D"></div>
+                    <div class="suit-seven" id="seven-D"><span>7</span></div>
+                    <div class="suit-high" id="high-D"></div>
+                </div>
+                <div class="suit-row" id="row-C">
+                    <div class="suit-label">♣</div>
+                    <div class="suit-low" id="low-C"></div>
+                    <div class="suit-seven" id="seven-C"><span>7</span></div>
+                    <div class="suit-high" id="high-C"></div>
+                </div>
+                <div class="suit-row" id="row-H">
+                    <div class="suit-label red">♥</div>
+                    <div class="suit-low" id="low-H"></div>
+                    <div class="suit-seven" id="seven-H"><span>7</span></div>
+                    <div class="suit-high" id="high-H"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="opp-container"></div>
+
+        <div id="finished-bar"></div>
+
+        <div id="your-zone">
+            <div id="your-label-row">
+                <span id="your-name">{{ username }}</span>
+                <span id="turn-pill">YOUR TURN</span>
+            </div>
+            <div id="your-hand"></div>
+            <button id="pass-btn" onclick="passGo()" style="display:none">Pass</button>
+        </div>
+    </div>
+
+    <div id="play-feed"></div>
+
+    <script>
+        const roomCode = "{{ roomCode }}";
+        const username = "{{ username }}";
+    </script>
+    <script src="{{ url_for('sevens.static', filename='script.js') }}"></script>
+</body>
+
+</html>

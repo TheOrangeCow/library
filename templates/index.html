@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+</head>
+<body>
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· Home</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }})</span>
+        <span style="font-size:0.75rem; color:#7a6030; margin-left:1rem;">
+            Join Code: <b style="color:var(--gold); letter-spacing:0.08em;">{{ join_code }}</b>
+            <span style="color:#7a6030; font-size:0.7rem;">(changes hourly)</span>
+        </span>
+        <a class="logout" href="/logout">Logout</a>
+    </div><br>
+
+    <div class="nav">
+        <a href="#games">Games</a>
+        <a href="#your-stats">Stats</a>
+        <a href="#chip">Leaderboard</a>
+        <a href="#achievements">Achievements</a>
+        <a href="#friends">Players</a>
+        <a href="#changelog">Changelog</a>
+    </div>
+    <div id="games">
+        <h1 style="padding: 1rem 1.4rem;">Games</h1>
+
+        <div id="search-wrap">
+            <input id="search-input" type="text" placeholder="Search games…" oninput="filterGames(this.value)" />
+        </div><br>
+
+
+        <div id="pooheads" style="padding: 1rem 1.4rem;">
+            <div class="game-card">
+                <h2>Pooheads</h2>
+                <div>
+                    <span class="tag">1-5 Players</span>
+                    <span class="tag">Strategy</span>
+                    <span class="tag">Special Cards</span>
+                </div>
+                <p>
+                    A fast and chaotic shedding game. Play cards equal or higher than the pile,
+                    use special cards to reset, burn, or skip - and whatever you do, don't be
+                    the last one left holding cards. Works through your hand, face-up, then
+                    face-down cards blindly. Luck meets tactics.
+                </p>
+                <a href="/pooheads">Play Pooheads →</a>
+            </div>
+        </div>
+
+        <div id="sevens" style="padding: 1rem 1.4rem;">
+            <div class="game-card">
+                <h2>Sevens</h2>
+                <div>
+                    <span class="tag">2-6 Players</span>
+                    <span class="tag">Strategy</span>
+                    <span class="tag">Card Sequencing</span>
+                </div>
+                <p>
+                    A calm but cunning sequencing game. Build four suit sequences outward
+                    from the 7s - low cards climb toward the Ace, high cards descend toward
+                    the King. You can only play what fits, and passing costs you. The first
+                    to empty their hand wins.
+                </p>
+                <a href="/sevens">Play Sevens →</a>
+            </div>
+        </div>
+
+        <div id="blackjack" style="padding: 1rem 1.4rem;">
+            <div class="game-card">
+                <h2>Blackjack</h2>
+                <div>
+                    <span class="tag">1-6 Players</span>
+                    <span class="tag">Luck</span>
+                    <span class="tag">Betting</span>
+                </div>
+                <p>
+                    Beat the dealer to 21 without going bust. Place your bet,
+                    take a hit or stand - and if you're feeling bold, double down
+                    for twice the reward. A bot dealer plays strict basic theory,
+                    so the edge is slim. Chips carry over between games, so play smart.
+                    You have {{ chips }} chips.
+                </p>
+                <a href="/blackjack">Play Blackjack →</a>
+            </div>
+        </div>
+
+       <div id="poker" style="padding: 1rem 1.4rem;">
+            <div class="game-card">
+                <h2>Poker</h2>
+                <div>
+                    <span class="tag">2-9 Players</span>
+                    <span class="tag">Strategy</span>
+                    <span class="tag">Betting</span>
+                </div>
+                <p>
+                    Texas Hold'em at its finest. Place your blinds, play your hole cards
+                    and bluff, call, or raise your way to the pot. Five community cards
+                    decide your fate - but the right bet at the right moment can take
+                    it all without showing a single card.
+                </p>
+                <a href="/poker">Play Poker →</a>
+            </div>
+        </div>
+
+        <div id="slots" style="padding: 1rem 1.4rem;">
+            <div class="game-card">
+                <h2>Slots</h2>
+                <div>
+                    <span class="tag">1 Player</span>
+                    <span class="tag">Luck</span>
+                    <span class="tag">Betting</span>
+                </div>
+                <p>
+                    Pull the lever and pray. Match three symbols to win -
+                    cherries pay small, diamonds pay big, and a triple 7
+                    or Joker hits the jackpot. Simple, fast, and dangerously addictive.
+                </p>
+                <a href="/slots">Play Slots →</a>
+            </div>
+        </div>
+    </div>
+
+    <div style="padding: 0.8rem 1.4rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+        <div id="chip" class="game-card" style="flex:1; min-width: 200px;">
+            <h2 style="margin-bottom:0.6rem;">Chip Leaderboard</h2>
+            {% for entry in leaderboard %}
+            <div
+                style="display:flex; justify-content:space-between; font-size:0.85rem; padding:0.2rem 0; border-bottom:1px solid rgba(212,168,67,0.08);">
+                <span style="color:var(--gold-dim);">
+                    {{ ["🥇","🥈","🥉"][loop.index0] if loop.index0 < 3 else loop.index ~ "." }} {{ entry.username }}
+                        </span>
+                        <span style="color:var(--gold);">{{ entry.chips }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div id="your-stats" class="game-card" style="flex:1; min-width:200px;">
+            <h2 style="margin-bottom:0.6rem;">Your Stats</h2>
+            <div style="font-size:0.85rem; color:var(--gold-dim); line-height:2;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Games Played</span>
+                    <span style="color:var(--gold);">{{ stats.get("games_played", 0) }}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Wins</span>
+                    <span style="color:#6fe296;">{{ stats.get("wins", 0) }}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>Biggest Win</span>
+                    <span style="color:var(--gold);">+{{ stats.get("biggest_win", 0) }} chips</span>
+                </div>
+            </div>
+
+            <h2 style="margin-bottom:0.6rem;">Recent Games</h2>
+            {% for h in history %}
+            <div style="display:flex; justify-content:space-between; align-items:center;
+                        font-size:0.82rem; padding:0.25rem 0;
+                        border-bottom:1px solid rgba(212,168,67,0.08);">
+                <span style="color:var(--gold-dim);">{{ h.game | capitalize }}</span>
+                <span
+                    style="color:{{ '#6fe296' if h.result in ('win','blackjack') else '#e05555' if h.result == 'lose' else 'var(--gold-dim)' }};">
+                    {{ h.result.upper() }}
+                </span>
+                <span
+                    style="color:{{ '#6fe296' if h.chips_delta > 0 else '#e05555' if h.chips_delta < 0 else 'var(--gold-dim)' }};">
+                    {{ '+' if h.chips_delta > 0 else '' }}{{ h.chips_delta }}
+                </span>
+            </div>
+            {% else %}
+            <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">No games played yet.</p>
+            {% endfor %}
+        </div>
+        <div id="achievements" class="game-card" style="flex:1; min-width:220px;">
+            <h2 style="margin-bottom:0.7rem;">Achievements</h2>
+            <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+                {% for a in achievements %}
+                <div title="{{ a.desc }}" style="
+            display:flex; flex-direction:column; align-items:center;
+            width:70px; padding:0.4rem 0.3rem; border-radius:8px; text-align:center;
+            border:1px solid {{ 'rgba(212,168,67,0.4)' if a.unlocked else 'rgba(255,255,255,0.05)' }};
+            background:{{ 'rgba(212,168,67,0.07)' if a.unlocked else 'rgba(0,0,0,0.2)' }};
+            opacity:{{ '1' if a.unlocked else '0.35' }};
+            cursor:default;
+        ">
+                    <span style="font-size:1.4rem;">{{ a.icon }}</span>
+                    <span style="font-size:0.52rem; font-family:'Cinzel',serif;
+                         color:{{ 'var(--gold)' if a.unlocked else '#555' }};
+                         letter-spacing:0.04em; margin-top:0.2rem; line-height:1.3;">
+                        {{ a.name }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div id="friends" class="game-card" style="flex:1; min-width:200px;">
+            <h2 style="margin-bottom:0.6rem;">Recent Players</h2>
+            {% if recent_players %}
+            {% for p in recent_players %}
+            <div style="display:flex; justify-content:space-between; align-items:center;
+                    font-size:0.82rem; padding:0.3rem 0;
+                    border-bottom:1px solid rgba(212,168,67,0.08);">
+                <span style="color:var(--gold-dim); font-family:'Cinzel',serif;
+                          font-size:0.7rem; letter-spacing:0.06em;">
+                    {{ p.username }}
+                </span>
+                <span style="color:#7a6030; font-size:0.72rem; font-style:italic;">
+                    {{ p.chips }} chips · {{ p.wins }}W
+                </span>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">
+                Play a game to see recent opponents here.
+            </p>
+            {% endif %}
+        </div>
+
+
+        <div id="changelog" class="game-card" style="flex:1; min-width: 200px;">
+            <h2 style="margin-bottom:0.6rem;">Changelog</h2>
+            <div style="font-size:0.8rem; color:var(--gold-dim); line-height:1.8;">
+                <div><span style="color:#7a6030;">04/05/26</span> · Slots added</div>
+                <div><span style="color:#7a6030;">04/05/26</span> · Blackjack added</div>
+                <div><span style="color:#7a6030;">04/05/26</span> · Login &amp; chip system</div>
+                <div><span style="color:#7a6030;">04/05/26</span> · Sevens added</div>
+                <div><span style="color:#7a6030;">02/05/26</span> · Pooheads launched</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="bug" style="padding: 1rem 1.4rem;">
+        <div class="game-card">
+        <h2>Bugs</h2>
+        <div style="font-size:0.8rem; color:var(--gold-dim);">
+            <p>If you find a bug please email me here <a href="mailto:coworange9@gmail.com">coworange9@gmail.com</a></p>
+        </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    function filterGames(query) {
+        const q = query.toLowerCase().trim();
+        document.querySelectorAll(".game-card").forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.closest("div[id]").style.display = (!q || text.includes(q)) ? "" : "none";
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Poker</title>
+    <link rel="stylesheet" href="{{ url_for('poker.static', filename='poker.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="header">
+        <h1>Poker <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· {{ roomCode }}</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }})</span>
+        <div class="hbtns">
+            <button class="hbtn" onclick="copyLink()">Copy Link</button>
+            <button class="hbtn" onclick="window.location.href = '/poker'">Back</button>
+        </div>
+    </div>
+
+    <div id="arena">
+        <div id="table">
+            <div id="board-area">
+                <div id="board-cards"></div>
+                <div id="pot-label"></div>
+                <div id="phase-label"></div>
+            </div>
+        </div>
+
+        <div id="opp-container"></div>
+
+        <div id="your-zone">
+            <div id="your-label-row">
+                <span id="your-name">{{ username }}</span>
+                <span id="stack-pill"></span>
+                <span id="turn-pill">YOUR TURN</span>
+            </div>
+            <div id="your-hole"></div>
+            <div id="action-bar" style="display:none">
+                <button class="abtn red" onclick="doAction('fold')">Fold</button>
+                <button class="abtn" id="btn-check" onclick="doAction('check')">Check</button>
+                <button class="abtn" id="btn-call" onclick="doAction('call')">Call</button>
+                <div class="raise-wrap">
+                    <input type="range" id="raise-slider" min="0" max="1000" value="0" oninput="updateRaiseLabel()">
+                    <span id="raise-label">0</span>
+                    <button class="abtn gold" onclick="doAction('raise')">Raise</button>
+                </div>
+                <button class="abtn gold" onclick="doAction('allin')">All-in</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lobby-overlay" class="overlay open">
+        <div class="obox">
+            <h2>♠ Poker Table . {{ roomCode }}</h2>
+            <p id="lobby-info">Waiting for players…</p>
+            <div id="buy-in-section">
+                <label>Buy-in amount</label>
+                <input type="number" id="buy-in-input" min="0" value="0">
+                <button class="hbtn" onclick="doBuyIn()">Buy In</button>
+                <div id="buy-in-status"></div>
+            </div>
+            <div id="player-list"></div>
+            <button class="hbtn" id="start-btn" onclick="startGame()" style="display:none">Start Game</button>
+        </div>
+    </div>
+
+    <div id="showdown-overlay" class="overlay">
+        <div class="obox">
+            <h2>Showdown</h2>
+            <div id="showdown-results"></div>
+            <button class="hbtn" id="next-hand-btn" style="display:none" onclick="nextHand()">Next Hand</button>
+            <a href="/poker" class="hbtn">Leave</a>
+        </div>
+    </div>
+
+    <div id="notif"></div>
+    <div id="play-feed"></div>
+
+    <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script>
+        const roomCode = "{{ roomCode }}";
+        const username = "{{ username }}";
+        const myChips = {{ chips }};
+    </script>
+    <script src="{{ url_for('poker.static', filename='poker.js') }}"></script>
+</body>
+
+</html>

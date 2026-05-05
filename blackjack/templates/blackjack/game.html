@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blackjack · {{ roomCode }}</title>
+    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('blackjack.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+
+<div id="notif"></div>
+
+<div id="header">
+    <h1>Blackjack <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· {{ roomCode }}</span></h1>
+    <span class="you-label">Playing as <b>{{ username }}</b></span>
+    <div class="hbtns">
+        <button class="hbtn" onclick="window.location.href='/blackjack'">Back</button>
+    </div>
+</div>
+
+<div id="arena">
+    <div id="table"></div>
+
+    <div id="dealer-zone">
+        <div class="dealer-label">Dealer</div>
+        <div id="dealer-hand" class="card-row"></div>
+        <div id="dealer-total" class="hand-total"></div>
+    </div>
+
+    <div id="opp-container"></div>
+
+    <div id="your-zone">
+        <div id="your-label-row">
+            <span id="your-name">{{ username }}</span>
+            <span id="turn-pill">YOUR TURN</span>
+        </div>
+        <div id="your-hand" class="card-row"></div>
+        <div id="your-total" class="hand-total"></div>
+        <div id="your-chips"></div>
+        <div id="action-area">
+            <div id="bet-area" style="display:none;">
+                <input id="bet-input" type="number" min="1" class="index" placeholder="Bet amount" />
+                <button class="hbtn" onclick="placeBet()">Place Bet</button>
+                <div id="quick-bets">
+                    <button class="hbtn" onclick="quickBet(10)">10</button>
+                    <button class="hbtn" onclick="quickBet(25)">25</button>
+                    <button class="hbtn" onclick="quickBet(50)">50</button>
+                    <button class="hbtn" onclick="quickBet(100)">100</button>
+                </div>
+            </div>
+            <div id="play-area" style="display:none;">
+                <button class="hbtn" onclick="doHit()">Hit</button>
+                <button class="hbtn" onclick="doStand()">Stand</button>
+                <button class="hbtn" id="double-btn" onclick="doDouble()">Double Down</button>
+            </div>
+        </div>
+        <div id="result-banner"></div>
+        <div id="new-round-btn" style="display:none;">
+            <button class="hbtn" onclick="newRound()">New Round</button>
+        </div>
+    </div>
+
+    <div id="finished-bar"></div>
+</div>
+
+<div id="play-feed"></div>
+
+<script>
+    const roomCode = "{{ roomCode }}";
+    const username = "{{ username }}";
+</script>
+<script src="{{ url_for('blackjack.static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,340 @@
+body {
+    overflow: auto !important;
+}
+
+#slots-wrap {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem 1rem;
+    flex-wrap: wrap;
+}
+
+#machine {
+    background: linear-gradient(160deg, #1a0a00, #0e0600);
+    border: 3px solid var(--gold);
+    border-radius: 20px;
+    padding: 1.5rem 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 0 60px rgba(212, 168, 67, 0.15), inset 0 0 40px rgba(0, 0, 0, 0.5);
+    min-width: 340px;
+}
+
+#machine-top {
+    width: 100%;
+    text-align: center;
+    border-bottom: 1px solid var(--gold-dim);
+    padding-bottom: 0.6rem;
+}
+
+.machine-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1.4rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(212, 168, 67, 0.5);
+}
+
+#reels-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: #000;
+    border: 3px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 0.5rem;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    position: relative;
+}
+
+.reel-window {
+    width: 90px;
+    height: 100px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.reel-divider {
+    width: 3px;
+    height: 80px;
+    background: var(--gold-dim);
+    opacity: 0.4;
+    margin: 0 2px;
+}
+
+.reel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.reel-symbol {
+    font-size: 3rem;
+    line-height: 1;
+    user-select: none;
+    transition: transform 0.1s;
+}
+
+.reel-symbol.landed {
+    animation: symbolLand 0.4s cubic-bezier(.22, .68, 0, 1.4) forwards;
+}
+
+@keyframes symbolLand {
+    0% {
+        transform: translateY(-20px) scale(0.7);
+        opacity: 0;
+    }
+
+    70% {
+        transform: translateY(4px) scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.reel-symbol.spinning {
+    animation: reelSpin 0.1s linear infinite;
+}
+
+@keyframes reelSpin {
+    0% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    49% {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+#win-line {
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#win-line.active {
+    opacity: 1;
+    animation: winLinePulse 1s ease-in-out infinite;
+}
+
+@keyframes winLinePulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 6px rgba(212, 168, 67, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(212, 168, 67, 0.9);
+    }
+}
+
+#result-display {
+    min-height: 2rem;
+    text-align: center;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+
+.result-jackpot {
+    color: #ffd97a;
+    animation: jackpotPop 0.5s cubic-bezier(.22, .68, 0, 1.5) forwards;
+    text-shadow: 0 0 20px rgba(255, 217, 122, 0.7);
+}
+
+.result-win {
+    color: #6fe296;
+}
+
+.result-lose {
+    color: #e05555;
+}
+
+@keyframes jackpotPop {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+#bet-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.bet-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--gold-dim);
+    background: rgba(212, 168, 67, 0.07);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bet-btn:hover {
+    background: rgba(212, 168, 67, 0.22);
+    border-color: var(--gold);
+}
+
+#bet-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.1rem;
+}
+
+#bet-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+#bet-input {
+    width: 70px;
+    text-align: center;
+    background: #0a0500;
+    border: 1px solid var(--gold-dim);
+    border-radius: 4px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    padding: 0.2rem;
+}
+
+#bet-input:focus {
+    outline: none;
+    border-color: var(--gold);
+}
+
+
+#spin-btn {
+    width: 140px;
+    height: 52px;
+    border-radius: 30px;
+    border: 2px solid var(--gold);
+    background: linear-gradient(135deg, rgba(212, 168, 67, 0.2), rgba(212, 168, 67, 0.05));
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.15s;
+    box-shadow: 0 0 20px rgba(212, 168, 67, 0.15);
+    display: block;
+    margin: 0 auto;
+}
+
+#spin-btn:hover {
+    background: linear-gradient(135deg, rgba(212, 168, 67, 0.35), rgba(212, 168, 67, 0.1));
+    box-shadow: 0 0 30px rgba(212, 168, 67, 0.35);
+}
+
+#spin-btn:active {
+    transform: scale(0.96);
+}
+
+#spin-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+#chips-display {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.08em;
+}
+
+#payout-table {
+    background: #0e0a00;
+    border: 1px solid var(--gold-dim);
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    min-width: 200px;
+}
+
+#payout-table h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(212, 168, 67, 0.15);
+    padding-bottom: 0.5rem;
+}
+
+.pt-section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.58rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+}
+
+.pt-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.18rem 0;
+    border-bottom: 1px solid rgba(212, 168, 67, 0.06);
+    font-size: 0.85rem;
+}
+
+.pt-sym {
+    letter-spacing: 0.1em;
+}
+
+.pt-mult {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    color: var(--gold);
+}

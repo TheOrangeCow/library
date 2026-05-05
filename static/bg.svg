@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'>
+  <polygon points='30,2 58,58 2,58' fill='none' stroke='#d4a843' stroke-width='0.7' opacity='0.16'/>
+  <polygon points='30,14 50,50 10,50' fill='none' stroke='#d4a843' stroke-width='0.3' opacity='0.08'/>
+  <line x1='0' y1='0' x2='60' y2='60' stroke='#d4a843' stroke-width='0.3' opacity='0.05'/>
+  <line x1='60' y1='0' x2='0' y2='60' stroke='#d4a843' stroke-width='0.3' opacity='0.05'/>
+</svg>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="{{ url_for('blackjack.static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        .index-text {
+            color: var(--gold);
+        }
+
+        body {
+            overflow: auto !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--gold-dim);
+        }
+
+        .index-text ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .index-text li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .index-text li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--gold-light);
+            font-weight: bold;
+        }
+
+        .special {
+            font-weight: bold;
+            color: var(--gold-light);
+        }
+
+        .highlight {
+            background-color: var(--gold-light);
+            color: var(--gold-dim);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .nav {
+            display: flex;
+        }
+
+        .nav a {
+            flex: 1;
+            text-align: center;
+            padding: 5px 0;
+            text-decoration: none;
+            color: gold;
+
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        input.index {
+            color: var(--gold);
+            background-color: #081a12;
+            padding: 5px;
+            border: 1px solid #7a6030;
+            border-radius: 5px;
+        }
+
+        input.index:focus {
+            border: #e8b84b;
+        }
+
+
+        button.index {
+            padding: 0.28rem 0.85rem;
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            border: 1px solid var(--gold-dim);
+            background: rgba(212, 168, 67, 0.07);
+            color: var(--gold);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        button.index:hover {
+            background: rgba(212, 168, 67, 0.22);
+            border-color: var(--gold);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· blackjack</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <div class="hbtns">
+            <button class="hbtn" onclick="window.location.href = '/'">Back</button>
+        </div>
+    </div><br>
+    <div class="nav">
+        <a href="#rooms">Rooms</a>
+        <a href="#rules">Rules</a>
+        <a href="#strategy">Strategy</a>
+    </div>
+    <div id="rooms">
+        <h1 class="index-text">Rooms</h1>
+        <form method="POST">
+            <input class="index" type="text" name="room_code" placeholder="123456" /><br><br>
+            <button class="index" name="join" value="1">Join Room</button>
+            <button class="index" name="create" value="1">Create Room</button>
+        </form>
+        {% if error %}
+        <div class="index-text">{{ error }}</div>
+        {% endif %}
+    </div><br><br>
+
+    <div id="rules" class="index-text">
+        <h2>Rules</h2>
+        <h3>Objective</h3>
+        <ul>
+            <li>Beat the dealer by getting a hand value closer to <span class="highlight">21</span> without going over.
+            </li>
+            <li>You are only playing against the <span class="highlight">dealer</span>, not other players.</li>
+        </ul>
+
+        <h3>Card Values</h3>
+        <ul>
+            <li><span class="special">2–10</span>: Face value.</li>
+            <li><span class="special">J, Q, K</span>: Worth 10.</li>
+            <li><span class="special">Ace</span>: Worth 11, or 1 if 11 would bust you.</li>
+        </ul>
+
+        <h3>The Deal</h3>
+        <ul>
+            <li>Place your <span class="highlight">bet</span> before cards are dealt.</li>
+            <li>Everyone gets two cards face up. The dealer gets one face up, one <span class="highlight">face
+                    down</span>.</li>
+        </ul>
+
+        <h3>Your Turn</h3>
+        <ul>
+            <li><span class="special">Hit</span>: Take another card.</li>
+            <li><span class="special">Stand</span>: Keep your hand and end your turn.</li>
+            <li><span class="special">Double Down</span>: Double your bet and take exactly one more card, then stand.
+                Only available on your first two cards.</li>
+        </ul>
+
+        <h3>The Dealer</h3>
+        <ul>
+            <li>After all players have acted, the dealer reveals their hidden card.</li>
+            <li>The dealer <span class="highlight">must hit</span> on any total of 16 or below.</li>
+            <li>The dealer <span class="highlight">must stand</span> on hard 17 or above.</li>
+            <li>The dealer hits on <span class="highlight">soft 17</span> (Ace + 6).</li>
+        </ul>
+
+        <h3>Outcomes</h3>
+        <ul>
+            <li><span class="special">Win</span>: Beat the dealer — your bet pays 1:1 (double your bet back).</li>
+            <li><span class="special">Blackjack</span>: Ace + 10-value card on the deal — pays <span
+                    class="highlight">3:2</span> (2.5× your bet).</li>
+            <li><span class="special">Push</span>: Tie with the dealer — your bet is returned.</li>
+            <li><span class="special">Bust</span>: Go over 21 — you lose your bet regardless of the dealer.</li>
+            <li><span class="special">Dealer Bust</span>: Dealer goes over 21 — all non-bust players win.</li>
+        </ul>
+
+        <h3>Chips</h3>
+        <ul>
+            <li>You start with <span class="highlight">1000 chips</span> on registration.</li>
+            <li>Chips carry over between all games and sessions.</li>
+            <li>If you run out, you are removed from the room at the end of the round.</li>
+        </ul>
+    </div><br><br>
+
+    <div id="strategy" class="index-text">
+        <h2>Strategy</h2>
+        <ul>
+            <li><span class="highlight">Always stand</span> on 17 or higher — the risk of busting outweighs the reward.
+            </li>
+            <li><span class="highlight">Always hit</span> on 8 or below — you cannot bust and need more value.</li>
+            <li><span class="highlight">Double down on 11</span> — strongest doubling hand, especially if the dealer
+                shows a weak card (2–6).</li>
+            <li><span class="highlight">Double down on 10</span> unless the dealer shows a 10 or Ace.</li>
+            <li>Hit on <span class="highlight">soft hands</span> (hands with an Ace counted as 11) below soft 18 — you
+                can't bust and might improve.</li>
+            <li>When the dealer shows <span class="special">2–6</span> (bust cards), play conservatively — stand earlier
+                and let the dealer bust.</li>
+            <li>When the dealer shows <span class="special">7–A</span>, assume they have a strong hand and hit until at
+                least 17.</li>
+            <li>Never take unnecessary risks when you're already at <span class="highlight">18–20</span> — the dealer
+                needs to beat you.</li>
+            <li>The dealer hits soft 17, which slightly favours the player — don't panic on a soft 17 yourself.</li>
+        </ul>
+    </div>
+</body>
+
+</html>

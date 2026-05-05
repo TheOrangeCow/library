@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pooheads – Room {{ roomCode }}</title>
+    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+
+<div id="notif"></div>
+
+<div id="aceModal">
+    <div class="mbox">
+        <h2>Ace Played</h2>
+        <p>Choose the value of your Ace</p>
+        <div class="ace-btns">
+            <button onclick="confirmAce('low')">1 — Low</button>
+            <button onclick="confirmAce('high')">13 — High</button>
+        </div>
+    </div>
+</div>
+
+<div id="swapOverlay">
+    <div class="sbox">
+        <h2>Swap Your Cards</h2>
+        <div id="swapTimer" class="swap-timer">20</div>
+        <p class="swap-instr">Click a <b>hand card</b> then a <b>face-up card</b> to swap them.</p>
+        <div class="swap-row">
+            <div class="swap-sec">
+                <h4>Your Hand</h4>
+                <div id="swapHandCards" class="swap-cards"></div>
+            </div>
+            <div class="swap-sec">
+                <h4>Face Up</h4>
+                <div id="swapFaceCards" class="swap-cards"></div>
+            </div>
+        </div>
+        <div id="swapHint" class="swap-hint"></div>
+        <div class="ready-row">
+            <button id="readyBtn" onclick="markReady()">✓ Ready</button>
+            <div id="swapReadyList" class="rlist"></div>
+        </div>
+    </div>
+</div>
+
+<div id="header">
+    <h1>Pooheads <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· {{ roomCode }}</span></h1>
+    <span class="you-label">Playing as <b>{{ username }}</b></span>
+    <div class="hbtns">
+        <button class="hbtn" onclick="copyLink()">Copy Link</button>
+        <button class="hbtn" onclick="startGame()">Start Game</button>
+        <button class="hbtn" onclick="window.location.href = '/pooheads'">Back</button>
+    </div>
+</div>
+
+<div id="arena">
+    <div id="table"></div>
+
+    <div id="pile-area">
+        <div id="pile-cards"></div>
+        <div id="pile-count"></div>
+        <div id="ruleIndicator"></div>
+        <div id="pileHistory"></div>
+        <button id="pickupBtn" onclick="pickupPile()">Pick Up Pile</button>
+    </div>
+
+    <div id="opp-container"></div>
+
+    <div id="your-zone">
+        <div id="your-label-row">
+            <span id="your-name">{{ username }}</span>
+            <span id="turn-pill">YOUR TURN</span>
+        </div>
+        <div id="your-table-cards"></div>
+        <div id="your-hand"></div>
+        <button id="play-btn" onclick="playSelected()">Play</button>
+    </div>
+
+    <div id="finished-bar"></div>
+</div>
+
+<div id="play-feed"></div>
+<script>
+    const roomCode = "{{ roomCode }}";
+    const username = "{{ username }}";
+</script>
+<script src="{{ url_for('pooheads.static', filename='script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,338 @@
+:root {
+    --gold: #e8b84b;
+    --gold-light: #ffd97a;
+    --gold-dim: #b08a30;
+    --dark: #0d0d0d;
+    --felt: #0a2218;
+    --card-w: 62px;
+    --card-h: 90px;
+    --radius: 6px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: #2a1c00;
+    background-image: url('/static/bg.svg');
+    background-size: 60px 60px;
+    font-family: 'EB Garamond', serif;
+    color: #f5e8b0;
+}
+
+input.index {
+    color: var(--gold);
+    background-color: #081a12;
+    padding: 5px;
+    border: 1px solid #7a6030;
+    border-radius: 5px;
+}
+
+input.index:focus {
+    border: #e8b84b;
+}
+
+hr.index {
+    border: 1px solid var(--gold-dim);
+}
+
+button.index {
+    padding: 0.28rem 0.85rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--gold-dim);
+    background: rgba(212, 168, 67, 0.07);
+    color: var(--gold);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+button.index:hover {
+    background: rgba(212, 168, 67, 0.22);
+    border-color: var(--gold);
+}
+
+
+
+#header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1.4rem;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--gold);
+    border-radius: 5px;
+    flex-shrink: 0;
+    z-index: 20;
+}
+
+#header h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+}
+
+#header .you-label {
+    font-size: 0.78rem;
+    color: #e8b84b;
+    font-style: italic;
+}
+
+#header .you-label b {
+    color: var(--gold);
+    font-style: normal;
+}
+
+.hbtns {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#search-wrap {
+    padding: 0.8rem 1.4rem 0;
+}
+
+#search-input {
+    width: 100%;
+    padding: 0.45rem 0.8rem;
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+    color: var(--gold);
+    background: #0e0a00;
+    border: 1px solid var(--gold-dim);
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+#search-input:focus {
+    border-color: var(--gold);
+}
+
+#search-input::placeholder {
+    color: #7a6030;
+}
+
+body {
+    overflow: auto !important;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gold-dim);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.nav {
+    display: flex;
+}
+
+.nav a {
+    flex: 1;
+    text-align: center;
+    padding: 5px 0;
+    text-decoration: none;
+    color: gold;
+}
+
+h1 {
+    color: var(--gold);
+}
+
+.game-card {
+    background: #0e0a00;
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    padding: 1.2rem 1.6rem;
+    margin-bottom: 1.2rem;
+}
+
+.game-card h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-bottom: 0.4rem;
+}
+
+.game-card p {
+    font-family: 'EB Garamond', serif;
+    color: #c8b060;
+    font-size: 0.95rem;
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+
+.game-card a {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--gold-dim);
+    background: rgba(212, 168, 67, 0.07);
+    color: var(--gold);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+a.logout {
+    display: inline-block;
+    padding: 0.3rem 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--gold-dim);
+    background: rgba(212, 168, 67, 0.07);
+    color: var(--gold);
+    border-radius: 4px;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.game-card a:hover {
+    background: rgba(212, 168, 67, 0.22);
+    border-color: var(--gold);
+}
+
+a.logout:hover {
+    background: rgba(212, 168, 67, 0.22);
+    border-color: var(--gold);
+}
+
+.tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.07em;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    border-radius: 3px;
+    padding: 0.1rem 0.4rem;
+    margin-right: 0.3rem;
+    margin-bottom: 0.6rem;
+}
+
+
+#lobby-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#lobby-box {
+    background: #0e0a00;
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    padding: 2rem 2.5rem;
+    min-width: 320px;
+    text-align: center;
+    box-shadow: 0 0 60px rgba(212, 168, 67, 0.13);
+}
+
+#lobby-box h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 1.3rem;
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.1em;
+}
+
+.lobby-error {
+    color: #d08080;
+    font-size: 0.82rem;
+    margin-bottom: 0.8rem;
+    border: 1px solid #803030;
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    background: rgba(160, 50, 50, 0.1);
+}
+
+.field {
+    margin-bottom: 0.8rem;
+    text-align: left;
+}
+
+.field label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--gold-dim);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+}
+
+input.index {
+    width: 100%;
+    color: var(--gold);
+    background-color: #081a12;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #7a6030;
+    border-radius: 5px;
+    font-family: 'EB Garamond', serif;
+    font-size: 0.95rem;
+}
+
+input.index:focus {
+    border-color: var(--gold);
+}
+
+hr.index {
+    border: 1px solid var(--gold-dim);
+    margin: 1rem 0;
+}
+
+.btn-row {
+    display: flex;
+    gap: 0.7rem;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+button.index {
+    padding: 0.38rem 1.1rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--gold-dim);
+    background: rgba(212, 168, 67, 0.07);
+    color: var(--gold);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+button.index:hover {
+    background: rgba(212, 168, 67, 0.22);
+    border-color: var(--gold);
+}

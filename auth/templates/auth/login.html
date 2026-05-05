@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="lobby-box">
+        <h2>Welcome Back</h2>
+
+        {% if error %}
+        <div class="lobby-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="field">
+                <label>Username</label>
+                <input class="index" type="text" name="username" required autofocus />
+            </div>
+            <div class="field">
+                <label>Password</label>
+                <input class="index" type="password" name="password" required />
+            </div>
+            <div class="btn-row">
+                <button class="index" type="submit">Login</button>
+            </div>
+        </form>
+
+        <hr class="index">
+        <p style="font-size:0.78rem; color:#7a6030; text-align:center;">
+            No account? <a href="{{ url_for('auth.register') }}" style="color:var(--gold);">Register</a>
+        </p>
+    </div>
+</body>
+
+</html>
