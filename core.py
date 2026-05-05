@@ -9,4 +9,4 @@ app = Flask(__name__,
     static_folder=os.path.join(BASE_DIR, "static")
 )
 app.secret_key = "secret_key"
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins="*")
