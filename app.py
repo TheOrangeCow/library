@@ -8,7 +8,6 @@ from blackjack.blackjack import blackjack_bp
 from slots.slots import slots_bp
 from poker.poker import poker_bp 
 
-
 app.register_blueprint(poker_bp)
 app.register_blueprint(slots_bp)
 app.register_blueprint(blackjack_bp)
