@@ -489,18 +489,17 @@ def play(data):
     if won:
         if g["players"]:
             g["turn"] = next_p if next_p in g["players"] else g["players"][0]
-    elif not extra_turn:
+    elif extra_turn:
+        pass
+    else:
         skip = g.pop("pendingSkip", 0)
         if skip > 0:
             n = len(g["players"])
-            net = skip % n 
-            if net == 0:
-                pass
-            else:
+            net = skip % n
+            if net != 0:
                 next_player_n(g, user, net + 1)
         else:
             next_player(g, user)
-
     
     if len(g["players"]) <= 1:
         all_players = list(g["dead"]) + g["players"]
