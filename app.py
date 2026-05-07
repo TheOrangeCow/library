@@ -59,5 +59,15 @@ def home():
         recent_players=recent_players
     )
 
+
+@app.route("/school")
+@login_required
+def school():
+
+    return render_template("school.html",
+        username=session["username"],
+        join_code=get_join_code()
+    )
+
 if __name__ == "__main__":
     socketio.run(app, debug=True)
