@@ -1,10 +1,14 @@
 from flask import Blueprint, request, session, redirect, url_for, render_template
 import json, os, hashlib, time, hmac
+from dotenv import load_dotenv
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates')
 
+load_dotenv()
+
+CODE_SECRET  = os.getenv("CODE_SECRET")
+
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
-CODE_SECRET = "secret132"
 
 def get_join_code():
     hour_bucket = int(time.time()) // 3600
