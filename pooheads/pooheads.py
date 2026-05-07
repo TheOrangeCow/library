@@ -98,8 +98,8 @@ def check_win(g, p):
         record_result(p, "pooheads", result, 0)
         g["players"].remove(p)
         g["dead"].append(p)
-        ...
-
+        return True
+    return False
 
 def effective_top(g):
     for c in reversed(g["pile"]):
@@ -489,14 +489,14 @@ def play(data):
     if won:
         if g["players"]:
             g["turn"] = next_p if next_p in g["players"] else g["players"][0]
-    elif not extra_turn:
+    elif extra_turn:
+        pass
+    else:
         skip = g.pop("pendingSkip", 0)
         if skip > 0:
             n = len(g["players"])
-            net = skip % n 
-            if net == 0:
-                pass
-            else:
+            net = skip % n
+            if net != 0:
                 next_player_n(g, user, net + 1)
         else:
             next_player(g, user)
