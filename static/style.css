@@ -399,7 +399,7 @@ button.index:hover {
 
 .chat-header {
     padding: 10px;
-    background: #000;
+    background: #313131;
     color: var(--gold-dim);
     cursor: move;
     border-top-left-radius: 8px;
