@@ -180,19 +180,18 @@
             <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">No games played yet.</p>
             {% endfor %}
         </div>
-    </div>
-    <div id="achievements" class="game-card" style="flex:1; min-width:220px;">
+        <div id="achievements" class="game-card" style="flex:1; min-width:220px;">
             <h2 style="margin-bottom:0.7rem;">Achievements</h2>
             <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
                 {% for a in achievements %}
                 <div title="{{ a.desc }}" style="
-            display:flex; flex-direction:column; align-items:center;
-            width:70px; padding:0.4rem 0.3rem; border-radius:8px; text-align:center;
-            border:1px solid {{ 'rgba(212,168,67,0.4)' if a.unlocked else 'rgba(255,255,255,0.05)' }};
-            background:{{ 'rgba(212,168,67,0.07)' if a.unlocked else 'rgba(0,0,0,0.2)' }};
-            opacity:{{ '1' if a.unlocked else '0.35' }};
-            cursor:default;
-        ">
+                display:flex; flex-direction:column; align-items:center;
+                width:70px; padding:0.4rem 0.3rem; border-radius:8px; text-align:center;
+                border:1px solid {{ 'rgba(212,168,67,0.4)' if a.unlocked else 'rgba(255,255,255,0.05)' }};
+                background:{{ 'rgba(212,168,67,0.07)' if a.unlocked else 'rgba(0,0,0,0.2)' }};
+                opacity:{{ '1' if a.unlocked else '0.35' }};
+                cursor:default;
+            ">
                     <span style="font-size:1.4rem;">{{ a.icon }}</span>
                     <span style="font-size:0.52rem; font-family:'Cinzel',serif;
                          color:{{ 'var(--gold)' if a.unlocked else '#555' }};
