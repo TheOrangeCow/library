@@ -353,10 +353,12 @@
     }
 
     socket.on('receive_msg', function(data) {
+        if (data.type === 'private' && data.target !== username && data.sender !== username) return;
+
         const msgDiv = document.getElementById('chat-messages');
         const p = document.createElement('p');
         p.className = data.type === 'private' ? 'msg-private' : 'msg-global';
-        const prefix = data.type === 'private' ? '[Private] ' : '';
+        const prefix = data.type === 'private' ? `[PM ${data.sender === username ? '→ ' + data.target : '← ' + data.sender}] ` : '';
         p.innerHTML = `<strong>${prefix}${data.sender}:</strong> ${data.msg}`;
         msgDiv.appendChild(p);
         msgDiv.scrollTop = msgDiv.scrollHeight;
