@@ -395,6 +395,7 @@ button.index:hover {
     display: flex;
     flex-direction: column;
     z-index: 1000;
+    min-height: 100px;
 }
 
 .chat-header {
