@@ -408,14 +408,7 @@ button.index:hover {
     justify-content: space-between;
 }
 
-#chat-messages {
-    height: 200px;
-    overflow-y: auto;
-    padding: 10px;
-    font-size: 14px;
-    border-bottom: 1px solid #eee;
-    color: var(--gold);
-}
+
 
 .chat-input-area {
     display: flex;
