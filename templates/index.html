@@ -246,17 +246,7 @@
             </div>
         </div>
 
-        <div id="chat-container" class="chat-window">
-            <div id="chat-header" class="chat-header">
-                <span id="chat-title" style="color: var(--gold);">Global Chat</span>
-                <button onclick="resetChat()" style="background:none; border:none; color: var(--gold); cursor:pointer;">X</button>
-            </div>
-            <div id="chat-messages" style="color: var(--gold);"></div>
-            <div class="chat-input-area">
-                <input type="text" class="index" id="chat-input" placeholder="Type a message...">
-                <button id="chat-send">Send</button>
-            </div>
-        </div>
+
 
         <div id="bug" style="padding: 1rem 1.4rem;">
             <div class="game-card">
@@ -268,6 +258,17 @@
         </div>
 
 </body>
+        <div id="chat-container" class="chat-window">
+            <div id="chat-header" class="chat-header">
+                <span id="chat-title" style="color: var(--gold);">Global Chat</span>
+                <button onclick="resetChat()" style="background:none; border:none; color: var(--gold); cursor:pointer;">X</button>
+            </div>
+            <div id="chat-messages" style="color: var(--gold);"></div>
+            <div class="chat-input-area">
+                <input type="text" class="index" id="chat-input" placeholder="Type a message...">
+                <button id="chat-send">Send</button>
+            </div>
+        </div>
 <script>
     username = "{{ username }}"
     function filterGames(query) {
