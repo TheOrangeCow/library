@@ -348,13 +348,13 @@ button.index:hover {
 }
 
 .dot-active {
-    background-color: #2ecc71;
-    box-shadow: 0 0 0 rgba(46, 204, 113, 0.4);
+    background-color: var(--gold);
+    box-shadow: 0 0 0 var(--gold-light);
     animation: pulse-green 2s infinite;
 }
 
 .dot-away {
-    background-color: #e74c3c;
+    background-color: var(--gold-dim);
 }
 
 @keyframes pulse-green {
