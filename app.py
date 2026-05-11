@@ -68,6 +68,37 @@ def school():
         username=session["username"],
         join_code=get_join_code()
     )
+@app.route("/school2")
+@login_required
+def school2():
 
+    username = session["username"]
+    data = load_users()
+    user = data["users"].get(username, {})
+    stats = user.get("stats", {})
+
+    history = list(reversed(user.get("history", [])))[:5]
+
+    chips = get_chips(username)
+
+    leaderboard = sorted(
+        [{"username": u, "chips": d["chips"]} for u, d in data["users"].items()],
+        key=lambda x: x["chips"], reverse=True
+    )[:5]
+
+
+    achievements   = get_achievements(username)
+    recent_players = get_recent_players(username)
+
+    return render_template("index.html",
+        username=username,
+        chips=chips,
+        leaderboard=leaderboard,
+        join_code=get_join_code(),
+        stats=stats,
+        history=history,
+        achievements=achievements,
+        recent_players=recent_players
+    )
 if __name__ == "__main__":
     socketio.run(app, debug=True)
