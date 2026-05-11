@@ -417,5 +417,5 @@ button.index:hover {
 
 #chat-input { flex-grow: 1; border: 1px solid #ddd; padding: 5px; }
 
-.msg-private { color: var(--gold-dim); font-style: italic; }
-.msg-global { color: #2c3e50; }
+.msg-private { color: var(--gold-dim); }
+.msg-global { color: var(--gold-dim); }
