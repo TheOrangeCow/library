@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<div style="max-width: 860px; margin: 2rem auto; padding: 0 1.2rem;">
+
+  <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.6rem;">
+    <h1 style="font-family:'Cinzel',serif; font-size:1.2rem; letter-spacing:0.14em; text-transform:uppercase;">
+      ⚙ Admin Panel
+    </h1>
+    <span class="tag" style="border-color:var(--gold); color:var(--gold);">DANIEL</span>
+    <div style="margin-left:auto;">
+      <a class="logout" href="{{ url_for('auth.profile') }}">← Back to Profile</a>
+    </div>
+  </div>
+
+  {% if error %}
+  <div class="lobby-error">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+  <div style="color:#80d090; font-size:0.82rem; margin-bottom:0.9rem; border:1px solid #306030; border-radius:4px; padding:0.3rem 0.6rem; background:rgba(50,160,50,0.08);">
+    ✓ {{ success }}
+  </div>
+  {% endif %}
+
+  <div class="game-card" style="padding:0; overflow:hidden;">
+    <table style="width:100%; border-collapse:collapse;">
+      <thead>
+        <tr style="background:#0a0700; border-bottom:1px solid var(--gold-dim);">
+          <th style="padding:0.7rem 1.1rem; text-align:left; font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; font-weight:600;">Username</th>
+          <th style="padding:0.7rem 1.1rem; text-align:left; font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; font-weight:600;">Chips</th>
+          <th style="padding:0.7rem 1.1rem; text-align:left; font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; font-weight:600;">Wins</th>
+          <th style="padding:0.7rem 1.1rem; text-align:left; font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; font-weight:600;">Games</th>
+          <th style="padding:0.7rem 1.1rem; text-align:right; font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; font-weight:600;"></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users_list %}
+        <tr id="row-{{ loop.index }}"
+            data-username="{{ u.username }}"
+            data-chips="{{ u.chips }}"
+            onclick="selectUser('{{ u.username }}', {{ u.chips }})"
+            style="border-bottom:1px solid #1e1600; cursor:pointer; transition:background 0.15s;">
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#f5e8b0;">
+            {{ u.username }}
+            {% if u.username == 'daniel' %}
+              <span class="tag" style="border-color:var(--gold); color:var(--gold); margin-left:4px;">ADMIN</span>
+            {% endif %}
+          </td>
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:var(--gold); font-size:0.9rem;">{{ u.chips }}</td>
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#c8b060; font-size:0.9rem;">{{ u.wins }}</td>
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#c8b060; font-size:0.9rem;">{{ u.games }}</td>
+          <td style="padding:0.65rem 1.1rem; text-align:right;">
+            <span style="font-family:'Cinzel',serif; font-size:0.55rem; color:#5a4820; letter-spacing:0.08em; text-transform:uppercase;">click to edit</span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="game-card" id="edit-panel" style="border-color:var(--gold-dim); display:none;">
+
+    <h2 id="edit-panel-title">Edit User</h2>
+    <p id="edit-panel-sub" style="margin-bottom:1.2rem;"></p>
+
+    <hr class="index" style="margin-bottom:1.2rem;">
+
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1.4rem;">
+
+      <div>
+        <div style="font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:0.8rem; padding-bottom:0.5rem; border-bottom:1px solid #1e1600;">
+          Rename
+        </div>
+        <form method="POST">
+          <input type="hidden" name="action" value="admin_change_username">
+          <input type="hidden" name="target_user" id="u1">
+          <div class="field">
+            <label>New Username</label>
+            <input class="index" type="text" name="admin_new_username" placeholder="new_name" required>
+          </div>
+          <div class="btn-row" style="justify-content:flex-start; margin-top:0.6rem;">
+            <button class="index" type="submit">Rename</button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div style="font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:0.8rem; padding-bottom:0.5rem; border-bottom:1px solid #1e1600;">
+          Set Password
+        </div>
+        <form method="POST">
+          <input type="hidden" name="action" value="admin_change_password">
+          <input type="hidden" name="target_user" id="u2">
+          <div class="field">
+            <label>New Password</label>
+            <input class="index" type="password" name="admin_new_password" placeholder="min 4 chars" required>
+          </div>
+          <div class="field">
+            <label>Confirm</label>
+            <input class="index" type="password" name="admin_confirm_password" placeholder="repeat" required>
+          </div>
+          <div class="btn-row" style="justify-content:flex-start; margin-top:0.6rem;">
+            <button class="index" type="submit">Set Password</button>
+          </div>
+        </form>
+      </div>
+
+      <div>
+        <div style="font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.1em; color:var(--gold-dim); text-transform:uppercase; margin-bottom:0.8rem; padding-bottom:0.5rem; border-bottom:1px solid #1e1600;">
+          Set Chips
+        </div>
+        <form method="POST">
+          <input type="hidden" name="action" value="admin_set_chips">
+          <input type="hidden" name="target_user" id="u3">
+          <div class="field">
+            <label>Chip Amount</label>
+            <input class="index" type="number" name="admin_chips" id="chips-input" placeholder="0" min="0" required>
+          </div>
+          <div class="btn-row" style="justify-content:flex-start; margin-top:0.6rem;">
+            <button class="index" type="submit">Update Chips</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<style>
+  tbody tr:hover { background: rgba(212, 168, 67, 0.05); }
+  tbody tr.selected { background: rgba(212, 168, 67, 0.09); border-left: 3px solid var(--gold); }
+  @media (max-width: 620px) {
+    #edit-panel > div[style*="grid"] { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+<script>
+  function selectUser(username, chips) {
+
+    document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected'));
+    document.querySelector(`tr[data-username="${username}"]`).classList.add('selected');
+
+    document.getElementById('u1').value = username;
+    document.getElementById('u2').value = username;
+    document.getElementById('u3').value = username;
+    document.getElementById('chips-input').value = chips;
+
+    document.getElementById('edit-panel-title').textContent = 'Edit: ' + username;
+    document.getElementById('edit-panel-sub').innerHTML =
+      'Current chips: <span style="color:var(--gold);">🪙 ' + chips + '</span>';
+
+    const panel = document.getElementById('edit-panel');
+    panel.style.display = 'block';
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+{% endblock %}

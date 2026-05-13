@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Profile — {{ username }}{% endblock %}
+
+{% block content %}
+<div style="max-width: 640px; margin: 2rem auto; padding: 0 1.2rem;">
+
+  <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.6rem;">
+    <h1 style="font-family:'Cinzel',serif; font-size:1.2rem; letter-spacing:0.14em; text-transform:uppercase;">
+      ⚙ My Profile
+    </h1>
+    <div style="font-size:0.82rem; color:#c8b060; font-style:italic;">
+      Logged in as <b style="color:var(--gold); font-style:normal;">{{ username }}</b>
+      &nbsp;·&nbsp;
+      <span style="color:var(--gold);">🪙 {{ chips }}</span>
+    </div>
+  </div>
+
+  {% if error %}
+  <div class="lobby-error">{{ error }}</div>
+  {% endif %}
+  {% if success %}
+  <div style="color:#80d090; font-size:0.82rem; margin-bottom:0.9rem; border:1px solid #306030; border-radius:4px; padding:0.3rem 0.6rem; background:rgba(50,160,50,0.08);">
+    ✓ {{ success }}
+  </div>
+  {% endif %}
+
+  <div class="game-card">
+    <h2>Change Username</h2>
+    <p>Pick a new display name. You'll need to confirm with your current password.</p>
+    <form method="POST">
+      <input type="hidden" name="action" value="change_username">
+      <div class="field">
+        <label>New Username</label>
+        <input class="index" type="text" name="new_username" placeholder="new_handle" required>
+      </div>
+      <div class="field">
+        <label>Current Password</label>
+        <input class="index" type="password" name="current_password_u" placeholder="confirm your identity" required>
+      </div>
+      <div class="btn-row" style="justify-content:flex-start;">
+        <button class="index" type="submit">Update Username</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="game-card">
+    <h2>Change Password</h2>
+    <p>Choose a new password. Must be at least 4 characters.</p>
+    <form method="POST">
+      <input type="hidden" name="action" value="change_password">
+      <div class="field">
+        <label>Current Password</label>
+        <input class="index" type="password" name="current_password_p" placeholder="your current password" required>
+      </div>
+      <div class="field">
+        <label>New Password</label>
+        <input class="index" type="password" name="new_password" placeholder="at least 4 characters" required>
+      </div>
+      <div class="field">
+        <label>Confirm New Password</label>
+        <input class="index" type="password" name="confirm_password" placeholder="repeat new password" required>
+      </div>
+      <div class="btn-row" style="justify-content:flex-start;">
+        <button class="index" type="submit">Update Password</button>
+      </div>
+    </form>
+  </div>
+
+  {% if is_admin %}
+  <div class="game-card" style="border-color:var(--gold);">
+    <h2>Admin Panel</h2>
+    <p>You have full administrator access. Manage all users, chips, and credentials.</p>
+    <a href="{{ url_for('auth.admin') }}">⚙ Open Admin Panel</a>
+  </div>
+  {% endif %}
+
+  <div style="margin-top:0.5rem;">
+    <a class="logout" href="{{ url_for('home') }}">← Back to Lobby</a>
+  </div>
+
+</div>
+{% endblock %}
