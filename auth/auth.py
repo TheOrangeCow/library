@@ -2,7 +2,7 @@ from flask import Blueprint, request, session, redirect, url_for, render_templat
 import json, os, hashlib, time, hmac
 from dotenv import load_dotenv
 
-auth_bp = Blueprint('auth', __name__, template_folder='templates')
+auth_bp = Blueprint('auth', __name__, template_folder='templates/auth')
 
 load_dotenv()
 
