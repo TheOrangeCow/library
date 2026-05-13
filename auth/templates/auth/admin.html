@@ -1,7 +1,23 @@
-{% extends "base.html" %}
-{% block title %}Admin Panel{% endblock %}
+<!DOCTYPE html>
+<html>
 
-{% block content %}
+<head>
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
 <div style="max-width: 860px; margin: 2rem auto; padding: 0 1.2rem;">
 
   <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.6rem;">
@@ -156,4 +172,5 @@
     panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 </script>
-{% endblock %}
+</body>
+</html>
