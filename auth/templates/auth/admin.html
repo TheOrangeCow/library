@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Login</title>
+    <title>Admin</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
     <link
@@ -24,9 +24,8 @@
     <h1 style="font-family:'Cinzel',serif; font-size:1.2rem; letter-spacing:0.14em; text-transform:uppercase;">
       Admin Panel
     </h1>
-    <span class="tag" style="border-color:var(--gold); color:var(--gold);">DANIEL</span>
     <div style="margin-left:auto;">
-      <a class="logout" href="{{ url_for('auth.profile') }}">← Back to Profile</a>
+      <a class="logout" href="{{ url_for('auth.profile') }}">Back to Profile</a>
     </div>
   </div>
 
@@ -59,9 +58,6 @@
             style="border-bottom:1px solid #1e1600; cursor:pointer; transition:background 0.15s;">
           <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#f5e8b0;">
             {{ u.username }}
-            {% if u.username == 'daniel' %}
-              <span class="tag" style="border-color:var(--gold); color:var(--gold); margin-left:4px;">ADMIN</span>
-            {% endif %}
           </td>
           <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:var(--gold); font-size:0.9rem;">{{ u.chips }}</td>
           <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#c8b060; font-size:0.9rem;">{{ u.wins }}</td>
