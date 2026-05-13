@@ -72,6 +72,130 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("auth.login"))
+@auth_bp.route("/profile", methods=["GET", "POST"])
+def profile():
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+ 
+    username = session["username"]
+    error = None
+    success = None
+ 
+    if request.method == "POST":
+        action = request.form.get("action")
+        data = load_users()
+        user = data["users"].get(username)
+ 
+        if action == "change_username":
+            new_username = request.form.get("new_username", "").strip()
+            current_pw   = request.form.get("current_password_u", "").strip()
+ 
+            if not new_username:
+                error = "New username cannot be empty."
+            elif user["password"] != hash_pw(current_pw):
+                error = "Current password is incorrect."
+            elif new_username in data["users"]:
+                error = "That username is already taken."
+            else:
+                data["users"][new_username] = data["users"].pop(username)
+                save_users(data)
+                session["username"] = new_username
+                username = new_username
+                success = f"Username changed to '{new_username}'."
+ 
+        elif action == "change_password":
+            current_pw  = request.form.get("current_password_p", "").strip()
+            new_pw      = request.form.get("new_password", "").strip()
+            confirm_pw  = request.form.get("confirm_password", "").strip()
+ 
+            if user["password"] != hash_pw(current_pw):
+                error = "Current password is incorrect."
+            elif len(new_pw) < 4:
+                error = "New password must be at least 4 characters."
+            elif new_pw != confirm_pw:
+                error = "New passwords do not match."
+            else:
+                data["users"][username]["password"] = hash_pw(new_pw)
+                save_users(data)
+                success = "Password changed successfully."
+ 
+    data = load_users()
+    user_data = data["users"].get(username, {})
+    return render_template(
+        "auth/profile.html",
+        username=username,
+        chips=user_data.get("chips", 0),
+        error=error,
+        success=success,
+        is_admin=(username == "daniel"),
+    )
+
+@auth_bp.route("/admin", methods=["GET", "POST"])
+def admin():
+    if "username" not in session or session["username"] != "daniel":
+        return redirect(url_for("home"))
+ 
+    error = None
+    success = None
+ 
+    if request.method == "POST":
+        action      = request.form.get("action")
+        target_user = request.form.get("target_user", "").strip()
+        data = load_users()
+ 
+        if target_user not in data["users"]:
+            error = f"User '{target_user}' not found."
+        else:
+            if action == "admin_change_username":
+                new_username = request.form.get("admin_new_username", "").strip()
+                if not new_username:
+                    error = "New username cannot be empty."
+                elif new_username in data["users"]:
+                    error = "That username is already taken."
+                else:
+                    data["users"][new_username] = data["users"].pop(target_user)
+                    save_users(data)
+                    success = f"Renamed '{target_user}' → '{new_username}'."
+ 
+            elif action == "admin_change_password":
+                new_pw      = request.form.get("admin_new_password", "").strip()
+                confirm_pw  = request.form.get("admin_confirm_password", "").strip()
+                if len(new_pw) < 4:
+                    error = "Password must be at least 4 characters."
+                elif new_pw != confirm_pw:
+                    error = "Passwords do not match."
+                else:
+                    data["users"][target_user]["password"] = hash_pw(new_pw)
+                    save_users(data)
+                    success = f"Password updated for '{target_user}'."
+ 
+            elif action == "admin_set_chips":
+                try:
+                    chips = int(request.form.get("admin_chips", 0))
+                    data["users"][target_user]["chips"] = chips
+                    save_users(data)
+                    success = f"Set chips for '{target_user}' to {chips}."
+                except ValueError:
+                    error = "Chips must be a whole number."
+ 
+    data = load_users()
+    users_list = [
+        {
+            "username": u,
+            "chips": info.get("chips", 0),
+            "wins": info.get("stats", {}).get("wins", 0),
+            "games": info.get("stats", {}).get("games_played", 0),
+        }
+        for u, info in data["users"].items()
+    ]
+    users_list.sort(key=lambda x: x["username"].lower())
+ 
+    return render_template(
+        "auth/admin.html",
+        users_list=users_list,
+        error=error,
+        success=success,
+    )
 
 def get_chips(username):
     data = load_users()
