@@ -33,7 +33,7 @@ body {
     overflow: auto !important;
     display: flex;
     flex-direction: column;
-    background-color: var(--gold);
+    background-color: #0a0700;
     background-image:
         radial-gradient(ellipse 90% 55% at 50% -5%, rgba(232, 184, 75, 0.2) 0%, transparent 65%),
         radial-gradient(ellipse 50% 40% at 85% 85%, rgba(232, 184, 75, 0.07) 0%, transparent 60%),
