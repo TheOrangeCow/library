@@ -370,5 +370,20 @@
         msgDiv.appendChild(p);
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
+
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
+
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+
+    const active2 = pill.querySelector('a.active');
+    if (active2) moveSlider(active2);
+    window.addEventListener('resize', () => {
+        const cur = pill.querySelector('a.active2');
+        if (cur) moveSlider(cur);
+    });
 </script>
 </html>
