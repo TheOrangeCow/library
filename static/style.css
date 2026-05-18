@@ -304,6 +304,7 @@ button.index:hover {
     display: flex;
     align-items: center;
     gap: 1.4rem;
+    background: rgba(255, 255, 255, 0.06);
     transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1),
         background 0.25s,
         border-color 0.25s,
