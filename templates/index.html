@@ -34,7 +34,7 @@
             <a href="#chip">Leaderboard</a>
             <a href="#achievements">Achievements</a>
             <a href="#friends">Players</a>
-            <a href="#users">Players</a>
+            <a href="#users">Online</a>
             <a href="#changelog">Changelog</a>
             <a href="#bug">Changelog</a>
         </div>
@@ -354,6 +354,14 @@
         slider.style.width = el.offsetWidth + 'px';
     }
 
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+        });
+    });
+    
     setTimeout(() => {
         const active = pill.querySelector('a.active');
         if (active) moveSlider(active);
