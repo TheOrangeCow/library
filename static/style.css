@@ -451,3 +451,7 @@ button.index:hover {
 
 .msg-private { color: var(--gold-dim); }
 .msg-global { color: var(--gold-dim); }
+#header, .nav, #games, #search-wrap, .game-card, #chat-container {
+    position: relative;
+    z-index: 1;
+}
