@@ -21,12 +21,9 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: #1a0e00;
-    background-image: 
-        radial-gradient(ellipse 600px 400px at 10% 20%, rgba(232,184,75,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 400px 400px at 80% 70%, rgba(160,80,10,0.1) 0%, transparent 70%),
-        url('/static/bg.svg');
-    background-size: auto, auto, 60px 60px;
+    background-color: #2a1c00;
+    background-image: url('/static/bg.svg');
+    background-size: 60px 60px;
     font-family: 'EB Garamond', serif;
     color: #f5e8b0;
 }
@@ -72,9 +69,7 @@ button.index:hover {
     align-items: center;
     justify-content: space-between;
     padding: 0.5rem 1.4rem;
-    background: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(0, 0, 0, 0.6);
     border: 1px solid var(--gold);
     border-radius: 5px;
     flex-shrink: 0;
@@ -121,10 +116,6 @@ button.index:hover {
     border-radius: 5px;
     outline: none;
     transition: border-color 0.15s;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(232, 184, 75, 0.2);
 }
 
 #search-input:focus {
@@ -177,29 +168,11 @@ h1 {
 }
 
 .game-card {
-    position: relative;
-    overflow: hidden;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(232, 184, 75, 0.2);
+    background: #0e0a00;
+    border: 1px solid var(--gold-dim);
     border-radius: 10px;
     padding: 1.2rem 1.6rem;
     margin-bottom: 1.2rem;
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    transition: border-color 0.2s, background 0.2s;
-}
-.game-card:hover {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(232, 184, 75, 0.45);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
-}
-
-.game-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 8%; right: 8%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(232,184,75,0.35), transparent);
 }
 
 .game-card h2 {
@@ -423,10 +396,6 @@ button.index:hover {
     flex-direction: column;
     z-index: 1000;
     min-height: 300px;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(232, 184, 75, 0.25);
 }
 
 .chat-header {
@@ -451,7 +420,3 @@ button.index:hover {
 
 .msg-private { color: var(--gold-dim); }
 .msg-global { color: var(--gold-dim); }
-#header, .nav, #games, #search-wrap, .game-card, #chat-container {
-    position: relative;
-    z-index: 1;
-}
