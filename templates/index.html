@@ -371,7 +371,7 @@
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 
-    const pill = document.getElementById('nav-pill');
+   const pill = document.getElementById('nav-pill');
     const slider = document.getElementById('nav-slider');
 
     function moveSlider(el) {
@@ -379,8 +379,11 @@
         slider.style.width = el.offsetWidth + 'px';
     }
 
-    const active2 = pill.querySelector('a.active');
-    if (active2) moveSlider(active2);
+    setTimeout(() => {
+        const active = pill.querySelector('a.active');
+        if (active) moveSlider(active);
+    }, 50);
+
     window.addEventListener('resize', () => {
         const cur = pill.querySelector('a.active');
         if (cur) moveSlider(cur);
