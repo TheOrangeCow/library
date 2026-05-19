@@ -97,7 +97,6 @@ def school():
 @app.route("/school2")
 @login_required
 def school2():
-
     username = session["username"]
     data = load_users()
     user = data["users"].get(username, {})
@@ -116,7 +115,7 @@ def school2():
     achievements   = get_achievements(username)
     recent_players = get_recent_players(username)
 
-    return render_template("index.html",
+    return render_template("school2.html",
         username=username,
         chips=chips,
         leaderboard=leaderboard,
