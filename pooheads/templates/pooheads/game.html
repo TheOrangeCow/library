@@ -49,11 +49,12 @@
 <div id="header">
     <h1>Pooheads <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· {{ roomCode }}</span></h1>
     <span class="you-label">Playing as <b>{{ username }}</b></span>
-    <div class="hbtns">
-        <button class="hbtn" onclick="copyLink()">Copy Link</button>
-        <button class="hbtn" onclick="startGame()">Start Game</button>
-        <button class="hbtn" onclick="window.location.href = '/pooheads'">Back</button>
-    </div>
+
+    <span>
+        <button class="index" onclick="copyLink()">Copy Link</button>
+        <button class="index" onclick="startGame()">Start Game</button>
+        <button class="index" onclick="window.location.href = '/pooheads'">Back</button>
+    </span>
 </div>
 
 <div id="arena">
