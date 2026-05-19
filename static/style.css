@@ -9,7 +9,7 @@
     --card-w: 62px;
     --card-h: 90px;
     --radius: 6px;
-    --glass-bg: rgba(255, 255, 255, 0.085);
+    --glass-bg: rgba(255, 255, 255, 0.4);
     --glass-border: rgba(232, 184, 75, 0.22);
     --glass-highlight: rgba(255, 255, 255, 0.6);
     --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 0 0.5px rgba(232, 184, 75, 0.15);
