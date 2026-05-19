@@ -20,7 +20,7 @@
             <a class="logout" href="/">Back</a>
             <a class="logout" href="/logout">Logout</a>
         </span>
-        
+
     </div><br>
     <nav class="nav">
         <div class="nav-pill" id="nav-pill">
@@ -29,95 +29,95 @@
             <a href="#rules">Rules</a>
             <a href="#strategy">Strategy</a>
         </div>
-        </div>
-        <div id="rooms">
-            <h1 style="color: var(--gold);">Rooms</h1><br>
-            <form method="post">
-                <h2 style="color: var(--gold);">Join</h2>
-                <input class="index" name="room_code" placeholder="Room Code"><br>
-                <button class="index" name="join">Join Game</button>
-                <h2 style="color: var(--gold);">Create</h2>
-                <button class="index" name="create">Create Game</button>
-            </form>
-            {% if error %}
-            <p style="color: var(--gold)">{{ error }}</p>
-            {% endif %}
-        </div>
+    </nav>
+    <div id="rooms">
+        <h1 style="color: var(--gold);">Rooms</h1><br>
+        <form method="post">
+            <h2 style="color: var(--gold);">Join</h2>
+            <input class="index" name="room_code" placeholder="Room Code"><br>
+            <button class="index" name="join">Join Game</button>
+            <h2 style="color: var(--gold);">Create</h2>
+            <button class="index" name="create">Create Game</button>
+        </form>
+        {% if error %}
+        <p style="color: var(--gold)">{{ error }}</p>
+        {% endif %}
+    </div>
 
-        <div id="rules">
-            <h2>Rules</h2>
-            <h3>Game Setup</h3>
-            <ul>
-                <li>Each player gets 3 <span class="highlight">face-down</span> cards (cannot look at them).</li>
-                <li>Each player gets 3 <span class="highlight">face-up</span> cards (everyone can see them).</li>
-                <li>Each player gets 3 cards in <span class="highlight">hand</span>.</li>
-                <li>The remaining cards form the <span class="highlight">deck</span>.</li>
-                <li>The first player in the room goes first.</li>
-                <li>On your turn, you must play cards of the <span class="highlight">same rank</span> or higher.</li>
-            </ul>
+    <div id="rules">
+        <h2>Rules</h2>
+        <h3>Game Setup</h3>
+        <ul>
+            <li>Each player gets 3 <span class="highlight">face-down</span> cards (cannot look at them).</li>
+            <li>Each player gets 3 <span class="highlight">face-up</span> cards (everyone can see them).</li>
+            <li>Each player gets 3 cards in <span class="highlight">hand</span>.</li>
+            <li>The remaining cards form the <span class="highlight">deck</span>.</li>
+            <li>The first player in the room goes first.</li>
+            <li>On your turn, you must play cards of the <span class="highlight">same rank</span> or higher.</li>
+        </ul>
 
-            <h3>Objective</h3>
-            <ul>
-                <li>Be the first to get rid of all <span class="highlight">hand</span>, <span
-                        class="highlight">face-up</span>, and <span class="highlight">face-down</span> cards.</li>
-            </ul>
+        <h3>Objective</h3>
+        <ul>
+            <li>Be the first to get rid of all <span class="highlight">hand</span>, <span
+                    class="highlight">face-up</span>, and <span class="highlight">face-down</span> cards.</li>
+        </ul>
 
-            <h3>Drawing Cards</h3>
-            <ul>
-                <li>After a successful play, draw from the deck until you have at least 3 cards in hand (unless the deck
-                    is
-                    empty).</li>
-            </ul>
+        <h3>Drawing Cards</h3>
+        <ul>
+            <li>After a successful play, draw from the deck until you have at least 3 cards in hand (unless the deck
+                is
+                empty).</li>
+        </ul>
 
-            <h3>Playing Rules</h3>
-            <ul>
-                <li>You must play a card equal or higher than the top card of the pile.</li>
-                <li>If you cannot play legally, pick up the entire pile AND the card(s) you tried to play.</li>
-            </ul>
+        <h3>Playing Rules</h3>
+        <ul>
+            <li>You must play a card equal or higher than the top card of the pile.</li>
+            <li>If you cannot play legally, pick up the entire pile AND the card(s) you tried to play.</li>
+        </ul>
 
-            <h3>Special Cards</h3>
-            <ul>
-                <li><span class="special">2 - Reset</span>: Resets pile to 2, next player can play anything.</li>
-                <li><span class="special">3 - Invisible Card</span>: Counts as the last non-3 card on the pile.</li>
-                <li><span class="special">7 - Must Play Lower</span>: Next player must play a card 7 or lower.</li>
-                <li><span class="special">8 - Skip Player</span>: Skips one player per 8. Multiple 8s stack.</li>
-                <li><span class="special">10 - Burn</span>: Clears the pile; the player who played it gets another turn.
-                </li>
-                <li><span class="special">A - High or Low</span>: The player can choice if it is hight (13) or low (1).
-                </li>
-                <li><span class="special">Joker</span>: Rotates everyones hand cards around.</li>
-                <li><span class="special">4-of-a-Kind Burn</span>: If the top four cards are the same rank, pile burns;
-                    last
-                    player gets another turn.</li>
-            </ul>
+        <h3>Special Cards</h3>
+        <ul>
+            <li><span class="special">2 - Reset</span>: Resets pile to 2, next player can play anything.</li>
+            <li><span class="special">3 - Invisible Card</span>: Counts as the last non-3 card on the pile.</li>
+            <li><span class="special">7 - Must Play Lower</span>: Next player must play a card 7 or lower.</li>
+            <li><span class="special">8 - Skip Player</span>: Skips one player per 8. Multiple 8s stack.</li>
+            <li><span class="special">10 - Burn</span>: Clears the pile; the player who played it gets another turn.
+            </li>
+            <li><span class="special">A - High or Low</span>: The player can choice if it is hight (13) or low (1).
+            </li>
+            <li><span class="special">Joker</span>: Rotates everyones hand cards around.</li>
+            <li><span class="special">4-of-a-Kind Burn</span>: If the top four cards are the same rank, pile burns;
+                last
+                player gets another turn.</li>
+        </ul>
 
-            <h3>Hand, Face-Up & Face-Down️</h3>
-            <ul>
-                <li>Play from <span class="highlight">hand</span> first.</li>
-                <li>Then play from <span class="highlight">face-up</span> cards.</li>
-                <li>Finally, flip and play <span class="highlight">face-down</span> cards blindly.</li>
-                <li>Illegal plays in face-up/down result in picking up the pile.</li>
-            </ul>
+        <h3>Hand, Face-Up & Face-Down️</h3>
+        <ul>
+            <li>Play from <span class="highlight">hand</span> first.</li>
+            <li>Then play from <span class="highlight">face-up</span> cards.</li>
+            <li>Finally, flip and play <span class="highlight">face-down</span> cards blindly.</li>
+            <li>Illegal plays in face-up/down result in picking up the pile.</li>
+        </ul>
 
-            <h3>Winning</h3>
-            <ul>
-                <li>You win when <span class="highlight">hand</span>, <span class="highlight">face-up</span>, and <span
-                        class="highlight">face-down</span> cards are empty.</li>
-            </ul>
-        </div><br><br>
+        <h3>Winning</h3>
+        <ul>
+            <li>You win when <span class="highlight">hand</span>, <span class="highlight">face-up</span>, and <span
+                    class="highlight">face-down</span> cards are empty.</li>
+        </ul>
+    </div><br><br>
 
-        <div id="strategy">
-            <h2>Strategy</h2>
-            <ul>
-                <li>Save strong/special cards for when you’re in trouble</li>
-                <li>Get rid of weak cards early (4, 5, 6, etc.)</li>
-                <li>Always think: “Will this screw me when I’m on face-down cards?”</li>
-                <li>Arrange face up cards so strong cards are saved (2, 10, A) and weak cards are gone early</li>
-                <li>Dump your low/mid cards first</li>
-                <li>Try to keep control cards 2, 3, 10, A</li>
-                <li>Don’t waste a 10 early unless it saves you from picking up</li>
-            </ul>
-        </div>
+    <div id="strategy">
+        <h2>Strategy</h2>
+        <ul>
+            <li>Save strong/special cards for when you’re in trouble</li>
+            <li>Get rid of weak cards early (4, 5, 6, etc.)</li>
+            <li>Always think: “Will this screw me when I’m on face-down cards?”</li>
+            <li>Arrange face up cards so strong cards are saved (2, 10, A) and weak cards are gone early</li>
+            <li>Dump your low/mid cards first</li>
+            <li>Try to keep control cards 2, 3, 10, A</li>
+            <li>Don’t waste a 10 early unless it saves you from picking up</li>
+        </ul>
+    </div>
 </body>
 <script>
     const pill = document.getElementById('nav-pill');
