@@ -41,7 +41,7 @@
             <p style="font-size:0.85rem;color:#7a6030;">Have a code? Enter it below to join a private or public room.
             </p>
             <form method="POST">
-                <input class="index" name="room_code" placeholder="Room Code" />
+                <input class="index" name="room_code" placeholder="Room Code" /><br><br>
                 <button class="index" type="submit" name="join">Join Game</button>
             </form>
 
@@ -203,7 +203,7 @@
                     <span style="color:#7a6030;font-size:0.8rem;">${r.players}/${r.max} players</span>
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="room_code" value="${r.code}">
-                        <button type="submit" name="join" 
+                        <button class="index" type="submit" name="join" 
                             style="font-size:0.75rem;padding:0.2rem 0.7rem;">
                             Join →
                         </button>
