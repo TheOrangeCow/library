@@ -8,6 +8,7 @@ from pooheads.pooheads import pooheads_bp
 from sevens.sevens import sevens_bp
 from auth.auth import auth_bp, get_chips, load_users, get_achievements, get_recent_players,  get_join_code
 from blackjack.blackjack import blackjack_bp
+from flask_socketio import SocketIO, emit
 from slots.slots import slots_bp
 from poker.poker import poker_bp 
 
