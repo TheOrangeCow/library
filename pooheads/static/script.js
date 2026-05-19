@@ -100,7 +100,10 @@ function detectPlays(newState) {
     }
 }
 
-socket.on("connect", () => socket.emit("join", { code: roomCode, username }));
+socket.on("connect", () => {
+    socket.emit("join", { code: roomCode, username });
+    socket.emit("set_page", { page: `Gaming:${roomCode}` });
+});
 socket.on("state", (data) => { detectPlays(data); render(data); });
 socket.on("invalidPlay", (data) => { showNotif(data.msg || "Can't play that!"); selectedCards = []; renderLastState(); });
 
@@ -398,17 +401,17 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 
-socket.on('update_user_list', function (users) {
+socket.on('update_user_list', function(users) {
     const listElement = document.getElementById('user-list');
     listElement.innerHTML = '';
-    users.forEach(user => {
-        if (user.name === "{{ username }}") return;
-        const li = document.createElement('li');
-        li.style.cursor = "pointer";
-        const dotClass = (user.status === "Active") ? "dot-active" : "dot-away";
-        li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
-        listElement.appendChild(li);
-    });
+    users
+        .filter(u => u.name !== username && u.page === `Gaming:${roomCode}`)
+        .forEach(user => {
+            const li = document.createElement('li');
+            const dotClass = user.status === "Active" ? "dot-active" : "dot-away";
+            li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
+            listElement.appendChild(li);
+        });
 });
 
 document.getElementById('chat-send').onclick = sendMessage;

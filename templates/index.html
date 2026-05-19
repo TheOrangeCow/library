@@ -308,16 +308,33 @@
 
     socket.on('update_user_list', function(users) {
         const listElement = document.getElementById('user-list');
-        listElement.innerHTML = ''; 
+        listElement.innerHTML = '';
         users.forEach(user => {
-            if(user.name === "{{ username }}") return;
+            if (user.name === "{{ username }}") return;
             const li = document.createElement('li');
-            li.style.cursor = "pointer";
-            li.onclick = () => setChatTarget(user.name);
-            const dotClass = (user.status === "Active") ? "dot-active" : "dot-away";
-            li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
+            const dotClass = user.status === "Active" ? "dot-active" : "dot-away";
+
+            let pageLabel = "";
+            let canPM = false;
+            if (!user.page || user.page === "Home") {
+                pageLabel = `<span style="color:#7a6030;font-size:0.7rem;"> · Home</span>`;
+                canPM = true;
+            } else if (user.page.startsWith("Gaming:")) {
+                const code = user.page.split(":")[1];
+                pageLabel = `<span style="color:#e8b84b;font-size:0.7rem;"> · In Game ${code}</span>`;
+            } else if (user.page === "Lobby") {
+                pageLabel = `<span style="color:#6fe296;font-size:0.7rem;"> · In Lobby</span>`;
+            }
+
+            li.style.cursor = canPM ? "pointer" : "default";
+            li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}${pageLabel}`;
+            if (canPM) li.onclick = () => setChatTarget(user.name);
             listElement.appendChild(li);
         });
+    });
+
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: "Home" });
     });
 
     document.getElementById('chat-send').onclick = sendMessage;
