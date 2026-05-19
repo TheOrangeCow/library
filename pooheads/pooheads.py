@@ -568,7 +568,7 @@ def start(data):
     t.start()
     swap_timers[code] = t
 
-@socketio.on('send_global_msg')
+@socketio.on('send_game_msg')
 def handle_global(data):
     if session.get("username"):
         code = data.get("code")
