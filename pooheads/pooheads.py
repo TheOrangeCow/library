@@ -1,5 +1,5 @@
 from flask import Flask, request, session, render_template, redirect, url_for
-from flask_socketio import SocketIO, join_room
+from flask_socketio import SocketIO, join_room, emit
 import json, os, random, re, threading
 from flask import Blueprint
 from functools import wraps
@@ -570,11 +570,8 @@ def start(data):
 
 @socketio.on('send_global_msg')
 def handle_global(data):
-    print("MSG RECEIVED:", data)
-    print("SESSION USER:", session.get("username"))
     if session.get("username"):
         code = data.get("code")
-        print("EMITTING TO ROOM:", code)
         emit('receive_msg', {
             'sender': session.get("username"),
             'msg': data['msg'],
