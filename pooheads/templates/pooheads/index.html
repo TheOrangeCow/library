@@ -151,11 +151,18 @@
         });
     });
 
-    setTimeout(() => {
-        const active = pill.querySelector('a.active');
-        if (active) moveSlider(active);
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
         hide('rooms');
-    }, 50);
+    }
+
+    if (document.fonts) {
+        document.fonts.ready.then(init);
+    } else {
+        window.addEventListener('load', init);
+    }
 
     window.addEventListener('resize', () => {
         const cur = pill.querySelector('a.active');
