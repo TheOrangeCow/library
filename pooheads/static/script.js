@@ -426,7 +426,7 @@ function sendMessage() {
     input.value = '';
 }
 
-socket.on('receive_msg', function (data) {
+socket.on('receive_game_msg', function (data) {
     const msgDiv = document.getElementById('chat-messages');
     const p = document.createElement('p');
     p.className = 'msg-global';
