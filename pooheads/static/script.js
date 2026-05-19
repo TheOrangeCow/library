@@ -400,7 +400,7 @@ document.addEventListener("visibilitychange", () => {
 
 socket.on('update_user_list', function (users) {
     const listElement = document.getElementById('user-list');
-    listElement.innerHTML = '<p></p>';
+    listElement.innerHTML = '';
     users.forEach(user => {
         if (user.name === "{{ username }}") return;
         const li = document.createElement('li');
