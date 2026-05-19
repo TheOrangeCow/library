@@ -400,12 +400,11 @@ document.addEventListener("visibilitychange", () => {
 
 socket.on('update_user_list', function (users) {
     const listElement = document.getElementById('user-list');
-    listElement.innerHTML = '';
+    listElement.innerHTML = '<p></p>';
     users.forEach(user => {
         if (user.name === "{{ username }}") return;
         const li = document.createElement('li');
         li.style.cursor = "pointer";
-        li.onclick = () => setChatTarget(user.name);
         const dotClass = (user.status === "Active") ? "dot-active" : "dot-away";
         li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
         listElement.appendChild(li);
