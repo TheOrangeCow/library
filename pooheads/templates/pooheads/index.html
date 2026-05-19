@@ -218,7 +218,7 @@
     setInterval(loadPublicRooms, 5000);
     const socket = io();
     socket.on("connect", () => {
-        socket.emit("set_page", { page: `lobing` });
+        socket.emit("set_page", { page: `Lobby` });
     });
 
     document.addEventListener("visibilitychange", () => {
