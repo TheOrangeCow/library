@@ -29,18 +29,20 @@
             <a href="#strategy">Strategy</a>
         </div>
     </nav>
-    <div id="rooms" class="game-card" style="padding: 1rem 1.4rem;">
-        <h1 style="color: var(--gold);">Rooms</h1><br>
-        <form method="post">
-            <h2 style="color: var(--gold);">Join</h2>
-            <input class="index" name="room_code" placeholder="Room Code"><br>
-            <button class="index" name="join">Join Game</button>
-            <h2 style="color: var(--gold);">Create</h2>
-            <button class="index" name="create">Create Game</button>
-        </form>
-        {% if error %}
-        <p style="color: var(--gold)">{{ error }}</p>
-        {% endif %}
+    <div id="rooms" style="padding: 1rem 1.4rem;">
+        <div class="game-card">
+            <h2 style="color: var(--gold);">Rooms</h2>
+            <form method="post">
+                <h3 style="color: var(--gold);">Join</h3>
+                <input class="index" name="room_code" placeholder="Room Code"><br>
+                <button class="index" name="join">Join Game</button>
+                <h3 style="color: var(--gold);">Create</h3>
+                <button class="index" name="create">Create Game</button>
+            </form>
+            {% if error %}
+            <p style="color: var(--gold)">{{ error }}</p>
+            {% endif %}
+        </div>
     </div>
 
     <div id="rules">
