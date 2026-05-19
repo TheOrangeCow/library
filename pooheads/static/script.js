@@ -423,14 +423,6 @@ function sendMessage() {
     if (!msg) return;
 
     socket.emit('send_game_msg', { msg: input.value, code: roomCode });
-
-    const msgDiv = document.getElementById('chat-messages');
-    const p = document.createElement('p');
-    p.className = 'msg-global';
-    p.innerHTML = `<strong>You:</strong> ${msg}`;
-    msgDiv.appendChild(p);
-    msgDiv.scrollTop = msgDiv.scrollHeight;
-
     input.value = '';
 }
 
@@ -438,7 +430,11 @@ socket.on('receive_msg', function (data) {
     const msgDiv = document.getElementById('chat-messages');
     const p = document.createElement('p');
     p.className = 'msg-global';
-    p.innerHTML = `<strong>${data.sender}:</strong> ${data.msg}`;
+    if(data.sender != username){
+        p.innerHTML = `<strong>${data.sender}:</strong> ${data.msg}`;
+    }else{
+        p.innerHTML = `<strong>You:</strong> ${data.msg}`;
+    }
     msgDiv.appendChild(p);
     msgDiv.scrollTop = msgDiv.scrollHeight;
 });
