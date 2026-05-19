@@ -570,8 +570,11 @@ def start(data):
 
 @socketio.on('send_global_msg')
 def handle_global(data):
+    print("MSG RECEIVED:", data)
+    print("SESSION USER:", session.get("username"))
     if session.get("username"):
         code = data.get("code")
+        print("EMITTING TO ROOM:", code)
         emit('receive_msg', {
             'sender': session.get("username"),
             'msg': data['msg'],
