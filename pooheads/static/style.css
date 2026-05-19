@@ -1,5 +1,4 @@
 @import url('/static/style.css');
-/
 
 body {
     height: 100vh;
@@ -771,4 +770,35 @@ body {
 
 .rlist .rdy {
     color: #6fe296;
+}
+
+.index-text ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.index-text li {
+    padding: 5px 0;
+    position: relative;
+    padding-left: 25px;
+}
+
+.index-text li::before {
+    content: "•";
+    position: absolute;
+    left: 0;
+    color: var(--gold-light);
+    font-weight: bold;
+}
+
+.special {
+    font-weight: bold;
+    color: var(--gold-light);
+}
+
+.highlight {
+    background-color: var(--gold-light);
+    color: var(--gold-dim);
+    padding: 2px 5px;
+    border-radius: 4px;
 }
