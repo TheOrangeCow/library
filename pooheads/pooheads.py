@@ -571,11 +571,12 @@ def start(data):
 @socketio.on('send_global_msg')
 def handle_global(data):
     if session.get("username"):
+        code = data.get("code")
         emit('receive_msg', {
             'sender': session.get("username"),
             'msg': data['msg'],
             'type': 'global'
-        }, broadcast=True)
+        }, to=code)
 
 
 @app.route("/pooheads", methods=["GET", "POST"])

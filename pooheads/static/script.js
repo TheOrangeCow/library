@@ -419,7 +419,7 @@ function sendMessage() {
     const msg = input.value.trim();
     if (!msg) return;
 
-    socket.emit('send_global_msg', { msg });
+    socket.emit('send_global_msg', { msg: input.value, code: roomCode });
 
     const msgDiv = document.getElementById('chat-messages');
     const p = document.createElement('p');
