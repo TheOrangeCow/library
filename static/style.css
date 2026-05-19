@@ -422,6 +422,44 @@ hr.index {
     margin: 1rem 0;
 }
 
+input[type="checkbox"].index {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1.1rem;
+    height: 1.1rem;
+    border: 1px solid rgba(232, 184, 75, 0.22);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="checkbox"].index:checked {
+    background: rgba(232, 184, 75, 0.15);
+    border-color: rgba(232, 184, 75, 0.6);
+}
+
+input[type="checkbox"].index:checked::after {
+    content: '';
+    position: absolute;
+    left: 0.28rem;
+    top: 0.08rem;
+    width: 0.3rem;
+    height: 0.55rem;
+    border: 2px solid var(--gold);
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+}
+
+input[type="checkbox"].index:hover {
+    border-color: rgba(232, 184, 75, 0.5);
+    box-shadow: 0 0 0 3px rgba(232, 184, 75, 0.07);
+}
+
 .btn-row {
     display: flex;
     gap: 0.7rem;
