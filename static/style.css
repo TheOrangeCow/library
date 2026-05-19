@@ -325,40 +325,7 @@ button.index:hover {
         box-shadow 0.25s ease;
 }
 
-.game-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
 
-    background: linear-gradient(
-        135deg,
-        rgba(255,255,255,0.08) 0%,
-        transparent 45%,
-        rgba(255,255,255,0.025) 100%
-    );
-
-    pointer-events: none;
-}
-
-.game-card::after {
-    content: '';
-    position: absolute;
-
-    top: 0;
-    left: 0;
-    right: 0;
-
-    height: 1px;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,0.16),
-        transparent
-    );
-
-    pointer-events: none;
-}
 
 .game-card:hover {
     transform: translateY(-2px);
