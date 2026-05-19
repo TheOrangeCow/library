@@ -365,3 +365,69 @@ function renderLastState() {
     const dead = data.dead || [];
     finBar.innerHTML = dead.map((p, i) => `<div class="fin-badge">${["🥇", "🥈", "🥉"][i] || "•"} ${p}</div>`).join("");
 }
+
+
+
+const dragItem = document.getElementById("chat-container");
+const dragHeader = document.getElementById("chat-header");
+let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+dragHeader.onmousedown = (e) => {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+    active = true;
+};
+document.onmouseup = () => active = false;
+document.onmousemove = (e) => {
+    if (active) {
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        xOffset = currentX; yOffset = currentY;
+        dragItem.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+    }
+};
+
+
+
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'hidden') {
+        socket.emit('tab_hidden');
+    } else {
+        socket.emit('tab_visible');
+    }
+});
+
+socket.on('update_user_list', function (users) {
+    const listElement = document.getElementById('user-list');
+    listElement.innerHTML = '';
+    users.forEach(user => {
+        if (user.name === "{{ username }}") return;
+        const li = document.createElement('li');
+        li.style.cursor = "pointer";
+        li.onclick = () => setChatTarget(user.name);
+        const dotClass = (user.status === "Active") ? "dot-active" : "dot-away";
+        li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
+        listElement.appendChild(li);
+    });
+});
+
+document.getElementById('chat-send').onclick = sendMessage;
+document.getElementById('chat-input').onkeydown = (e) => { if (e.key === "Enter") sendMessage(); };
+
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    if (!input.value.trim()) return;
+    socket.emit('send_global_msg', { msg: input.value });
+    
+    input.value = '';
+}
+
+socket.on('receive_msg', function (data) {
+    const msgDiv = document.getElementById('chat-messages');
+    const p = document.createElement('p');
+    p.className = 'msg-global';
+    p.innerHTML = `<strong>${data.sender}:</strong> ${data.msg}`;
+    msgDiv.appendChild(p);
+    msgDiv.scrollTop = msgDiv.scrollHeight;
+});

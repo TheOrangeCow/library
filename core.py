@@ -57,27 +57,3 @@ def handle_disconnect():
             away_users.discard(user)
         emit_status_update()
 
-@socketio.on('send_global_msg')
-def handle_global(data):
-    if session.get("username"):
-        emit('receive_msg', {
-            'sender': session.get("username"),
-            'msg': data['msg'],
-            'type': 'global'
-        }, broadcast=True)
-
-@socketio.on('send_private_msg')
-def handle_private(data):
-    if session.get("username"):
-        sender = session.get("username")
-        recipient = data['to']
-        msg_content = data['msg']
-        payload = {
-            'sender': sender,
-            'msg': msg_content,
-            'type': 'private',
-            'target': recipient
-        }
-        emit('receive_msg', payload, room=recipient)
-        if sender != recipient:
-            emit('receive_msg', payload, room=sender)

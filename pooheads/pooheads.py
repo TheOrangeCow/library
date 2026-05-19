@@ -568,6 +568,15 @@ def start(data):
     t.start()
     swap_timers[code] = t
 
+@socketio.on('send_global_msg')
+def handle_global(data):
+    if session.get("username"):
+        emit('receive_msg', {
+            'sender': session.get("username"),
+            'msg': data['msg'],
+            'type': 'global'
+        }, broadcast=True)
+
 
 @app.route("/pooheads", methods=["GET", "POST"])
 @login_required
