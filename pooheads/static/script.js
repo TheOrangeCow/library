@@ -416,9 +416,18 @@ document.getElementById('chat-input').onkeydown = (e) => { if (e.key === "Enter"
 
 function sendMessage() {
     const input = document.getElementById('chat-input');
-    if (!input.value.trim()) return;
-    socket.emit('send_global_msg', { msg: input.value });
-    
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    socket.emit('send_global_msg', { msg });
+
+    const msgDiv = document.getElementById('chat-messages');
+    const p = document.createElement('p');
+    p.className = 'msg-global';
+    p.innerHTML = `<strong>You:</strong> ${msg}`;
+    msgDiv.appendChild(p);
+    msgDiv.scrollTop = msgDiv.scrollHeight;
+
     input.value = '';
 }
 
