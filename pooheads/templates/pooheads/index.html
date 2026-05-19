@@ -9,6 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 
 <body>
@@ -215,6 +216,18 @@
 
     loadPublicRooms();
     setInterval(loadPublicRooms, 5000);
+
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: `lobing` });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'hidden') {
+        socket.emit('tab_hidden');
+    } else {
+        socket.emit('tab_visible');
+    }
+});
 </script>
 
 </html>
