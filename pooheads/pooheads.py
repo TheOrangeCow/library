@@ -588,6 +588,7 @@ def index():
 
         if "create" in request.form:
             code = str(random.randint(100000, 999999))
+            is_public = "public" in request.form 
 
             games.setdefault("games", {})[code] = {
                 "players": [],
@@ -599,7 +600,8 @@ def index():
                 "sevenRule": False,
                 "aceMode": "high",
                 "dead": [],
-                "phase": "lobby"
+                "phase": "lobby",
+                "public": is_public
             }
 
             save_json(GAME_FILE, games)
@@ -622,6 +624,20 @@ def index():
 
     return render_template("/pooheads/index.html", username=username)
 
+@app.route("/pooheads/rooms")
+@login_required
+def public_rooms():
+    games = load_json(GAME_FILE)
+    rooms = []
+    for code, g in games.get("games", {}).items():
+        if g.get("public") and g.get("phase") == "lobby":
+            rooms.append({
+                "code": code,
+                "players": len(g["players"]),
+                "max": MAX_PLAYERS,
+                "names": g["players"]
+            })
+    return {"rooms": rooms}
 
 @app.route("/pooheads/game")
 @login_required

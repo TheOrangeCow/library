@@ -32,10 +32,25 @@
     <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
         <div class="game-card">
             <h1 style="color: var(--gold);">Rooms</h1><br>
-            <form method="post">
-                <input class="index" name="room_code" placeholder="Room Code" style="max-width: 500px;"><br><br>
-                <button class="index" name="join">Join Game</button><br><br>
-                <button class="index" name="create">Create Game</button>
+            <h2>Join a Public Room</h2>
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color:#7a6030;font-size:0.85rem;">Loading rooms...</p>
+            </div>
+
+            <h2>Join Private Room</h2>
+            <p style="font-size:0.85rem;color:#7a6030;">Have a code? Enter it below to join a private or public room.
+            </p>
+            <form method="POST">
+                <input name="room_code" placeholder="Room Code" />
+                <button type="submit" name="join">Join Game</button>
+            </form>
+
+            <h2>Create Room</h2>
+            <form method="POST">
+                <label style="font-size:0.85rem;color:#7a6030;">
+                    <input type="checkbox" name="public" checked> Make this room public
+                </label><br><br>
+                <button type="submit" name="create">Create Game</button>
             </form>
             {% if error %}
             <p style="color: var(--gold)">{{ error }}</p>
@@ -168,6 +183,38 @@
         const cur = pill.querySelector('a.active');
         if (cur) moveSlider(cur);
     });
+
+    function loadPublicRooms() {
+        fetch('/pooheads/rooms')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('public-rooms-list');
+                if (!data.rooms.length) {
+                    el.innerHTML = '<p style="color:#7a6030;font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    return;
+                }
+                el.innerHTML = data.rooms.map(r => `
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                            padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                    <span style="color:var(--gold-dim);font-size:0.85rem;">
+                        Room <b style="color:var(--gold)">${r.code}</b>
+                        · ${r.names.join(', ') || 'Empty'}
+                    </span>
+                    <span style="color:#7a6030;font-size:0.8rem;">${r.players}/${r.max} players</span>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="room_code" value="${r.code}">
+                        <button type="submit" name="join" 
+                            style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                            Join →
+                        </button>
+                    </form>
+                </div>
+            `).join('');
+            });
+    }
+
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
 </script>
 
 </html>
