@@ -276,23 +276,24 @@ def handle_global(data):
             'type': 'global'
         }, to=code)
 
-
-@sevens_bp.route("/sevens", methods=["GET", "POST"])
-@login_required
-def index():
-    games = load_json(GAME_FILE)
-    username = session["username"]
-    public_rooms=[
+def get_public_rooms(games):
+    return [
         (code, room) for code, room in games.get("games", {}).items()
         if room.get("is_public") and room.get("phase") == "lobby"
         and len(room["players"]) < MAX_PLAYERS
     ]
+
+@sevens_bp.route("/sevens", methods=["GET", "POST"])
+@login_required
+def index():
+    username = session["username"]
+
     if request.method == "POST":
-        
+        games = load_json(GAME_FILE)
 
         if "create" in request.form:
             code = str(random.randint(100000, 999999))
-            is_public = "is_public" in request.form 
+            is_public = "is_public" in request.form
             games.setdefault("games", {})[code] = {
                 "players": [],
                 "hands": {},
@@ -313,18 +314,26 @@ def index():
                 room = games["games"][code]
                 if username in room["players"]:
                     return render_template("sevens/index.html",
-                        error=f'The name "{username}" is already taken in room {code}.', username=username,  public_rooms=[])
+                        error=f'The name "{username}" is already taken in room {code}.',
+                        username=username,
+                        public_rooms=get_public_rooms(games))
                 if len(room["players"]) >= MAX_PLAYERS:
                     return render_template("sevens/index.html",
-                        error="That room is full (max 6 players).", username=username,  public_rooms=[])
+                        error="That room is full (max 6 players).",
+                        username=username,
+                        public_rooms=get_public_rooms(games))
                 room["players"].append(username)
                 save_json(GAME_FILE, games)
                 return redirect(url_for("sevens.game", code=code))
             else:
-                return render_template("sevens/index.html", error="Room not found.",  public_rooms=[])
-
-    return render_template("sevens/index.html", username=username,   public_rooms=[])
-
+                return render_template("sevens/index.html",
+                    error="Room not found.",
+                    username=username,
+                    public_rooms=get_public_rooms(games))
+    games = load_json(GAME_FILE)
+    return render_template("sevens/index.html",
+        username=username,
+        public_rooms=get_public_rooms(games))
 
 @sevens_bp.route("/sevens/game")
 @login_required
