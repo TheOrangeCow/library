@@ -5,6 +5,7 @@ let myHole = [];
 
 socket.on("connect", () => {
     socket.emit("poker_join", { code: roomCode, username });
+    socket.emit("set_page", { page: `Gaming:${roomCode}` });
 });
 
 socket.on("state", (data) => {
@@ -286,3 +287,49 @@ function showNotif(msg, dur = 2500) {
     clearTimeout(el._t);
     el._t = setTimeout(() => el.style.display = "none", dur);
 }
+
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'hidden') {
+        socket.emit('tab_hidden');
+    } else {
+        socket.emit('tab_visible');
+    }
+});
+
+socket.on('update_user_list', function(users) {
+    const listElement = document.getElementById('user-list');
+    listElement.innerHTML = '';
+    users
+        .filter(u => u.name !== username && u.page === `Gaming:${roomCode}`)
+        .forEach(user => {
+            const li = document.createElement('li');
+            const dotClass = user.status === "Active" ? "dot-active" : "dot-away";
+            li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
+            listElement.appendChild(li);
+        });
+});
+
+document.getElementById('chat-send').onclick = sendMessage;
+document.getElementById('chat-input').onkeydown = (e) => { if (e.key === "Enter") sendMessage(); };
+
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    socket.emit('send_pgame_msg', { msg: input.value, code: roomCode });
+    input.value = '';
+}
+
+socket.on('receive_pgame_msg', function (data) {
+    const msgDiv = document.getElementById('chat-messages');
+    const p = document.createElement('p');
+    p.className = 'msg-global';
+    if(data.sender != username){
+        p.innerHTML = `<strong>${data.sender}:</strong> ${data.msg}`;
+    }else{
+        p.innerHTML = `<strong>You:</strong> ${data.msg}`;
+    }
+    msgDiv.appendChild(p);
+    msgDiv.scrollTop = msgDiv.scrollHeight;
+});

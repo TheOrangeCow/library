@@ -583,3 +583,13 @@ def poker_leave(data):
         return
 
     save_json(GAME_FILE, games)
+
+@socketio.on('send_pgame_msg')
+def handle_global(data):
+    if session.get("username"):
+        code = data.get("code")
+        emit('receive_pgame_msg', {
+            'sender': session.get("username"),
+            'msg': data['msg'],
+            'type': 'global'
+        }, to=code)
