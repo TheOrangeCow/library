@@ -282,11 +282,17 @@ def handle_global(data):
 def index():
     games = load_json(GAME_FILE)
     username = session["username"]
+    public_rooms=[
+        (code, room) for code, room in games.get("games", {}).items()
+        if room.get("is_public") and room.get("phase") == "lobby"
+        and len(room["players"]) < MAX_PLAYERS
+    ]
     if request.method == "POST":
         
 
         if "create" in request.form:
             code = str(random.randint(100000, 999999))
+            is_public = "is_public" in request.form 
             games.setdefault("games", {})[code] = {
                 "players": [],
                 "hands": {},
@@ -296,6 +302,7 @@ def index():
                 "turn": None,
                 "phase": "lobby",
                 "passed": [],
+                "is_public": is_public,
             }
             save_json(GAME_FILE, games)
             return redirect(url_for("sevens.game", code=code))
@@ -306,17 +313,17 @@ def index():
                 room = games["games"][code]
                 if username in room["players"]:
                     return render_template("sevens/index.html",
-                        error=f'The name "{username}" is already taken in room {code}.', username=username)
+                        error=f'The name "{username}" is already taken in room {code}.', username=username,  public_rooms=[])
                 if len(room["players"]) >= MAX_PLAYERS:
                     return render_template("sevens/index.html",
-                        error="That room is full (max 6 players).", username=username)
+                        error="That room is full (max 6 players).", username=username,  public_rooms=[])
                 room["players"].append(username)
                 save_json(GAME_FILE, games)
                 return redirect(url_for("sevens.game", code=code))
             else:
-                return render_template("sevens/index.html", error="Room not found.")
+                return render_template("sevens/index.html", error="Room not found.",  public_rooms=[])
 
-    return render_template("sevens/index.html", username=username)
+    return render_template("sevens/index.html", username=username,   public_rooms=[])
 
 
 @sevens_bp.route("/sevens/game")

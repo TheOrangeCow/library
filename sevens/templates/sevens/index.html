@@ -31,12 +31,31 @@
 
     <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
         <div class="game-card">
+            <div id="public-rooms">
+                <h2 style="color: var(--gold); margin-top: 1.5rem;">Open Rooms</h2>
+                {% if public_rooms %}
+                    {% for code, room in public_rooms %}
+                    <form method="POST" style="display:inline;">
+                        <input type="hidden" name="room_code" value="{{ code }}">
+                        <div class="public-room-row">
+                            <span>Room <b>{{ code }}</b> — {{ room.players | length }} / 6 players</span>
+                            <button class="index" type="submit" name="join">Join</button>
+                        </div>
+                    </form>
+                    {% endfor %}
+                {% else %}
+                    <p class="index-text" style="opacity:0.6;">No open public rooms right now.</p>
+                {% endif %}
+            </div>
             <form method="POST">
                 <h1 style="color: var(--gold);">Rooms</h1><br>
                 <label class="index-text" for="room_code">Room Code</label><br>
                 <input class="index" type="text" name="room_code" placeholder="6-digit code…" autocomplete="off"><br>
                 <br>
                 <button class="index" type="submit" name="join">Join Room</button>
+                <label class="index-text">
+                    <input type="checkbox" name="is_public"> Make room public
+                </label><br><br>
                 <button class="index" type="submit" name="create">Create Room</button>
 
             </form>
