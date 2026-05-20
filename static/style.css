@@ -396,7 +396,8 @@ button.index:hover {
     flex: 1;
     min-width: 200px;
 }
-input.index {
+input.index,
+section{
     width: 100%;
     color: var(--gold);
     background: rgba(255, 255, 255, 0.04);
@@ -411,7 +412,8 @@ input.index {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input.index:focus {
+input.index:focus,
+section {
     border-color: var(--gold);
     box-shadow: 0 0 18px rgba(232, 184, 75, 0.12);
 }
