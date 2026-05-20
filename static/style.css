@@ -397,7 +397,7 @@ button.index:hover {
     min-width: 200px;
 }
 input.index,
-section{
+select{
     width: 100%;
     color: var(--gold);
     background: rgba(255, 255, 255, 0.04);
@@ -413,7 +413,7 @@ section{
 }
 
 input.index:focus,
-section {
+select {
     border-color: var(--gold);
     box-shadow: 0 0 18px rgba(232, 184, 75, 0.12);
 }
