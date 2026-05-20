@@ -31,30 +31,43 @@
 
     <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
         <div class="game-card">
+            <h1 style="color: var(--gold);">Rooms</h1><br>
             <div id="public-rooms">
-                <h2 style="color: var(--gold); margin-top: 1.5rem;">Open Rooms</h2>
-                {% if public_rooms %}
+                <h2>Join a Public Room</h2>
+                <div id="public-rooms-list" style="margin-bottom:1rem;">
+                    {% if public_rooms %}
                     {% for code, room in public_rooms %}
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="room_code" value="{{ code }}">
-                        <div class="public-room-row">
-                            <span>Room <b>{{ code }}</b> — {{ room.players | length }} / 6 players</span>
-                            <button class="index" type="submit" name="join">Join</button>
-                        </div>
-                    </form>
+
+                    <div style="display:flex;justify-content:space-between;align-items:center;
+                            padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                        <span style="color:var(--gold-dim);font-size:0.85rem;">
+                            Room <b style="color:var(--gold)">{{ code }}</b> ·
+                        </span>
+                        <span style="color:#7a6030;font-size:0.8rem;">{{ room.players | length }} / 6 players</span>
+                        <form method="POST" style="margin:0;">
+                            <input type="hidden" name="room_code" value="{{ code }}">
+                            <button class="index" type="submit" name="join"
+                                style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                                Join →
+                            </button>
+                        </form>
+                    </div>
                     {% endfor %}
-                {% else %}
+                    {% else %}
                     <p class="index-text" style="opacity:0.6;">No open public rooms right now.</p>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
+            <br>
             <form method="POST">
-                <h1 style="color: var(--gold);">Rooms</h1><br>
-                <label class="index-text" for="room_code">Room Code</label><br>
+                <h2>Join Private Room</h2>
+                <p style="font-size:0.85rem;color:#7a6030;">Have a code? Enter it below to join a private or public room.</p>
                 <input class="index" type="text" name="room_code" placeholder="6-digit code…" autocomplete="off"><br>
-                <br>
                 <button class="index" type="submit" name="join">Join Room</button>
-                <label class="index-text">
-                    <input type="checkbox" name="is_public"> Make room public
+                <br><br>
+                <h2>Create Room</h2>
+                <label style="font-size:0.85rem;color:#7a6030;">
+                    <input class="index" type="checkbox" name="is_public" checked> Make this room public
                 </label><br><br>
                 <button class="index" type="submit" name="create">Create Room</button>
 
@@ -187,12 +200,12 @@
     });
 
     document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === 'hidden') {
-        socket.emit('tab_hidden');
-    } else {
-        socket.emit('tab_visible');
-    }
-});
+        if (document.visibilityState === 'hidden') {
+            socket.emit('tab_hidden');
+        } else {
+            socket.emit('tab_visible');
+        }
+    });
 </script>
 
 </html>
