@@ -65,9 +65,16 @@ function cardHTML(c, facedown = false) {
     }
     const suit = c.slice(-1);
     const rank = c.slice(0, -1);
-    const suitMap = { S: "S", H: "H", D: "D", C: "C" };
-    const filename = rank + suitMap[suit];
-    return `<div class="card-img"><img src="/static/cards/${filename}.png" draggable="false"></div>`;
+    const filename = rank + suit;
+    return `
+        <div class="card-img hole-card">
+            <div class="card-face">
+                <img src="/static/cards/${filename}.png" draggable="false">
+            </div>
+            <div class="card-back">
+                <img src="/static/cards/back.png" draggable="false">
+            </div>
+        </div>`;
 }
 
 const CHIPS = [
