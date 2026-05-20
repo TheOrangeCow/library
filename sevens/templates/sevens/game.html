@@ -18,13 +18,13 @@
     <div id="header">
         <h1>Sevens <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· {{ roomCode }}</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b></span>
-        <div class="hbtns">
-            <button class="hbtn"
+        <span>
+            <button class="index"
                 onclick="navigator.clipboard.writeText(window.location.href);showNotif('Link copied!')">Copy
                 Link</button>
-            <button class="hbtn" onclick="startGame()">Start Game</button>
-            <button class="hbtn" onclick="window.location.href='/sevens'">Back</button>
-        </div>
+            <button class="index" onclick="startGame()">Start Game</button>
+            <button class="index" onclick="window.location.href='/sevens'">Back</button>
+        </span>
     </div>
 
     <div id="arena">
@@ -72,7 +72,19 @@
     </div>
 
     <div id="play-feed"></div>
-
+    <div id="user-list"></div>
+    <div id="chat-container" class="chat-window">
+        <div id="chat-header" class="chat-header">
+            <span id="chat-title" style="color: var(--gold);">Game Chat</span>
+            <button onclick="resetChat()"
+                style="background:none; border:none; color: var(--gold); cursor:pointer;">X</button>
+        </div>
+        <div id="chat-messages" style="font-size:0.8rem; color: var(--gold);"></div>
+        <div class="chat-input-area">
+            <input type="text" class="index" id="chat-input" placeholder="Type a message...">
+            <button class="index" id="chat-send">Send</button>
+        </div>
+    </div>
     <script>
         const roomCode = "{{ roomCode }}";
         const username = "{{ username }}";

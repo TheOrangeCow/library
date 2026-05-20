@@ -10,6 +10,12 @@ body {
     overflow: auto !important;
 }
 
+#rooms .game-card,
+#rules .game-card,
+#strategy .game-card {
+    display: block;
+}
+
 #header {
     padding: 0.5rem 1.4rem;
     flex-shrink: 0;

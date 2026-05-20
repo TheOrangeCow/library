@@ -162,6 +162,10 @@
         if (cur) moveSlider(cur);
     });
 
+    const socket = io();
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: `Lobby` });
+    });
 
     document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === 'hidden') {

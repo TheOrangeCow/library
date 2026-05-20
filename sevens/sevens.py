@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for
-from flask_socketio import join_room
+from flask_socketio import join_room, emit 
 import json, os, random, threading
 from auth.auth import record_result
 from functools import wraps
@@ -265,6 +265,16 @@ def sevens_pass(data):
     next_player(g, user)
     save_json(GAME_FILE, games)
     socketio.emit("sevens_state", g, to=code)
+
+@socketio.on('send_7game_msg')
+def handle_global(data):
+    if session.get("username"):
+        code = data.get("code")
+        emit('receive_game_msg', {
+            'sender': session.get("username"),
+            'msg': data['msg'],
+            'type': 'global'
+        }, to=code)
 
 
 @sevens_bp.route("/sevens", methods=["GET", "POST"])
