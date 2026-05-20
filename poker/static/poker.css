@@ -1,7 +1,13 @@
 @import url('/static/style.css');
 body {
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden !important;
+}
+
+#rooms .game-card,
+#rules .game-card,
+#strategy .game-card {
+    display: block;
 }
 
 #header {
@@ -411,124 +417,6 @@ body {
     box-shadow: 0 0 18px rgba(232, 184, 75, 0.12);
 }
 
-
-#lobby-wrap {
-    display: flex;
-    gap: 2rem;
-    padding: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    overflow-y: auto;
-    flex: 1;
-}
-
-.lobby-col {
-    border-radius: 24px;
-    padding: 1.5rem;
-    min-width: 280px;
-    flex: 1;
-    max-width: 500px;
-
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-blur);
-    -webkit-backdrop-filter: var(--glass-blur);
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-
-    position: relative;
-    overflow: hidden;
-}
-
-.lobby-col::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent 0%, var(--glass-highlight) 40%, rgba(255, 255, 255, 0.25) 50%, var(--glass-highlight) 60%, transparent 100%);
-    pointer-events: none;
-}
-
-.lobby-col h2 {
-    font-family: 'Cinzel', serif;
-    color: var(--gold);
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    letter-spacing: .1em;
-    position: relative;
-    z-index: 1;
-}
-
-.lobby-col label {
-    display: block;
-    font-size: .75rem;
-    color: var(--gold-dim);
-    margin-bottom: .3rem;
-    margin-top: .6rem;
-    position: relative;
-    z-index: 1;
-}
-
-.lobby-col input,
-.lobby-col select {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(232, 184, 75, 0.22);
-    color: var(--gold);
-    padding: .4rem .7rem;
-    border-radius: 50px;
-    font-size: .85rem;
-    width: 100%;
-    margin-bottom: .5rem;
-    outline: none;
-    font-family: 'EB Garamond', serif;
-    transition: border-color .2s;
-    position: relative;
-    z-index: 1;
-}
-
-.lobby-col input:focus,
-.lobby-col select:focus {
-    border-color: var(--gold);
-    box-shadow: 0 0 14px rgba(232, 184, 75, .1);
-}
-
-.lobby-col button {
-    padding: .3rem .95rem;
-    font-family: 'Cinzel', serif;
-    font-size: .62rem;
-    letter-spacing: .1em;
-    border: 1px solid rgba(232, 184, 75, 0.28);
-    background: rgba(232, 184, 75, 0.07);
-    color: var(--gold);
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background .2s, border-color .2s, box-shadow .2s;
-    position: relative;
-    z-index: 1;
-}
-
-.lobby-col button:hover {
-    background: rgba(232, 184, 75, 0.18);
-    border-color: var(--gold);
-    box-shadow: 0 0 18px rgba(232, 184, 75, 0.18);
-}
-
-.lobby-col hr {
-    border: none;
-    border-top: 1px solid rgba(232, 184, 75, 0.18);
-    margin: 1rem 0;
-    position: relative;
-    z-index: 1;
-}
-
-.lobby-col .dim {
-    color: var(--gold-dim);
-    font-style: italic;
-    font-size: .85rem;
-    position: relative;
-    z-index: 1;
-}
 
 
 .room-table,
