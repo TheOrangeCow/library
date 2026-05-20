@@ -270,7 +270,7 @@ def sevens_pass(data):
 def handle_global(data):
     if session.get("username"):
         code = data.get("code")
-        emit('receive_game_msg', {
+        emit('receive_7game_msg', {
             'sender': session.get("username"),
             'msg': data['msg'],
             'type': 'global'
