@@ -1,5 +1,6 @@
 @import url('/static/style.css');
-body {
+
+body.in-game {
     height: 100vh;
     overflow: hidden !important;
 }

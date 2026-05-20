@@ -8,148 +8,234 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 
 <body>
     <div id="header">
         <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· Poker</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }} chips)</span>
-        <div class="hbtns">
-            <button class="hbtn" onclick="window.location.href = '/'">Back</button>
-        </div>
+        <span>
+            <a class="logout" href="/">Back</a>
+        </span>
     </div><br>
-    <div class="nav">
-        <a href="#rooms">Rooms</a>
-        <a href="#rules">Rules</a>
-        <a href="#strategy">Strategy</a>
+
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
+        </div>
+    </nav>
+
+    <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card">
+            <h1 class="index-text">Rooms</h1><br>
+            <h2 class="index-text">Create Room</h2>
+            {% if error %}<div class="err">{{ error }}</div>{% endif %}
+            <form method="post">
+                <input type="hidden" name="action" value="create">
+                <select class="index" name="stake">
+                    {% for key, lvl in blind_levels.items() %}
+                    <option value="{{ key }}">{{ key|capitalize }} — blinds {{ lvl.small }}/{{ lvl.big }} (buy-in {{
+                        lvl.min_buy }}–{{ lvl.max_buy }})</option>
+                    {% endfor %}
+                </select>
+                <button class="index" type="submit">Create Table</button>
+            </form><br>
+
+
+            <h2 class="index-text">Join Room</h2>
+            <form method="post">
+                <input type="hidden" name="action" value="join">
+                <input type="text" class="index" name="code" placeholder="6-digit room code" maxlength="6">
+                <button class="index" type="submit">Join</button>
+            </form><br>
+
+        </div>
     </div>
-    <div id="rooms">
-        <h1 class="index-text">Rooms</h1><br>
-        <h2 class="index-text">Create Room</h2>
-        {% if error %}<div class="err">{{ error }}</div>{% endif %}
-        <form method="post">
-            <input type="hidden" name="action" value="create">
-            <select class="index" name="stake">
-                {% for key, lvl in blind_levels.items() %}
-                <option value="{{ key }}">{{ key|capitalize }} — blinds {{ lvl.small }}/{{ lvl.big }} (buy-in {{
-                    lvl.min_buy }}–{{ lvl.max_buy }})</option>
-                {% endfor %}
-            </select>
-            <button class="index" type="submit">Create Table</button>
-        </form><br>
-
-
-        <h2 class="index-text">Join Room</h2>
-        <form method="post">
-            <input type="hidden" name="action" value="join">
-            <input type="text" class="index" name="code" placeholder="6-digit room code" maxlength="6">
-            <button class="index" type="submit">Join</button>
-        </form><br>
-
     </div>
-    </div><br><br>
 
-    <div id="rules" class="index-text">
-        <h2>Rules</h2>
-        <h3>Objective</h3>
-        <ul>
-            <li>Make the best <span class="highlight">5-card hand</span> using any combination of your 2 hole cards and
-                the 5 community cards.</li>
-            <li>Win the pot by having the best hand at showdown, or by making everyone else <span
-                    class="highlight">fold</span>.</li>
-        </ul>
+    <div id="rules" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Rules</h2>
+            <h3>Objective</h3>
+            <ul>
+                <li>Make the best <span class="highlight">5-card hand</span> using any combination of your 2 hole cards
+                    and
+                    the 5 community cards.</li>
+                <li>Win the pot by having the best hand at showdown, or by making everyone else <span
+                        class="highlight">fold</span>.</li>
+            </ul>
 
-        <h3>Hand Rankings (Best to Worst)</h3>
-        <ul>
-            <li><span class="special">Royal Flush</span>: A K Q J 10 of the same suit — unbeatable.</li>
-            <li><span class="special">Straight Flush</span>: Five consecutive cards of the same suit.</li>
-            <li><span class="special">Four of a Kind</span>: Four cards of the same rank.</li>
-            <li><span class="special">Full House</span>: Three of a kind plus a pair.</li>
-            <li><span class="special">Flush</span>: Any five cards of the same suit.</li>
-            <li><span class="special">Straight</span>: Five consecutive cards of any suit.</li>
-            <li><span class="special">Three of a Kind</span>: Three cards of the same rank.</li>
-            <li><span class="special">Two Pair</span>: Two different pairs.</li>
-            <li><span class="special">One Pair</span>: Two cards of the same rank.</li>
-            <li><span class="special">High Card</span>: No combination — highest card plays.</li>
-        </ul>
+            <h3>Hand Rankings (Best to Worst)</h3>
+            <ul>
+                <li><span class="special">Royal Flush</span>: A K Q J 10 of the same suit — unbeatable.</li>
+                <li><span class="special">Straight Flush</span>: Five consecutive cards of the same suit.</li>
+                <li><span class="special">Four of a Kind</span>: Four cards of the same rank.</li>
+                <li><span class="special">Full House</span>: Three of a kind plus a pair.</li>
+                <li><span class="special">Flush</span>: Any five cards of the same suit.</li>
+                <li><span class="special">Straight</span>: Five consecutive cards of any suit.</li>
+                <li><span class="special">Three of a Kind</span>: Three cards of the same rank.</li>
+                <li><span class="special">Two Pair</span>: Two different pairs.</li>
+                <li><span class="special">One Pair</span>: Two cards of the same rank.</li>
+                <li><span class="special">High Card</span>: No combination — highest card plays.</li>
+            </ul>
 
-        <h3>The Deal</h3>
-        <ul>
-            <li>Each player is dealt <span class="highlight">2 private hole cards</span> face down — only you can see
-                them.</li>
-            <li>Five <span class="highlight">community cards</span> are dealt face up in three stages: the Flop, the
-                Turn, and the River.</li>
-            <li>The <span class="special">dealer button</span> rotates each hand — the two players to the left post the
-                <span class="highlight">small blind</span> and <span class="highlight">big blind</span>.
-            </li>
-        </ul>
+            <h3>The Deal</h3>
+            <ul>
+                <li>Each player is dealt <span class="highlight">2 private hole cards</span> face down — only you can
+                    see
+                    them.</li>
+                <li>Five <span class="highlight">community cards</span> are dealt face up in three stages: the Flop, the
+                    Turn, and the River.</li>
+                <li>The <span class="special">dealer button</span> rotates each hand — the two players to the left post
+                    the
+                    <span class="highlight">small blind</span> and <span class="highlight">big blind</span>.
+                </li>
+            </ul>
 
-        <h3>Betting Rounds</h3>
-        <ul>
-            <li><span class="special">Preflop</span>: After hole cards are dealt. Action starts left of the big blind.
-            </li>
-            <li><span class="special">Flop</span>: Three community cards are revealed. Action starts left of the dealer.
-            </li>
-            <li><span class="special">Turn</span>: A fourth community card is revealed. Another betting round.</li>
-            <li><span class="special">River</span>: The fifth and final community card is revealed. Last betting round.
-            </li>
-        </ul>
+            <h3>Betting Rounds</h3>
+            <ul>
+                <li><span class="special">Preflop</span>: After hole cards are dealt. Action starts left of the big
+                    blind.
+                </li>
+                <li><span class="special">Flop</span>: Three community cards are revealed. Action starts left of the
+                    dealer.
+                </li>
+                <li><span class="special">Turn</span>: A fourth community card is revealed. Another betting round.</li>
+                <li><span class="special">River</span>: The fifth and final community card is revealed. Last betting
+                    round.
+                </li>
+            </ul>
 
-        <h3>Your Actions</h3>
-        <ul>
-            <li><span class="special">Fold</span>: Give up your hand and forfeit any chips already bet.</li>
-            <li><span class="special">Check</span>: Pass the action — only available when no bet has been made this
-                round.</li>
-            <li><span class="special">Call</span>: Match the current bet to stay in the hand.</li>
-            <li><span class="special">Raise</span>: Increase the bet — all other players must call, re-raise, or fold.
-            </li>
-            <li><span class="special">All-In</span>: Bet all your remaining chips. You can still win up to the amount
-                you put in from each opponent.</li>
-        </ul>
+            <h3>Your Actions</h3>
+            <ul>
+                <li><span class="special">Fold</span>: Give up your hand and forfeit any chips already bet.</li>
+                <li><span class="special">Check</span>: Pass the action — only available when no bet has been made this
+                    round.</li>
+                <li><span class="special">Call</span>: Match the current bet to stay in the hand.</li>
+                <li><span class="special">Raise</span>: Increase the bet — all other players must call, re-raise, or
+                    fold.
+                </li>
+                <li><span class="special">All-In</span>: Bet all your remaining chips. You can still win up to the
+                    amount
+                    you put in from each opponent.</li>
+            </ul>
 
-        <h3>Showdown</h3>
-        <ul>
-            <li>If two or more players remain after the final betting round, all hands are revealed.</li>
-            <li>The player with the <span class="highlight">best 5-card hand</span> wins the pot.</li>
-            <li>Ties are split equally between the winning players.</li>
-            <li>If everyone folds, the last remaining player wins the pot without showing their cards.</li>
-        </ul>
+            <h3>Showdown</h3>
+            <ul>
+                <li>If two or more players remain after the final betting round, all hands are revealed.</li>
+                <li>The player with the <span class="highlight">best 5-card hand</span> wins the pot.</li>
+                <li>Ties are split equally between the winning players.</li>
+                <li>If everyone folds, the last remaining player wins the pot without showing their cards.</li>
+            </ul>
 
-        <h3>Blinds & Stakes</h3>
-        <ul>
-            <li><span class="special">Low</span>: Blinds 10/20 — buy-in 200 to 1,000 chips.</li>
-            <li><span class="special">Mid</span>: Blinds 50/100 — buy-in 1,000 to 5,000 chips.</li>
-            <li><span class="special">High</span>: Blinds 250/500 — buy-in 5,000 to 25,000 chips.</li>
-            <li>Your buy-in is taken from your account when you join. Your remaining stack is returned when you leave.
-            </li>
-        </ul>
-    </div><br><br>
+            <h3>Blinds & Stakes</h3>
+            <ul>
+                <li><span class="special">Low</span>: Blinds 10/20 — buy-in 200 to 1,000 chips.</li>
+                <li><span class="special">Mid</span>: Blinds 50/100 — buy-in 1,000 to 5,000 chips.</li>
+                <li><span class="special">High</span>: Blinds 250/500 — buy-in 5,000 to 25,000 chips.</li>
+                <li>Your buy-in is taken from your account when you join. Your remaining stack is returned when you
+                    leave.
+                </li>
+            </ul>
+        </div>
+    </div>
 
-    <div id="strategy" class="index-text">
-        <h2>Strategy</h2>
-        <ul>
-            <li><span class="highlight">Play tight preflop</span> — fold weak hands early. Strong starting hands include
-                high pairs (AA, KK, QQ) and big connectors (AK, AQ).</li>
-            <li><span class="highlight">Position is power</span> — acting last gives you more information. Play more
-                hands in late position, fewer in early position.</li>
-            <li><span class="highlight">Don't always call</span> — if you can't raise, consider whether calling is even
-                worth it. Passive calling leaks chips.</li>
-            <li>Watch the <span class="special">pot odds</span> — only call a bet if the potential win justifies the
-                cost relative to your chance of hitting your hand.</li>
-            <li><span class="highlight">Bluff selectively</span> — bluffing works best against one or two opponents, not
-                a full table. A bluff is a story; make sure it makes sense.</li>
-            <li>When the board pairs or brings three of a suit, <span class="special">slow down</span> — someone may
-                have hit a full house or flush.</li>
-            <li><span class="highlight">Protect strong hands</span> — bet and raise with good hands to push out players
-                chasing draws cheaply.</li>
-            <li>If you're <span class="special">short-stacked</span>, look for a good spot to go all-in rather than
-                bleed out — pick a strong hand and commit.</li>
-            <li>The <span class="highlight">big blind gets a discount</span> preflop — you can check if nobody raises,
-                giving you a free look at the flop.</li>
-            <li>Never go all-in out of frustration. <span class="special">Patience</span> is the most underrated poker
-                skill.</li>
-        </ul>
+    <div id="strategy" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Strategy</h2>
+            <ul>
+                <li><span class="highlight">Play tight preflop</span> — fold weak hands early. Strong starting hands
+                    include
+                    high pairs (AA, KK, QQ) and big connectors (AK, AQ).</li>
+                <li><span class="highlight">Position is power</span> — acting last gives you more information. Play more
+                    hands in late position, fewer in early position.</li>
+                <li><span class="highlight">Don't always call</span> — if you can't raise, consider whether calling is
+                    even
+                    worth it. Passive calling leaks chips.</li>
+                <li>Watch the <span class="special">pot odds</span> — only call a bet if the potential win justifies the
+                    cost relative to your chance of hitting your hand.</li>
+                <li><span class="highlight">Bluff selectively</span> — bluffing works best against one or two opponents,
+                    not
+                    a full table. A bluff is a story; make sure it makes sense.</li>
+                <li>When the board pairs or brings three of a suit, <span class="special">slow down</span> — someone may
+                    have hit a full house or flush.</li>
+                <li><span class="highlight">Protect strong hands</span> — bet and raise with good hands to push out
+                    players
+                    chasing draws cheaply.</li>
+                <li>If you're <span class="special">short-stacked</span>, look for a good spot to go all-in rather than
+                    bleed out — pick a strong hand and commit.</li>
+                <li>The <span class="highlight">big blind gets a discount</span> preflop — you can check if nobody
+                    raises,
+                    giving you a free look at the flop.</li>
+                <li>Never go all-in out of frustration. <span class="special">Patience</span> is the most underrated
+                    poker
+                    skill.</li>
+            </ul>
+        </div>
     </div>
 </body>
+<script>
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
 
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+
+    function hide(el) {
+        const pages = ["rooms", "rules", "strategy"];
+        for (const page of pages) {
+            if (page !== el) {
+                document.getElementById(page).style.display = "none";
+            } else {
+                document.getElementById(page).style.display = "";
+            }
+        }
+    }
+
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+            hide(this.getAttribute('href').slice(1));
+        });
+    });
+
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
+        hide('rooms');
+    }
+
+    if (document.fonts) {
+        document.fonts.ready.then(init);
+    } else {
+        window.addEventListener('load', init);
+    }
+
+    window.addEventListener('resize', () => {
+        const cur = pill.querySelector('a.active');
+        if (cur) moveSlider(cur);
+    });
+
+    const socket = io();
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: `Lobby` });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'hidden') {
+        socket.emit('tab_hidden');
+    } else {
+        socket.emit('tab_visible');
+    }
+});
+</script>
 </html>
