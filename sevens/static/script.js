@@ -91,7 +91,10 @@ function detectPlays(newState) {
     }
     if (newState.turn !== lastState.turn) showFeedToast(`${who} passed`);
 }
-socket.on("connect", () => socket.emit("sevens_join", { code: roomCode, username }));
+socket.on("connect", () => {
+    socket.emit("sevens_join", { code: roomCode, username });
+    socket.emit("set_page", { page: `Gaming:${roomCode}` });
+});
 socket.on("sevens_state", (data) => { detectPlays(data); lastState = data; render(data); });
 socket.on("sevens_invalid", (data) => showNotif(data.msg || "Invalid move!"));
 
@@ -269,7 +272,7 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 
-socket.on('update_user_list', function(users) {
+socket.on('update_user_list', function (users) {
     const listElement = document.getElementById('user-list');
     listElement.innerHTML = '';
     users
@@ -298,9 +301,9 @@ socket.on('receive_7game_msg', function (data) {
     const msgDiv = document.getElementById('chat-messages');
     const p = document.createElement('p');
     p.className = 'msg-global';
-    if(data.sender != username){
+    if (data.sender != username) {
         p.innerHTML = `<strong>${data.sender}:</strong> ${data.msg}`;
-    }else{
+    } else {
         p.innerHTML = `<strong>You:</strong> ${data.msg}`;
     }
     msgDiv.appendChild(p);
