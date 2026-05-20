@@ -8,95 +8,168 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 
 <body>
     <div id="header">
         <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· sevens</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b></span>
-        <div class="hbtns">
-            <button class="hbtn" onclick="window.location.href = '/'">Back</button>
-        </div>
+        <span>
+            <a class="logout" href="/">Back</a>
+        </span>
     </div><br>
-    <div class="nav">
-        <a href="#rooms">Rooms</a>
-        <a href="#rules">Rules</a>
-        <a href="#strategy">Strategy</a>
+
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
+        </div>
+    </nav>
+
+    <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card">
+            <form method="POST">
+                <h1 style="color: var(--gold);">Rooms</h1><br>
+                <label class="index-text" for="room_code">Room Code</label><br>
+                <input class="index" type="text" name="room_code" placeholder="6-digit code…" autocomplete="off"><br>
+                <br>
+                <button class="index" type="submit" name="join">Join Room</button>
+                <button class="index" type="submit" name="create">Create Room</button>
+
+            </form>
+            {% if error %}
+            <div class="index-text">{{ error }}</div>
+            {% endif %}
+        </div>
     </div>
-    <div id="rooms">
-        <form method="POST">
-            <h1 style="color: var(--gold);">Rooms</h1><br>
-            <label class="index-text" for="room_code">Room Code</label><br>
-            <input class="index" type="text" name="room_code" placeholder="6-digit code…" autocomplete="off"><br>
-            <br>
-            <button class="index" type="submit" name="join">Join Room</button>
-            <button class="index" type="submit" name="create">Create Room</button>
 
-        </form>
-        {% if error %}
-        <div class="index-text">{{ error }}</div>
-        {% endif %}
-    </div><br><br>
+    <div id="rules" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Rules</h2>
+            <h3>Game Setup</h3>
+            <ul>
+                <li>2–6 players. A standard 52-card deck is dealt out as evenly as possible.</li>
+                <li>The player holding the <span class="highlight">7 of Diamonds</span> goes first and must play it.
+                </li>
+            </ul>
 
-    <div id="rules" class="index-text">
-        <h2>Rules</h2>
-        <h3>Game Setup</h3>
-        <ul>
-            <li>2–6 players. A standard 52-card deck is dealt out as evenly as possible.</li>
-            <li>The player holding the <span class="highlight">7 of Diamonds</span> goes first and must play it.</li>
-        </ul>
+            <h3>Objective</h3>
+            <ul>
+                <li>Be the first to play all your cards.</li>
+                <li>Players finishing in order are ranked <span class="highlight">1st, 2nd, 3rd…</span></li>
+            </ul>
 
-        <h3>Objective</h3>
-        <ul>
-            <li>Be the first to play all your cards.</li>
-            <li>Players finishing in order are ranked <span class="highlight">1st, 2nd, 3rd…</span></li>
-        </ul>
+            <h3>The Board</h3>
+            <ul>
+                <li>Cards are played onto a shared board with one column per suit.</li>
+                <li>Each suit starts with its <span class="highlight">7</span> and grows outward — lower cards go up,
+                    higher
+                    cards go down.</li>
+                <li>Valid sequences run <span class="highlight">A 2 3 4 5 6 7 8 9 10 J Q K</span> per suit.</li>
+            </ul>
 
-        <h3>The Board</h3>
-        <ul>
-            <li>Cards are played onto a shared board with one column per suit.</li>
-            <li>Each suit starts with its <span class="highlight">7</span> and grows outward — lower cards go up, higher
-                cards go down.</li>
-            <li>Valid sequences run <span class="highlight">A 2 3 4 5 6 7 8 9 10 J Q K</span> per suit.</li>
-        </ul>
+            <h3>Playing Rules</h3>
+            <ul>
+                <li>On your turn you must play a <span class="highlight">legal card</span> if you have one.</li>
+                <li>A card is legal if it is a <span class="special">7</span> (starts that suit), or it extends an
+                    existing
+                    suit sequence by exactly one rank up or down.</li>
+                <li>If you have no legal card, you must <span class="highlight">pass</span>.</li>
+                <li>You cannot pass if you have a legal card to play.</li>
+            </ul>
 
-        <h3>Playing Rules</h3>
-        <ul>
-            <li>On your turn you must play a <span class="highlight">legal card</span> if you have one.</li>
-            <li>A card is legal if it is a <span class="special">7</span> (starts that suit), or it extends an existing
-                suit sequence by exactly one rank up or down.</li>
-            <li>If you have no legal card, you must <span class="highlight">pass</span>.</li>
-            <li>You cannot pass if you have a legal card to play.</li>
-        </ul>
+            <h3>Special Rules</h3>
+            <ul>
+                <li><span class="special">7 of Diamonds</span>: Must be the very first card played in the game.</li>
+                <li><span class="special">Completing a suit (A→K)</span>: The player who completes a suit earns an <span
+                        class="highlight">extra turn</span>.</li>
+            </ul>
 
-        <h3>Special Rules</h3>
-        <ul>
-            <li><span class="special">7 of Diamonds</span>: Must be the very first card played in the game.</li>
-            <li><span class="special">Completing a suit (A→K)</span>: The player who completes a suit earns an <span
-                    class="highlight">extra turn</span>.</li>
-        </ul>
+            <h3>Winning</h3>
+            <ul>
+                <li>Play all your cards to finish. The last player left holding cards loses.</li>
+            </ul>
+        </div>
+    </div>
 
-        <h3>Winning</h3>
-        <ul>
-            <li>Play all your cards to finish. The last player left holding cards loses.</li>
-        </ul>
-    </div><br><br>
-
-    <div id="strategy" class="index-text">
-        <h2>Strategy</h2>
-        <ul>
-            <li>Identify which cards you're <span class="highlight">blocked</span> on early — if no one can play the 6♥
-                yet, cards below it are dead weight.</li>
-            <li>Play cards that <span class="highlight">unblock your hand</span> rather than extending suits you don't
-                benefit from.</li>
-            <li>Watch opponents' card counts — players running low will be desperate to extend certain suits.</li>
-            <li>Sometimes it's better to <span class="highlight">pass</span> and force others to open suits on your
-                terms.</li>
-            <li>Try to hold cards that extend in <span class="highlight">both directions</span> — they stay useful
-                longer.</li>
-            <li>Completing a suit for the extra turn can be a game-changer late on.</li>
-        </ul>
+    <div id="strategy" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Strategy</h2>
+            <ul>
+                <li>Identify which cards you're <span class="highlight">blocked</span> on early — if no one can play the
+                    6♥
+                    yet, cards below it are dead weight.</li>
+                <li>Play cards that <span class="highlight">unblock your hand</span> rather than extending suits you
+                    don't
+                    benefit from.</li>
+                <li>Watch opponents' card counts — players running low will be desperate to extend certain suits.</li>
+                <li>Sometimes it's better to <span class="highlight">pass</span> and force others to open suits on your
+                    terms.</li>
+                <li>Try to hold cards that extend in <span class="highlight">both directions</span> — they stay useful
+                    longer.</li>
+                <li>Completing a suit for the extra turn can be a game-changer late on.</li>
+            </ul>
+        </div>
     </div>
 </body>
+<script>
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
+
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+
+    function hide(el) {
+        const pages = ["rooms", "rules", "strategy"];
+        for (const page of pages) {
+            if (page !== el) {
+                document.getElementById(page).style.display = "none";
+            } else {
+                document.getElementById(page).style.display = "";
+            }
+        }
+    }
+
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+            hide(this.getAttribute('href').slice(1));
+        });
+    });
+
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
+        hide('rooms');
+    }
+
+    if (document.fonts) {
+        document.fonts.ready.then(init);
+    } else {
+        window.addEventListener('load', init);
+    }
+
+    window.addEventListener('resize', () => {
+        const cur = pill.querySelector('a.active');
+        if (cur) moveSlider(cur);
+    });
+
+
+    document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'hidden') {
+        socket.emit('tab_hidden');
+    } else {
+        socket.emit('tab_visible');
+    }
+});
+</script>
 
 </html>
