@@ -13,7 +13,7 @@
 
 <body>
     <div id="header">
-        <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· sevens</span></h1>
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· sevens</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b></span>
         <span>
             <a class="logout" href="/">Back</a>
@@ -43,7 +43,7 @@
                         <span style="color:var(--gold-dim);font-size:0.85rem;">
                             Room <b style="color:var(--gold)">{{ code }}</b> ·
                         </span>
-                        <span style="color:#7a6030;font-size:0.8rem;">{{ room.players | length }} / 6 players</span>
+                        <span style="color: var(--gold-dim);font-size:0.8rem;">{{ room.players | length }} / 6 players</span>
                         <form method="POST" style="margin:0;">
                             <input type="hidden" name="room_code" value="{{ code }}">
                             <button class="index" type="submit" name="join"
@@ -61,12 +61,12 @@
             <br>
             <form method="POST">
                 <h2>Join Private Room</h2>
-                <p style="font-size:0.85rem;color:#7a6030;">Have a code? Enter it below to join a private or public room.</p>
+                <p style="font-size:0.85rem;color: var(--gold-dim);">Have a code? Enter it below to join a private or public room.</p>
                 <input class="index" type="text" name="room_code" placeholder="6-digit code…" autocomplete="off"><br>
                 <button class="index" type="submit" name="join">Join Room</button>
                 <br><br>
                 <h2>Create Room</h2>
-                <label style="font-size:0.85rem;color:#7a6030;">
+                <label style="font-size:0.85rem;color: var(--gold-dim);">
                     <input class="index" type="checkbox" name="is_public" checked> Make this room public
                 </label><br><br>
                 <button class="index" type="submit" name="create">Create Room</button>
