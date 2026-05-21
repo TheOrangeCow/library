@@ -533,6 +533,9 @@ body.in-game {
     border-bottom: 1px solid rgba(232, 184, 75, 0.08);
 }
 
+.obox p{
+    color: var(--gold-dim);
+}
 
 #notif {
     display: none;
