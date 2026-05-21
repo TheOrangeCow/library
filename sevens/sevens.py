@@ -3,7 +3,7 @@ from flask_socketio import join_room, emit
 import json, os, random, threading
 from auth.auth import record_result
 from functools import wraps
-from auth.auth import record_result, record_played_with_all
+from auth.auth import record_result, record_played_with_all, get_theme
 from core import socketio
 
 sevens_bp = Blueprint(
@@ -316,11 +316,13 @@ def index():
                     return render_template("sevens/index.html",
                         error=f'The name "{username}" is already taken in room {code}.',
                         username=username,
+                        theme=get_theme(username),
                         public_rooms=get_public_rooms(games))
                 if len(room["players"]) >= MAX_PLAYERS:
                     return render_template("sevens/index.html",
                         error="That room is full (max 6 players).",
                         username=username,
+                        theme=get_theme(username),
                         public_rooms=get_public_rooms(games))
                 room["players"].append(username)
                 save_json(GAME_FILE, games)
@@ -329,10 +331,12 @@ def index():
                 return render_template("sevens/index.html",
                     error="Room not found.",
                     username=username,
+                    theme=get_theme(username),
                     public_rooms=get_public_rooms(games))
     games = load_json(GAME_FILE)
     return render_template("sevens/index.html",
         username=username,
+        theme=get_theme(username),
         public_rooms=get_public_rooms(games))
 
 @sevens_bp.route("/sevens/game")
@@ -342,4 +346,4 @@ def game():
     username = session["username"]
     if not code or not username:
         return redirect(url_for("sevens.index"))
-    return render_template("sevens/game.html", roomCode=code, username=username)
+    return render_template("sevens/game.html", theme=get_theme(username), roomCode=code, username=username)
