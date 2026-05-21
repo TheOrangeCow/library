@@ -16,11 +16,11 @@
 
 <body>
     <div id="header">
-        <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· Home</span></h1>
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Home</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }})</span>
-        <span style="font-size:0.75rem; color:#7a6030; margin-left:1rem;">
+        <span style="font-size:0.75rem; color: var(--gold-dim); margin-left:1rem;">
             Join Code: <b style="color:var(--gold); letter-spacing:0.08em;">{{ join_code }}</b>
-            <span style="color:#7a6030; font-size:0.7rem;">(changes hourly)</span>
+            <span style="color: var(--gold-dim); font-size:0.7rem;">(changes hourly)</span>
         </span>
         <span>
             <a class="logout" href="/profile">Profile</a>
@@ -57,7 +57,7 @@
                 document.documentElement.setAttribute('data-theme', theme);
                 localStorage.setItem('theme', theme);
             }
-            
+
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
         </script>
