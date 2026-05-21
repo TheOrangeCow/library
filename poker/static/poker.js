@@ -316,6 +316,28 @@ socket.on('update_user_list', function(users) {
         });
 });
 
+const dragItem = document.getElementById("chat-container");
+const dragHeader = document.getElementById("chat-header");
+let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+dragHeader.onmousedown = (e) => {
+    initialX = e.clientX - xOffset;
+    initialY = e.clientY - yOffset;
+    active = true;
+};
+document.onmouseup = () => active = false;
+document.onmousemove = (e) => {
+    if (active) {
+        e.preventDefault();
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+        xOffset = currentX; yOffset = currentY;
+        dragItem.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+    }
+};
+
+
+
 document.getElementById('chat-send').onclick = sendMessage;
 document.getElementById('chat-input').onkeydown = (e) => { if (e.key === "Enter") sendMessage(); };
 
