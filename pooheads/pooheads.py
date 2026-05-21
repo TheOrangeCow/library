@@ -3,7 +3,7 @@ from flask_socketio import SocketIO, join_room, emit
 import json, os, random, re, threading
 from flask import Blueprint
 from functools import wraps
-from auth.auth import record_result
+from auth.auth import record_result, get_theme
 from auth.auth import record_result, record_played_with_all
 
 if __name__ == "main":
@@ -605,7 +605,7 @@ def index():
             }
 
             save_json(GAME_FILE, games)
-            return redirect(url_for("game", code=code))
+            return redirect(url_for("game", theme=get_theme(username), code=code))
 
         if "join" in request.form:
             code = request.form.get("room_code")
@@ -613,16 +613,16 @@ def index():
                 room = games["games"][code]
 
                 if username in room["players"]:
-                    return render_template("/pooheads/index.html", error=f'The name "{username}" is already taken in room {code}.', username=username)
+                    return render_template("/pooheads/index.html", theme=get_theme(username), error=f'The name "{username}" is already taken in room {code}.', username=username)
 
                 if len(room["players"]) >= MAX_PLAYERS:
-                    return render_template("/pooheads/index.html", error="That room is full (max 5 players).", username=username)
+                    return render_template("/pooheads/index.html", theme=get_theme(username), error="That room is full (max 5 players).", username=username)
  
                 room["players"].append(username)
                 save_json(GAME_FILE, games)
-                return redirect(url_for("game", code=code))
+                return redirect(url_for("game", theme=get_theme(username), code=code))
 
-    return render_template("/pooheads/index.html", username=username)
+    return render_template("/pooheads/index.html", theme=get_theme(username), username=username)
 
 @app.route("/pooheads/rooms")
 @login_required
@@ -651,6 +651,7 @@ def game():
     return render_template(
         "/pooheads/game.html",
         roomCode=code,
+        theme=get_theme(username),
         username=username
     )
 
