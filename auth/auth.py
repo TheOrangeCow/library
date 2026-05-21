@@ -68,10 +68,26 @@ def login():
         return redirect(url_for("home"))
     return render_template("auth/login.html")
 
+@auth_bp.route("/set_theme", methods=["POST"])
+def set_theme():
+    if "username" not in session:
+        return {"ok": False}, 401
+    theme = request.json.get("theme", "")
+    data = load_users()
+    if session["username"] in data["users"]:
+        data["users"][session["username"]]["theme"] = theme
+        save_users(data)
+    return {"ok": True}
+
+def get_theme(username):
+    data = load_users()
+    return data["users"].get(username, {}).get("theme", "")
+
 @auth_bp.route("/logout")
 def logout():
     session.clear()
     return redirect(url_for("auth.login"))
+
 @auth_bp.route("/profile", methods=["GET", "POST"])
 def profile():
     if "username" not in session:
@@ -123,6 +139,7 @@ def profile():
     user_data = data["users"].get(username, {})
     return render_template(
         "auth/profile.html",
+        theme=get_theme(username),
         username=username,
         chips=user_data.get("chips", 0),
         error=error,
