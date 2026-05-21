@@ -641,6 +641,7 @@ input[type="checkbox"].index:hover {
     min-height: 280px;
     max-height: 280px;
     overflow: auto;
+    color: var(--gold-light);
     border-color: var(--gold-alpha45);
 }
 
@@ -696,7 +697,7 @@ input[type="checkbox"].index:hover {
 #chat-input {
     flex-grow: 1;
     background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(232, 184, 75, 0.15);
+    border: 1px solid var(--glass-bg);
     border-radius: 20px;
     padding: 0.3rem 0.8rem;
     font-family: 'EB Garamond', serif;
@@ -707,11 +708,11 @@ input[type="checkbox"].index:hover {
 }
 
 #chat-input:focus {
-    border-color: rgba(232, 184, 75, 0.4);
+    border-color: var(--gold-alpha45);
 }
 
 #chat-input::placeholder {
-    color: rgba(232, 184, 75, 0.25);
+    color: var(--gold-dim);
 }
 
 #chat-send {
@@ -720,12 +721,12 @@ input[type="checkbox"].index:hover {
 }
 
 .msg-private {
-    color: rgba(232, 184, 75, 0.65);
+    color: var(--gold-light);
     margin: 0 0 0.25rem;
 }
 
 .msg-global {
-    color: rgba(245, 232, 176, 0.6);
+    color: var(--gold-light);
     margin: 0 0 0.25rem;
 }
 
