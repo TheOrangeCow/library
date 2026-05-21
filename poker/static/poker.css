@@ -281,8 +281,8 @@ body.in-game {
     transition-delay: 0.07s;
 }
 
-.card-face,
-.card-back {
+.hole-card.card-face,
+.hole-card.card-back {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -292,7 +292,11 @@ body.in-game {
     overflow: hidden;
 }
 
-.card-back {
+.hole-card.card-face{
+    background-color: #ffffff;
+}
+
+.hole-card.card-back {
     transform: rotateY(180deg);
 }
 
