@@ -613,6 +613,7 @@ body.in-game {
     z-index: 900;
     align-items: center;
     justify-content: center;
+    color: var(--gold-dim);
     flex-direction: column;
 }
 
