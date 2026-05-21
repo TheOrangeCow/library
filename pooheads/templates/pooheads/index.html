@@ -191,7 +191,7 @@
             .then(data => {
                 const el = document.getElementById('public-rooms-list');
                 if (!data.rooms.length) {
-                    el.innerHTML = '<p style="color:#7a6030;font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
                     return;
                 }
                 el.innerHTML = data.rooms.map(r => `
@@ -201,7 +201,7 @@
                         Room <b style="color:var(--gold)">${r.code}</b>
                         · ${r.names.join(', ') || 'Empty'}
                     </span>
-                    <span style="color:#7a6030;font-size:0.8rem;">${r.players}/${r.max} players</span>
+                    <span style="color: var(--gold-dim);font-size:0.8rem;">${r.players}/${r.max} players</span>
                     <form method="POST" style="margin:0;">
                         <input type="hidden" name="room_code" value="${r.code}">
                         <button class="index" type="submit" name="join" 
