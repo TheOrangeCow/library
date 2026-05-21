@@ -1,7 +1,7 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for
 from flask_socketio import emit, join_room
 from functools import wraps
-from auth.auth import get_chips, update_chips, record_result
+from auth.auth import get_chips, update_chips, record_result, get_theme
 from core import app, socketio
 import os, json, random, threading
 from flask import request as flask_request
@@ -333,6 +333,7 @@ def index():
     return render_template("poker/index.html",
         username=username, chips=chips,
         rooms=lobby_rooms, error=error,
+        theme=get_theme(username),
         blind_levels=BLIND_LEVELS,
     )
 
@@ -348,6 +349,7 @@ def game():
         return redirect(url_for("poker.index"))
     return render_template("poker/game.html",
         roomCode=code, username=username,
+        theme=get_theme(username),
         chips=get_chips(username),
     )
 
