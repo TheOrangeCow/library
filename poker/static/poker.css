@@ -271,18 +271,20 @@ body.in-game {
     transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
     transform: rotateY(180deg);
     position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
 }
 
 #your-hole:hover .hole-card {
-    transform: rotateY(0deg); 
+    transform: rotateY(0deg);
 }
 
 #your-hole .hole-card:nth-child(2) {
     transition-delay: 0.07s;
 }
 
-.hole-card.card-face,
-.hole-card.card-back {
+.hole-card .card-face,
+.hole-card .card-back {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -292,11 +294,11 @@ body.in-game {
     overflow: hidden;
 }
 
-.hole-card.card-face{
+.hole-card .card-face {
     background-color: #ffffff;
 }
 
-.hole-card.card-back {
+.hole-card .card-back {
     transform: rotateY(180deg);
 }
 
