@@ -72,12 +72,20 @@ html {
 }
 
 body {
+    min-height: 100vh;
+    overflow: auto !important;
+    display: flex;
+    flex-direction: column;
     background-color: var(--bg-base);
     background-image:
         radial-gradient(ellipse 90% 55% at 50% -5%, var(--bg-grad1) 0%, transparent 65%),
         radial-gradient(ellipse 50% 40% at 85% 85%, var(--bg-grad2) 0%, transparent 60%),
         url('/static/bg.svg');
+    background-size: auto, auto, 60px 60px;
+    font-family: 'EB Garamond', serif;
+    color: #f5e8b0;
 }
+
 
 
 ::-webkit-scrollbar {
