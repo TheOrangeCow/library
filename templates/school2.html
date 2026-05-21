@@ -157,7 +157,7 @@
                 </span>
             </div>
             {% else %}
-            <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">No BLEEP played yet.</p>
+            <p style="font-size:0.8rem; color:var(--gold-dim); font-style:italic;">No BLEEP played yet.</p>
             {% endfor %}
         </div>
         <div id="achievements" class="game-card" style="flex:1; min-width:220px;">
@@ -196,13 +196,13 @@
                           font-size:0.7rem; letter-spacing:0.06em;">
                     {{ p.username }}
                 </span>
-                <span style="color:#7a6030; font-size:0.72rem; font-style:italic;">
+                <span style="color: var(--gold-dim); font-size:0.72rem; font-style:italic;">
                     {{ p.chips }} BLEEP · {{ p.wins }}W
                 </span>
             </div>
             {% endfor %}
             {% else %}
-            <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">
+            <p style="font-size:0.8rem; color:var(--gold-dim); font-style:italic;">
                 Open a BLEEP to see recent opponents here.
             </p>
             {% endif %}
@@ -221,11 +221,11 @@
         <div id="changelog" class="game-card" style="flex:1; min-width: 200px;">
             <h2 style="margin-bottom:0.6rem;">Changelog</h2>
             <div style="font-size:0.8rem; color:var(--gold-dim); line-height:1.8;">
-                <div><span style="color:#7a6030;">04/05/26</span> · BLEEP added</div>
-                <div><span style="color:#7a6030;">04/05/26</span> · BLEEP added</div>
-                <div><span style="color:#7a6030;">04/05/26</span> · Login &amp; BLEEP system</div>
-                <div><span style="color:#7a6030;">04/05/26</span> · BLEEP added</div>
-                <div><span style="color:#7a6030;">02/05/26</span> · BLEEP launched</div>
+                <div><span style="color:var(--gold-dim);">04/05/26</span> · BLEEP added</div>
+                <div><span style="color:var(--gold-dim);">04/05/26</span> · BLEEP added</div>
+                <div><span style="color:var(--gold-dim);">04/05/26</span> · Login &amp; BLEEP system</div>
+                <div><span style="color:var(--gold-dim);">04/05/26</span> · BLEEP added</div>
+                <div><span style="color:var(--gold-dim);">02/05/26</span> · BLEEP launched</div>
             </div>
         </div><br>
 
@@ -317,7 +317,7 @@
             let pageLabel = "";
             let canPM = false;
             if (!user.page || user.page === "Home") {
-                pageLabel = `<span style="color:#7a6030;font-size:0.7rem;"> · Home</span>`;
+                pageLabel = `<span style="color:var(--gold-dim);font-size:0.7rem;"> · Home</span>`;
                 canPM = true;
             } else if (user.page.startsWith("Gaming:")) {
                 const code = user.page.split(":")[1];
