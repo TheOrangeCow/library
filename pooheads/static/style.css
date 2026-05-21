@@ -772,11 +772,11 @@ body.in-game {
 
 .rlist {
     font-size: 0.78rem;
-    color: #4a3808;
+    color: var(--gold-dim);
 }
 
 .rlist .rdy {
-    color: #6fe296;
+    color: var(--gold);
 }
 
 .index-text ul {
