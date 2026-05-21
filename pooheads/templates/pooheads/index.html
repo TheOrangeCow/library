@@ -15,7 +15,7 @@
 <body>
 
     <div id="header">
-        <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· Pooheads</span></h1>
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Pooheads</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b></span>
         <span>
             <a class="logout" href="/">Back</a>
@@ -35,11 +35,11 @@
             <h1 style="color: var(--gold);">Rooms</h1><br>
             <h2>Join a Public Room</h2>
             <div id="public-rooms-list" style="margin-bottom:1rem;">
-                <p style="color:#7a6030;font-size:0.85rem;">Loading rooms...</p>
+                <p style="color: var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
             </div>
             <br>
             <h2>Join Private Room</h2>
-            <p style="font-size:0.85rem;color:#7a6030;">Have a code? Enter it below to join a private or public room.
+            <p style="font-size:0.85rem;color: var(--gold-dim);">Have a code? Enter it below to join a private or public room.
             </p>
             <form method="POST">
                 <input class="index" name="room_code" placeholder="Room Code" /><br><br>
@@ -48,7 +48,7 @@
             <br><br>
             <h2>Create Room</h2>
             <form method="POST">
-                <label style="font-size:0.85rem;color:#7a6030;">
+                <label style="font-size:0.85rem;color: var(--gold-dim);">
                     <input class="index" type="checkbox" name="public" checked> Make this room public
                 </label><br><br>
                 <button class="index" type="submit" name="create">Create Game</button>

@@ -495,7 +495,7 @@ input[type="checkbox"].index {
 
 input[type="checkbox"].index:checked {
     background: rgba(232, 184, 75, 0.15);
-    border-color: rgba(232, 184, 75, 0.6);
+    border-color: var(--gold-alpha15);
 }
 
 input[type="checkbox"].index:checked::after {
@@ -512,7 +512,7 @@ input[type="checkbox"].index:checked::after {
 }
 
 input[type="checkbox"].index:hover {
-    border-color: rgba(232, 184, 75, 0.5);
+    border-color: var(--gold-alpha45);
     box-shadow: 0 0 0 3px rgba(232, 184, 75, 0.07);
 }
 
