@@ -196,7 +196,7 @@ body {
     top: auto;
     bottom: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+    background: linear-gradient(90deg, transparent, var(--gold-alpha45), transparent);
 }
 
 #header h1 {
