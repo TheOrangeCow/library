@@ -281,27 +281,6 @@ body.in-game {
     transition-delay: 0.07s;
 }
 
-.card-face,
-.card-back {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    border-radius: var(--radius);
-    overflow: hidden;
-}
-
-.card-face img,
-.card-back img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.card-back {
-    transform: rotateY(180deg);
-}
 
 #action-bar {
     display: flex;
