@@ -283,8 +283,8 @@ body.in-game {
     transition-delay: 0.07s;
 }
 
-.hole-card .card-face,
-.hole-card .card-back {
+#your-hole .hole-card .card-face,
+#your-hole .hole-card .card-back {
     position: absolute;
     width: 100%;
     height: 100%;
@@ -292,21 +292,32 @@ body.in-game {
     -webkit-backface-visibility: hidden;
     border-radius: var(--radius);
     overflow: hidden;
-}
-
-.hole-card .card-face {
     background-color: #ffffff;
 }
 
-.hole-card .card-back {
+#your-hole .hole-card .card-back {
     transform: rotateY(180deg);
 }
 
 #your-hole .card-img {
     background: transparent;
     overflow: visible;
+    box-shadow: none;
 }
 
+#board-cards .card-img {
+    width: var(--card-w);
+    height: var(--card-h);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+#board-cards .card-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 #action-bar {
     display: flex;
     align-items: center;
