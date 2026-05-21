@@ -458,7 +458,7 @@ select{
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 0.4rem 0.7rem;
-    border: 1px solid rgba(232, 184, 75, 0.22);
+    border: 1px solid var(--glass-border);
     border-radius: 50px;
     font-family: 'EB Garamond', serif;
     font-size: 0.95rem;
@@ -474,7 +474,7 @@ select {
 
 hr.index {
     border: none;
-    border-top: 1px solid rgba(232, 184, 75, 0.18);
+    border-top: 1px solid var(--glass-border);
     margin: 1rem 0;
 }
 
