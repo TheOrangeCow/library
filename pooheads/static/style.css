@@ -663,7 +663,7 @@ body.in-game {
 }
 
 .swap-instr {
-    color: #6a5018;
+    color: var(--gold-dim);
     font-size: 0.88rem;
     margin-bottom: 1.1rem;
 }
