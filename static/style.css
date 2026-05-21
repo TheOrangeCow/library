@@ -388,7 +388,7 @@ button.index:hover {
 
     background: rgba(255, 255, 255, 0.06);
 
-    border-color: rgba(232, 184, 75, 0.3);
+    border-color: var(--gold-alpha45);
 
     box-shadow:
         inset 0 1px 0 rgba(255,255,255,0.12),
@@ -639,7 +639,9 @@ input[type="checkbox"].index:hover {
     flex-direction: column;
     z-index: 1000;
     min-height: 280px;
-    border-color: rgba(232, 184, 75, 0.28);
+    max-height: 280px;
+    overflow: auto;
+    border-color: var(--gold-alpha45);
 }
 
 .chat-header {
