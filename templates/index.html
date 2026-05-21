@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Library</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
 </head>
+
 <body>
     <div id="header">
         <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· Home</span></h1>
@@ -33,7 +35,7 @@
             <a href="#stats">Stats</a>
             <a href="#players">Players</a>
             <a href="#help">Help</a>
-            
+
         </div>
     </nav>
     <div id="games" style="display: none;">
@@ -43,6 +45,22 @@
             <input id="search-input" type="text" placeholder="Search games…" oninput="filterGames(this.value)" />
         </div><br>
 
+        <div class="theme-picker">
+            <button onclick="setTheme('')">Gold</button>
+            <button onclick="setTheme('blue')">Blue</button>
+            <button onclick="setTheme('green')">Green</button>
+            <button onclick="setTheme('red')">Red</button>
+        </div>
+
+        <script>
+            function setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+            }
+            
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
+        </script>
 
         <div id="pooheads" style="padding: 1rem 1.4rem;">
             <div class="game-card">
@@ -84,7 +102,7 @@
             </div>
         </div>
 
-       <div id="poker" style="padding: 1rem 1.4rem;">
+        <div id="poker" style="padding: 1rem 1.4rem;">
             <div class="game-card">
                 <h2>Poker</h2>
                 <p>
@@ -110,61 +128,61 @@
         </div>
     </div>
     <div id="stats" style="display: none;">
-    <div style="padding: 0.8rem 1.4rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-        <div id="chip" class="game-card" style="flex:1; min-width: 200px;">
-            <h2 style="margin-bottom:0.6rem;">Chip Leaderboard</h2>
-            {% for entry in leaderboard %}
-            <div
-                style="display:flex; justify-content:space-between; font-size:0.85rem; padding:0.2rem 0; border-bottom:1px solid rgba(212,168,67,0.08);">
-                <span style="color:var(--gold-dim);">
-                    {{ ["🥇","🥈","🥉"][loop.index0] if loop.index0 < 3 else loop.index ~ "." }} {{ entry.username }}
-                        </span>
-                        <span style="color:var(--gold);">{{ entry.chips }}</span>
-            </div>
-            {% endfor %}
-        </div>
-
-        <div id="your-stats" class="game-card" style="flex:1; min-width:200px;">
-            <h2 style="margin-bottom:0.6rem;">Your Stats</h2>
-            <div style="font-size:0.85rem; color:var(--gold-dim); line-height:2;">
-                <div style="display:flex; justify-content:space-between;">
-                    <span>Games Played</span>
-                    <span style="color:var(--gold);">{{ stats.get("games_played", 0) }}</span>
+        <div style="padding: 0.8rem 1.4rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div id="chip" class="game-card" style="flex:1; min-width: 200px;">
+                <h2 style="margin-bottom:0.6rem;">Chip Leaderboard</h2>
+                {% for entry in leaderboard %}
+                <div
+                    style="display:flex; justify-content:space-between; font-size:0.85rem; padding:0.2rem 0; border-bottom:1px solid rgba(212,168,67,0.08);">
+                    <span style="color:var(--gold-dim);">
+                        {{ ["🥇","🥈","🥉"][loop.index0] if loop.index0 < 3 else loop.index ~ "." }} {{ entry.username
+                            }} </span>
+                            <span style="color:var(--gold);">{{ entry.chips }}</span>
                 </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span>Wins</span>
-                    <span style="color:#6fe296;">{{ stats.get("wins", 0) }}</span>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                    <span>Biggest Win</span>
-                    <span style="color:var(--gold);">+{{ stats.get("biggest_win", 0) }} chips</span>
-                </div>
+                {% endfor %}
             </div>
 
-            <h2 style="margin-bottom:0.6rem;">Recent Games</h2>
-            {% for h in history %}
-            <div style="display:flex; justify-content:space-between; align-items:center;
+            <div id="your-stats" class="game-card" style="flex:1; min-width:200px;">
+                <h2 style="margin-bottom:0.6rem;">Your Stats</h2>
+                <div style="font-size:0.85rem; color:var(--gold-dim); line-height:2;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Games Played</span>
+                        <span style="color:var(--gold);">{{ stats.get("games_played", 0) }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Wins</span>
+                        <span style="color:#6fe296;">{{ stats.get("wins", 0) }}</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>Biggest Win</span>
+                        <span style="color:var(--gold);">+{{ stats.get("biggest_win", 0) }} chips</span>
+                    </div>
+                </div>
+
+                <h2 style="margin-bottom:0.6rem;">Recent Games</h2>
+                {% for h in history %}
+                <div style="display:flex; justify-content:space-between; align-items:center;
                         font-size:0.82rem; padding:0.25rem 0;
                         border-bottom:1px solid rgba(212,168,67,0.08);">
-                <span style="color:var(--gold-dim);">{{ h.game | capitalize }}</span>
-                <span
-                    style="color:{{ '#6fe296' if h.result in ('win','blackjack') else '#e05555' if h.result == 'lose' else 'var(--gold-dim)' }};">
-                    {{ h.result.upper() }}
-                </span>
-                <span
-                    style="color:{{ '#6fe296' if h.chips_delta > 0 else '#e05555' if h.chips_delta < 0 else 'var(--gold-dim)' }};">
-                    {{ '+' if h.chips_delta > 0 else '' }}{{ h.chips_delta }}
-                </span>
+                    <span style="color:var(--gold-dim);">{{ h.game | capitalize }}</span>
+                    <span
+                        style="color:{{ '#6fe296' if h.result in ('win','blackjack') else '#e05555' if h.result == 'lose' else 'var(--gold-dim)' }};">
+                        {{ h.result.upper() }}
+                    </span>
+                    <span
+                        style="color:{{ '#6fe296' if h.chips_delta > 0 else '#e05555' if h.chips_delta < 0 else 'var(--gold-dim)' }};">
+                        {{ '+' if h.chips_delta > 0 else '' }}{{ h.chips_delta }}
+                    </span>
+                </div>
+                {% else %}
+                <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">No games played yet.</p>
+                {% endfor %}
             </div>
-            {% else %}
-            <p style="font-size:0.8rem; color:#7a6030; font-style:italic;">No games played yet.</p>
-            {% endfor %}
-        </div>
-        <div id="achievements" class="game-card" style="flex:1; min-width:220px;">
-            <h2 style="margin-bottom:0.7rem;">Achievements</h2>
-            <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
-                {% for a in achievements %}
-                <div title="{{ a.desc }}" style="
+            <div id="achievements" class="game-card" style="flex:1; min-width:220px;">
+                <h2 style="margin-bottom:0.7rem;">Achievements</h2>
+                <div style="display:flex; flex-wrap:wrap; gap:0.5rem;">
+                    {% for a in achievements %}
+                    <div title="{{ a.desc }}" style="
                 display:flex; flex-direction:column; align-items:center;
                 width:70px; padding:0.4rem 0.3rem; border-radius:8px; text-align:center;
                 border:1px solid {{ 'rgba(212,168,67,0.4)' if a.unlocked else 'rgba(255,255,255,0.05)' }};
@@ -172,18 +190,18 @@
                 opacity:{{ '1' if a.unlocked else '0.35' }};
                 cursor:default;
             ">
-                    <span style="font-size:1.4rem;">{{ a.icon }}</span>
-                    <span style="font-size:0.52rem; font-family:'Cinzel',serif;
+                        <span style="font-size:1.4rem;">{{ a.icon }}</span>
+                        <span style="font-size:0.52rem; font-family:'Cinzel',serif;
                          color:{{ 'var(--gold)' if a.unlocked else '#555' }};
                          letter-spacing:0.04em; margin-top:0.2rem; line-height:1.3;">
-                        {{ a.name }}
-                    </span>
+                            {{ a.name }}
+                        </span>
+                    </div>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>
-        </div>
     <div id="players" style="padding: 0.8rem 1.4rem; display: none;">
         <div id="friends" class="game-card" style="flex:1; min-width:200px;">
             <h2 style="margin-bottom:0.6rem;">Recent Players</h2>
@@ -234,24 +252,26 @@
         <div id="bug" class="game-card" style="flex:1; min-width: 200px;">
             <h2 style="margin-bottom:0.6rem;">Bugs</h2>
             <div style="font-size:0.8rem; color:var(--gold-dim); line-height:1.8;">
-                <p>If you find a bug please email me here <a href="mailto:coworange9@gmail.com">coworange9@gmail.com</a></p>
+                <p>If you find a bug please email me here <a href="mailto:coworange9@gmail.com">coworange9@gmail.com</a>
+                </p>
             </div>
         </div>
     </div>
     </div>
 
 </body>
-        <div id="chat-container" class="chat-window">
-            <div id="chat-header" class="chat-header">
-                <span id="chat-title" style="color: var(--gold);">Global Chat</span>
-                <button onclick="resetChat()" style="background:none; border:none; color: var(--gold); cursor:pointer;">X</button>
-            </div>
-            <div id="chat-messages" style="font-size:0.8rem; color: var(--gold);"></div>
-            <div class="chat-input-area">
-                <input type="text" class="index" id="chat-input" placeholder="Type a message...">
-                <button class="index" id="chat-send">Send</button>
-            </div>
-        </div>
+<div id="chat-container" class="chat-window">
+    <div id="chat-header" class="chat-header">
+        <span id="chat-title" style="color: var(--gold);">Global Chat</span>
+        <button onclick="resetChat()"
+            style="background:none; border:none; color: var(--gold); cursor:pointer;">X</button>
+    </div>
+    <div id="chat-messages" style="font-size:0.8rem; color: var(--gold);"></div>
+    <div class="chat-input-area">
+        <input type="text" class="index" id="chat-input" placeholder="Type a message...">
+        <button class="index" id="chat-send">Send</button>
+    </div>
+</div>
 <script>
     username = "{{ username }}"
     function filterGames(query) {
@@ -306,7 +326,7 @@
         }
     });
 
-    socket.on('update_user_list', function(users) {
+    socket.on('update_user_list', function (users) {
         const listElement = document.getElementById('user-list');
         listElement.innerHTML = '';
         users.forEach(user => {
@@ -338,11 +358,11 @@
     });
 
     document.getElementById('chat-send').onclick = sendMessage;
-    document.getElementById('chat-input').onkeydown = (e) => { if(e.key === "Enter") sendMessage(); };
+    document.getElementById('chat-input').onkeydown = (e) => { if (e.key === "Enter") sendMessage(); };
 
     function sendMessage() {
         const input = document.getElementById('chat-input');
-        if(!input.value.trim()) return;
+        if (!input.value.trim()) return;
 
         if (currentChatTarget === "Global") {
             socket.emit('send_global_msg', { msg: input.value });
@@ -352,7 +372,7 @@
         input.value = '';
     }
 
-    socket.on('receive_msg', function(data) {
+    socket.on('receive_msg', function (data) {
         if (data.type === 'private' && data.target !== username && data.sender !== username) return;
 
         const msgDiv = document.getElementById('chat-messages');
@@ -364,7 +384,7 @@
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 
-   const pill = document.getElementById('nav-pill');
+    const pill = document.getElementById('nav-pill');
     const slider = document.getElementById('nav-slider');
 
     function moveSlider(el) {
@@ -391,7 +411,7 @@
             hide(this.getAttribute('href').slice(1));
         });
     });
-    
+
     setTimeout(() => {
         const active = pill.querySelector('a.active');
         if (active) moveSlider(active);
@@ -403,4 +423,5 @@
         if (cur) moveSlider(cur);
     });
 </script>
+
 </html>

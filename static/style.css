@@ -16,6 +16,34 @@
     --glass-blur: blur(28px) saturate(1.5);
 }
 
+[data-theme="blue"] {
+    --gold: #4ab3e8;
+    --gold-light: #7acfff;
+    --gold-dim: #2a7aad;
+    --felt: #0a1822;
+    --glass-border: rgba(74, 179, 232, 0.22);
+    --glass-highlight: rgba(122, 207, 255, 0.6);
+    --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 0 0.5px rgba(74, 179, 232, 0.15);
+}
+
+[data-theme="green"] {
+    --gold: #4ae87a;
+    --gold-light: #7affa0;
+    --gold-dim: #2aad50;
+    --glass-border: rgba(74, 232, 122, 0.22);
+    --glass-highlight: rgba(122, 255, 160, 0.6);
+    --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 0 0.5px rgba(74, 232, 122, 0.15);
+}
+
+[data-theme="red"] {
+    --gold: #e84a4a;
+    --gold-light: #ff7a7a;
+    --gold-dim: #ad2a2a;
+    --glass-border: rgba(232, 74, 74, 0.22);
+    --glass-highlight: rgba(255, 122, 122, 0.6);
+    --glass-shadow: 0 8px 40px rgba(0, 0, 0, 0.45), 0 0 0 0.5px rgba(232, 74, 74, 0.15);
+}
+
 *,
 *::before,
 *::after {
