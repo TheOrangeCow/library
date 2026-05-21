@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="{{ theme }}">
 
 <head>
     <title>Library</title>
@@ -44,23 +44,6 @@
         <div id="search-wrap">
             <input id="search-input" type="text" placeholder="Search games…" oninput="filterGames(this.value)" />
         </div><br>
-
-        <div class="theme-picker">
-            <button onclick="setTheme('')">Gold</button>
-            <button onclick="setTheme('blue')">Blue</button>
-            <button onclick="setTheme('green')">Green</button>
-            <button onclick="setTheme('red')">Red</button>
-        </div>
-
-        <script>
-            function setTheme(theme) {
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
-            }
-
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) document.documentElement.setAttribute('data-theme', savedTheme);
-        </script>
 
         <div id="pooheads" style="padding: 1rem 1.4rem;">
             <div class="game-card">

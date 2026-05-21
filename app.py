@@ -6,7 +6,7 @@ from core import app, socketio
 from functools import wraps
 from pooheads.pooheads import pooheads_bp
 from sevens.sevens import sevens_bp
-from auth.auth import auth_bp, get_chips, load_users, get_achievements, get_recent_players,  get_join_code
+from auth.auth import auth_bp, get_chips, load_users, get_achievements, get_recent_players,  get_join_codefrom, get_theme
 from blackjack.blackjack import blackjack_bp
 from flask_socketio import SocketIO, emit
 from slots.slots import slots_bp
@@ -77,6 +77,7 @@ def home():
     return render_template("index.html",
         username=username,
         chips=chips,
+        theme=get_theme(username),
         leaderboard=leaderboard,
         join_code=get_join_code(),
         stats=stats,
@@ -87,14 +88,6 @@ def home():
 
 
 @app.route("/school")
-@login_required
-def school():
-
-    return render_template("school.html",
-        username=session["username"],
-        join_code=get_join_code()
-    )
-@app.route("/school2")
 @login_required
 def school2():
     username = session["username"]
@@ -119,6 +112,7 @@ def school2():
         username=username,
         chips=chips,
         leaderboard=leaderboard,
+        theme=get_theme(username),
         join_code=get_join_code(),
         stats=stats,
         history=history,

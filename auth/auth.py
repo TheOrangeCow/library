@@ -209,6 +209,7 @@ def admin():
  
     return render_template(
         "auth/admin.html",
+        theme=get_theme(username),
         users_list=users_list,
         error=error,
         success=success,
