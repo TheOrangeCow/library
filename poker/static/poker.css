@@ -416,6 +416,8 @@ body.in-game {
     border: 1px solid var(--glass-border);
     box-shadow: 0 0 80px rgba(232, 184, 75, 0.13), var(--glass-shadow);
 
+    color: var(--gold-dim);
+
     position: relative;
     overflow: hidden;
 }
@@ -526,7 +528,7 @@ body.in-game {
 
 .plr-row {
     font-size: .82rem;
-    color: rgba(232, 184, 75, 0.55);
+    color: var(--gold-dim);
     padding: .25rem 0;
     border-bottom: 1px solid rgba(232, 184, 75, 0.08);
 }
