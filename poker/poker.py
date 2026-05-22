@@ -104,10 +104,11 @@ BLIND_LEVELS = {
     "high": {"small": 250, "big": 500, "min_buy": 5000, "max_buy": 25000},
 }
 
-def new_room(stake, host):
+def new_room(stake, host, public=False):
     return {
         "host": host,
         "stake": stake,
+        "public": public,
         "phase": "lobby",
         "players": [],
         "stacks": {},    
@@ -279,6 +280,24 @@ def betting_complete(g):
             return False
     return True
 
+@poker_bp.route("/poker/rooms")
+@login_required
+def public_rooms():
+    games = load_json(GAME_FILE)
+    rooms = games.get("games", {})
+    result = []
+    for code, g in rooms.items():
+        if g.get("public") and g["phase"] == "lobby":
+            result.append({
+                "code": code,
+                "stake": g["stake"],
+                "players": len(g["players"]),
+                "names": g["players"],
+                "blinds": f'{BLIND_LEVELS[g["stake"]]["small"]}/{BLIND_LEVELS[g["stake"]]["big"]}',
+                "min_buy": BLIND_LEVELS[g["stake"]]["min_buy"],
+                "max": 9,
+            })
+    return {"rooms": result}
 
 @poker_bp.route("/poker", methods=["GET","POST"])
 @login_required
@@ -297,8 +316,9 @@ def index():
             stake = request.form.get("stake", "low")
             if stake not in BLIND_LEVELS:
                 stake = "low"
+            public = "public" in request.form
             code = str(random.randint(100000, 999999))
-            games.setdefault("games", {})[code] = new_room(stake, username)
+            games.setdefault("games", {})[code] = new_room(stake, username, public)
             save_json(GAME_FILE, games)
             return redirect(url_for("poker.game", code=code))
 

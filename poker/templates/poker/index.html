@@ -32,8 +32,23 @@
     <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
         <div class="game-card">
             <h1 class="index-text">Rooms</h1><br>
-            <h2 class="index-text">Create Room</h2>
-            {% if error %}<div class="err">{{ error }}</div>{% endif %}
+
+
+
+
+            <h2 class="index-text">Public Rooms</h2>
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color:var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
+            </div>
+
+            <h2 class="index-text">Join Private Room</h2>
+            <p style="font-size:0.85rem;color:var(--gold-dim);">Have a code? Enter it to join any room.</p>
+            <form method="post">
+                <input type="hidden" name="action" value="join">
+                <input type="text" class="index" name="code" placeholder="6-digit room code" maxlength="6">
+                <button class="index" type="submit">Join</button>
+            </form>
+
             <form method="post">
                 <input type="hidden" name="action" value="create">
                 <select class="index" name="stake">
@@ -42,16 +57,11 @@
                         lvl.min_buy }}–{{ lvl.max_buy }})</option>
                     {% endfor %}
                 </select>
+                <label style="font-size:0.85rem;color:var(--gold-dim);">
+                    <input type="checkbox" name="public" checked> Make this room public
+                </label>
                 <button class="index" type="submit">Create Table</button>
-            </form><br>
-
-
-            <h2 class="index-text">Join Room</h2>
-            <form method="post">
-                <input type="hidden" name="action" value="join">
-                <input type="text" class="index" name="code" placeholder="6-digit room code" maxlength="6">
-                <button class="index" type="submit">Join</button>
-            </form><br>
+            </form>
 
         </div>
     </div>
@@ -231,11 +241,45 @@
     });
 
     document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === 'hidden') {
-        socket.emit('tab_hidden');
-    } else {
-        socket.emit('tab_visible');
+        if (document.visibilityState === 'hidden') {
+            socket.emit('tab_hidden');
+        } else {
+            socket.emit('tab_visible');
+        }
+    });
+
+    function loadPublicRooms() {
+        fetch('/poker/rooms')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('public-rooms-list');
+                if (!data.rooms.length) {
+                    el.innerHTML = '<p style="color:var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    return;
+                }
+                el.innerHTML = data.rooms.map(r => `
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                            padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                    <span style="color:var(--gold-dim);font-size:0.85rem;">
+                        Room <b style="color:var(--gold)">${r.code}</b>
+                        · ${r.stake} · blinds ${r.blinds}
+                        · ${r.names.join(', ') || 'Empty'}
+                    </span>
+                    <span style="color:var(--gold-dim);font-size:0.8rem;">${r.players}/9 players</span>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="action" value="join">
+                        <input type="hidden" name="code" value="${r.code}">
+                        <button class="index" type="submit" style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                            Join →
+                        </button>
+                    </form>
+                </div>
+            `).join('');
+            });
     }
-});
+
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
 </script>
+
 </html>
