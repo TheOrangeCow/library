@@ -56,14 +56,14 @@
             data-chips="{{ u.chips }}"
             onclick="selectUser('{{ u.username }}', {{ u.chips }})"
             style="border-bottom:1px solid #1e1600; cursor:pointer; transition:background 0.15s;">
-          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#f5e8b0;">
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color: var(--gold);">
             {{ u.username }}
           </td>
           <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:var(--gold); font-size:0.9rem;">{{ u.chips }}</td>
-          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#c8b060; font-size:0.9rem;">{{ u.wins }}</td>
-          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color:#c8b060; font-size:0.9rem;">{{ u.games }}</td>
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color: var(--gold-light); font-size:0.9rem;">{{ u.wins }}</td>
+          <td style="padding:0.65rem 1.1rem; font-family:'EB Garamond',serif; color: var(--gold-light); font-size:0.9rem;">{{ u.games }}</td>
           <td style="padding:0.65rem 1.1rem; text-align:right;">
-            <span style="font-family:'Cinzel',serif; font-size:0.55rem; color:#5a4820; letter-spacing:0.08em; text-transform:uppercase;">click to edit</span>
+            <span style="font-family:'Cinzel',serif; font-size:0.55rem; color: var(--gold-dim); letter-spacing:0.08em; text-transform:uppercase;">click to edit</span>
           </td>
         </tr>
         {% endfor %}
