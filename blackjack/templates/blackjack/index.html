@@ -4,132 +4,30 @@
 <head>
     <title>Blackjack</title>
     <link rel="stylesheet" href="{{ url_for('blackjack.static', filename='style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
     <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
-    <style>
-        .index-text {
-            color: var(--gold);
-        }
-
-        body {
-            overflow: auto !important;
-        }
-
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #111;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, var(--gold), var(--gold-dim));
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--gold-dim);
-        }
-
-        .index-text ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .index-text li {
-            padding: 5px 0;
-            position: relative;
-            padding-left: 25px;
-        }
-
-        .index-text li::before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            color: var(--gold-light);
-            font-weight: bold;
-        }
-
-        .special {
-            font-weight: bold;
-            color: var(--gold-light);
-        }
-
-        .highlight {
-            background-color: var(--gold-light);
-            color: var(--gold-dim);
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
-
-        .nav {
-            display: flex;
-        }
-
-        .nav a {
-            flex: 1;
-            text-align: center;
-            padding: 5px 0;
-            text-decoration: none;
-            color: gold;
-
-        }
-
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        input.index {
-            color: var(--gold);
-            background-color: #081a12;
-            padding: 5px;
-            border: 1px solid #7a6030;
-            border-radius: 5px;
-        }
-
-        input.index:focus {
-            border: #e8b84b;
-        }
-
-
-        button.index {
-            padding: 0.28rem 0.85rem;
-            font-family: 'Cinzel', serif;
-            font-size: 0.65rem;
-            letter-spacing: 0.08em;
-            border: 1px solid var(--gold-dim);
-            background: rgba(212, 168, 67, 0.07);
-            color: var(--gold);
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        button.index:hover {
-            background: rgba(212, 168, 67, 0.22);
-            border-color: var(--gold);
-        }
-    </style>
 </head>
 
 <body>
     <div id="header">
-        <h1>Library <span style="font-weight:400;color:#e8b84b;font-size:0.85rem;">· blackjack</span></h1>
-        <span class="you-label">Playing as <b>{{ username }}</b></span>
-        <div class="hbtns">
-            <button class="hbtn" onclick="window.location.href = '/'">Back</button>
-        </div>
+        <div id="header">
+            <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Pooheads</span></h1>
+            <span class="you-label">Playing as <b>{{ username }}</b></span>
+            <span>
+                <a class="logout" href="/">Back</a>
+            </span>
+        </div><br>
     </div><br>
-    <div class="nav">
-        <a href="#rooms">Rooms</a>
-        <a href="#rules">Rules</a>
-        <a href="#strategy">Strategy</a>
-    </div>
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
+        </div>
+    </nav>
     <div id="rooms">
         <h1 class="index-text">Rooms</h1>
         <form method="POST">
@@ -220,5 +118,64 @@
         </ul>
     </div>
 </body>
+<script>
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
 
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+
+    function hide(el) {
+        const pages = ["rooms", "rules", "strategy"];
+        for (const page of pages) {
+            if (page !== el) {
+                document.getElementById(page).style.display = "none";
+            } else {
+                document.getElementById(page).style.display = "";
+            }
+        }
+    }
+
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+            hide(this.getAttribute('href').slice(1));
+        });
+    });
+
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
+        hide('rooms');
+    }
+
+    if (document.fonts) {
+        document.fonts.ready.then(init);
+    } else {
+        window.addEventListener('load', init);
+    }
+
+    window.addEventListener('resize', () => {
+        const cur = pill.querySelector('a.active');
+        if (cur) moveSlider(cur);
+    });
+
+    const socket = io();
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: `Lobby` });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === 'hidden') {
+        socket.emit('tab_hidden');
+    } else {
+        socket.emit('tab_visible');
+    }
+});
+</script>
 </html>
