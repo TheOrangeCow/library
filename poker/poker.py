@@ -186,8 +186,8 @@ def start_betting_round(g):
         g["last_raise"] = bb_amt
         g["min_raise"]  = bb_amt
 
-        if g["stacks"].get(sb, 0) == 0: g["all_in"].add(sb)
-        if g["stacks"].get(bb, 0) == 0: g["all_in"].add(bb)
+        if g["stacks"].get(sb, 0) == 0: g["all_in"].append(sb)
+        if g["stacks"].get(bb, 0) == 0: g["all_in"].append(bb)
 
         act = players[action_idx % n]
         while act in g["all_in"] and act != players[bb_idx]:

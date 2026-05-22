@@ -149,10 +149,10 @@ def profile():
 
 @auth_bp.route("/admin", methods=["GET", "POST"])
 def admin():
-    username = session["username"]
+    
     if "username" not in session or session["username"] != "daniel":
         return redirect(url_for("home"))
- 
+    username = "daniel"
     error = None
     success = None
  
@@ -223,7 +223,7 @@ def get_chips(username):
 def update_chips(username, amount):
     data = load_users()
     if username in data["users"]:
-        data["users"][username]["chips"] += amount
+        data["users"][username]["chips"] = max(0, data["users"][username]["chips"] + amount)
         save_users(data)
 
 def record_result(username, game, result, chips_delta):
