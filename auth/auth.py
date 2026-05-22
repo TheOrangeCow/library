@@ -149,6 +149,7 @@ def profile():
 
 @auth_bp.route("/admin", methods=["GET", "POST"])
 def admin():
+    username = session["username"]
     if "username" not in session or session["username"] != "daniel":
         return redirect(url_for("home"))
  
