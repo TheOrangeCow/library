@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for
 from flask_socketio import join_room
-from auth.auth import get_chips, update_chips
+from auth.auth import get_chips, update_chips, get_theme
 from functools import wraps
 import json, os, random, threading
 from auth.auth import record_result
@@ -387,7 +387,7 @@ def index():
                 "current_player_idx": 0,
             }
             save_json(GAME_FILE, games)
-            return redirect(url_for("blackjack.game", code=code))
+            return redirect(url_for("blackjack.game", theme=get_theme(username), code=code))
 
         if "join" in request.form:
             code = request.form.get("room_code", "").strip()
@@ -396,12 +396,12 @@ def index():
                 if len(room["players"]) >= MAX_PLAYERS:
                     return render_template("blackjack/index.html",
                         error="Room is full.", username=username)
-                return redirect(url_for("blackjack.game", code=code))
+                return redirect(url_for("blackjack.game", theme=get_theme(username), code=code))
             else:
                 return render_template("blackjack/index.html",
-                    error="Room not found.", username=username)
+                    error="Room not found.", theme=get_theme(username), username=username)
 
-    return render_template("blackjack/index.html", username=username)
+    return render_template("blackjack/index.html", theme=get_theme(username), username=username)
 
 
 @blackjack_bp.route("/blackjack/game")
@@ -411,4 +411,4 @@ def game():
     username = session["username"]
     if not code:
         return redirect(url_for("blackjack.index"))
-    return render_template("blackjack/game.html", roomCode=code, username=username)
+    return render_template("blackjack/game.html", theme=get_theme(username), roomCode=code, username=username)
