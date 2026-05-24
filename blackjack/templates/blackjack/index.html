@@ -29,11 +29,29 @@
     <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
         <div class="game-card">
             <h1 class="index-text">Rooms</h1>
+
+            <h2 class="index-text">Join a Public Room</h2>
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color: var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
+            </div>
+            <br>
+
+            <h2 class="index-text">Join Private Room</h2>
+            <p style="font-size:0.85rem;color: var(--gold-dim);">Have a code? Enter it below.</p>
             <form method="POST">
                 <input class="index" type="text" name="room_code" placeholder="123456" /><br><br>
                 <button class="index" name="join" value="1">Join Room</button>
+            </form>
+            <br><br>
+
+            <h2 class="index-text">Create Room</h2>
+            <form method="POST">
+                <label style="font-size:0.85rem;color: var(--gold-dim);">
+                    <input class="index" type="checkbox" name="public" checked> Make this room public
+                </label><br><br>
                 <button class="index" name="create" value="1">Create Room</button>
             </form>
+
             {% if error %}
             <div class="index-text">{{ error }}</div>
             {% endif %}
@@ -188,6 +206,37 @@
             socket.emit('tab_visible');
         }
     });
+    function loadPublicRooms() {
+        fetch('/blackjack/rooms')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('public-rooms-list');
+                if (!data.rooms.length) {
+                    el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    return;
+                }
+                el.innerHTML = data.rooms.map(r => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;
+                                padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                        <span style="color:var(--gold-dim);font-size:0.85rem;">
+                            Room <b style="color:var(--gold)">${r.code}</b>
+                            · ${r.names.join(', ') || 'Empty'}
+                        </span>
+                        <span style="color:var(--gold-dim);font-size:0.8rem;">${r.players}/${r.max} players</span>
+                        <form method="POST" style="margin:0;">
+                            <input type="hidden" name="room_code" value="${r.code}">
+                            <button class="index" type="submit" name="join" value="1"
+                                style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                                Join →
+                            </button>
+                        </form>
+                    </div>
+                `).join('');
+            });
+    }
+
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
 </script>
 
 </html>

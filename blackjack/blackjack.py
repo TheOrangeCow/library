@@ -362,6 +362,20 @@ def bj_new_round(data):
     save_json(GAME_FILE, games)
     socketio.emit("bj_state", g, to=code)
 
+@blackjack_bp.route("/blackjack/rooms")
+@login_required
+def public_rooms():
+    games = load_json(GAME_FILE)
+    rooms = []
+    for code, g in games.get("games", {}).items():
+        if g.get("public") and g.get("phase") == "betting" and len(g["players"]) < MAX_PLAYERS:
+            rooms.append({
+                "code": code,
+                "players": len(g["players"]),
+                "max": MAX_PLAYERS,
+                "names": g["players"]
+            })
+    return {"rooms": rooms}
 
 @blackjack_bp.route("/blackjack", methods=["GET", "POST"])
 @login_required
@@ -372,6 +386,7 @@ def index():
     if request.method == "POST":
         if "create" in request.form:
             code = str(random.randint(100000, 999999))
+            is_public = "public" in request.form 
             games.setdefault("games", {})[code] = {
                 "players": [],
                 "hands": {},
@@ -385,6 +400,7 @@ def index():
                 "results": {},
                 "doubled": {},
                 "current_player_idx": 0,
+                "public": is_public,
             }
             save_json(GAME_FILE, games)
             return redirect(url_for("blackjack.game", theme=get_theme(username), code=code))
