@@ -95,6 +95,25 @@
             <div id="chips-display">{{ chips }} chips</div>
         </div>
 
+        <!--div id="payout-table">
+            <h3>Payouts</h3>
+            <div class="pt-section-label">3 of a kind</div>
+            {% for sym, mult in payouts.items() | sort(attribute='1') | reverse %}
+            <div class="pt-row">
+                <span class="pt-sym">{{ sym }} {{ sym }} {{ sym }}</span>
+                <span class="pt-mult">× {{ mult }}</span>
+            </div>
+            {% endfor %}
+            <div class="pt-section-label" style="margin-top:0.8rem;">2 of a kind</div>
+            {% for sym, mult in two_payouts.items() %}
+            {% if mult > 0 %}
+            <div class="pt-row">
+                <span class="pt-sym">{{ sym }} {{ sym }}</span>
+                <span class="pt-mult">× {{ mult }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div-->
         <div id="payout-table">
             <h3>Payouts</h3>
             <div class="pt-section-label">3 of a kind</div>
@@ -113,13 +132,13 @@
             </div>
             {% endif %}
             {% endfor %}
-        </div>
-        <div id="payout-table">
-            <table>
+
+            <div class="pt-section-label" style="margin-top:0.8rem;">Odds</div>
+            <table style="width:100%;border-collapse:collapse;white-space:nowrap;">
                 <tr>
-                    <th class="pt-section-label" style="width:3rem;">Symbol</th>
-                    <th class="pt-section-label" style="width:5rem;">Per reel</th>
-                    <th class="pt-section-label">3 of a kind</th>
+                    <th class="pt-section-label" style="width:3rem;text-align:left;">Symbol</th>
+                    <th class="pt-section-label" style="width:5rem;text-align:left;">Per reel</th>
+                    <th class="pt-section-label" style="text-align:left;">3 of a kind</th>
                 </tr>
                 <tr class="pt-row">
                     <td>🍒</td>
@@ -162,7 +181,6 @@
                     <td>0.00063% (1 in 157,464)</td>
                 </tr>
             </table>
-
         </div>
 
     </div>
