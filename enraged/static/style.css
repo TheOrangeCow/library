@@ -3,6 +3,12 @@ body.in-game {
     overflow: hidden !important;
 }
 
+#rooms .game-card,
+#rules .game-card,
+#strategy .game-card {
+    display: block;
+}
+
 #arena {
     flex: 1;
     position: relative;
