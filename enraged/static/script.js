@@ -189,12 +189,10 @@ function render(data) {
 
     const flipBtn = document.getElementById("flip-btn");
     const shuffleBtn = document.getElementById("shuffle-btn");
-    const pickupPrompt = document.getElementById("pickup-prompt-btn");
 
     flipBtn.disabled = !myTurn || myPile.length === 0;
     shuffleBtn.disabled = !myTurn || data.shuffledThisTurn || myPile.length === 0;
-    shuffleBtn.title = data.shuffledThisTurn ? "Already shuffled this turn" : "Shuffle your pile";
-    pickupPrompt.style.display = myTurn && centerPile.length > 0 ? "inline-block" : "none";
+    shuffleBtn.title = data.shuffledThisTurn ? "Already shuffled this turn" : "Shuffle your pile"
 
     const oppContainer = document.getElementById("opp-container");
     oppContainer.innerHTML = "";
@@ -242,8 +240,6 @@ function render(data) {
         `<div class="fin-badge">${["🥇", "🥈", "🥉"][i] || "•"} ${p}</div>`
     ).join("");
 
-    document.getElementById("pickupBtn").style.display =
-        myTurn && centerPile.length > 0 ? "block" : "none";
 }
 
 

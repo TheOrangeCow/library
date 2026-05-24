@@ -20,7 +20,7 @@
     <div id="aceModal">
         <div class="mbox">
             <h2>Ace Played</h2>
-            <p>Choose the value of your Ace</p>
+            <p style="color: (--gold-dim)">Choose the value of your Ace</p>
             <div class="ace-btns">
                 <button onclick="confirmAce('low')">1 — Low</button>
                 <button onclick="confirmAce('high')">14 — High</button>
@@ -46,7 +46,6 @@
             <div id="pile-count"></div>
             <div id="ruleIndicator"></div>
             <div id="pileHistory"></div>
-            <button id="pickupBtn" onclick="doPickup()">Pick Up Pile</button>
         </div>
 
         <div id="opp-container"></div>
@@ -65,7 +64,6 @@
             <div id="action-row">
                 <button id="shuffle-btn" onclick="doShuffle()">Shuffle</button>
                 <button id="flip-btn" onclick="doFlip()">Flip &amp; Play</button>
-                <button id="pickup-prompt-btn" onclick="doPickup()">Pick Up Pile</button>
             </div>
 
             <div id="flipped-display"></div>
