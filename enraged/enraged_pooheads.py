@@ -16,7 +16,6 @@ enraged_bp = Blueprint(
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 GAME_FILE = os.path.join(BASE_DIR, "enraged_game.json")
-CARDS_FILE = os.path.join(BASE_DIR, "cards.json")
 MAX_PLAYERS = 5
 
 file_lock = threading.RLock()
@@ -62,6 +61,15 @@ def effective_top(g):
         if get_rank(c) not in ("3", "JOKER"):
             return c
     return None
+
+SUITS = ["H", "D", "C", "S"]
+RANKS = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+
+def make_deck():
+    deck = [r + s for s in SUITS for r in RANKS]
+    deck += ["JOKER1", "JOKER2"]  # 2 jokers
+    random.shuffle(deck)
+    return deck
 
 def effective_top_value(g):
     top = effective_top(g)
@@ -185,13 +193,13 @@ def enraged_join(data):
 @socketio.on("enraged_start")
 def enraged_start(data):
     games = load_json(GAME_FILE)
-    deck_data = load_json(CARDS_FILE)
+
     code = data["code"]
     g = games["games"].get(code)
     if not g:
         return
 
-    deck = deck_data["deck"][:]
+    deck = make_deck()
     random.shuffle(deck)
 
     n = len(g["players"])
