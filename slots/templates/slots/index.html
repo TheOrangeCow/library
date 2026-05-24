@@ -20,7 +20,8 @@
         </span>
     </div>
 
-    <div id="payout-table">
+    <div id="slots-wrap">
+        <div id="payout-table">
             <h3>Payouts</h3>
             <div class="pt-section-label">3 of a kind</div>
             {% for sym, mult in payouts.items() | sort(attribute='1') | reverse %}
@@ -39,8 +40,7 @@
             {% endif %}
             {% endfor %}
         </div>
-
-    <div id="slots-wrap">
+        
         <div id="machine">
             <div id="machine-top">
                 <span class="machine-title">S L O T S</span>
