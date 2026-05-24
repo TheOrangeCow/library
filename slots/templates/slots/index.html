@@ -20,6 +20,26 @@
         </span>
     </div>
 
+    <div id="payout-table">
+            <h3>Payouts</h3>
+            <div class="pt-section-label">3 of a kind</div>
+            {% for sym, mult in payouts.items() | sort(attribute='1') | reverse %}
+            <div class="pt-row">
+                <span class="pt-sym">{{ sym }} {{ sym }} {{ sym }}</span>
+                <span class="pt-mult">× {{ mult }}</span>
+            </div>
+            {% endfor %}
+            <div class="pt-section-label" style="margin-top:0.8rem;">2 of a kind</div>
+            {% for sym, mult in two_payouts.items() %}
+            {% if mult > 0 %}
+            <div class="pt-row">
+                <span class="pt-sym">{{ sym }} {{ sym }}</span>
+                <span class="pt-mult">× {{ mult }}</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
     <div id="slots-wrap">
         <div id="machine">
             <div id="machine-top">
@@ -95,25 +115,6 @@
             <div id="chips-display">{{ chips }} chips</div>
         </div>
 
-        <div id="payout-table">
-            <h3>Payouts</h3>
-            <div class="pt-section-label">3 of a kind</div>
-            {% for sym, mult in payouts.items() | sort(attribute='1') | reverse %}
-            <div class="pt-row">
-                <span class="pt-sym">{{ sym }} {{ sym }} {{ sym }}</span>
-                <span class="pt-mult">× {{ mult }}</span>
-            </div>
-            {% endfor %}
-            <div class="pt-section-label" style="margin-top:0.8rem;">2 of a kind</div>
-            {% for sym, mult in two_payouts.items() %}
-            {% if mult > 0 %}
-            <div class="pt-row">
-                <span class="pt-sym">{{ sym }} {{ sym }}</span>
-                <span class="pt-mult">× {{ mult }}</span>
-            </div>
-            {% endif %}
-            {% endfor %}
-        </div>
         <div id="payout-table">
             <h3 class="pt-section-label" style="margin-top:0.8rem;">Odds</h3>
             <table style="width:100%;border-collapse:collapse;white-space:nowrap;">
