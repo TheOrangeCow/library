@@ -19,7 +19,7 @@ app = Flask(__name__,
     static_folder=os.path.join(BASE_DIR, "static")
 )
 app.secret_key = KEY
-socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins="https://theorangecow.org")
+socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins="https://library.theorangecow.org/")
 
 active_users = {}
 away_users = set()
