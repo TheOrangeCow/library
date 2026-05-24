@@ -180,7 +180,7 @@ def enraged_join(data):
     if not user or not code:
         return
     games = load_json(GAME_FILE)
-    g = games["games"].get(code)
+    g = games.get("games", {}).get(code)
     if not g:
         return
     if user not in g["players"]:
@@ -195,7 +195,7 @@ def enraged_start(data):
     games = load_json(GAME_FILE)
 
     code = data["code"]
-    g = games["games"].get(code)
+    g = games.get("games", {}).get(code)
     if not g:
         return
 
@@ -233,7 +233,7 @@ def enraged_play(data):
     user = data.get("username")
     ace_choice = data.get("aceMode", "high")
 
-    g = games["games"].get(code)
+    g = games.get("games", {}).get(code)
     if not g or g.get("phase") != "playing":
         return
     if g["turn"] != user or user not in g["players"]:
@@ -369,7 +369,7 @@ def enraged_shuffle(data):
     games = load_json(GAME_FILE)
     code = data["code"]
     user = data.get("username")
-    g = games["games"].get(code)
+    g = games.get("games", {}).get(code)
 
     if not g or g.get("phase") != "playing":
         return
@@ -393,7 +393,7 @@ def enraged_pickup(data):
     games = load_json(GAME_FILE)
     code = data["code"]
     user = data.get("username")
-    g = games["games"].get(code)
+    g = games.get("games", {}).get(code)
 
     if not g or g["turn"] != user:
         return
