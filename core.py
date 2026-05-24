@@ -2,18 +2,24 @@ from flask import Flask, session, request
 from flask_socketio import SocketIO, emit, join_room
 from dotenv import load_dotenv
 import os
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv()
 
 KEY = os.getenv("KEY")
+if not KEY:
+    raise ValueError("SECRET_KEY environment variable (KEY) not set! Please set it in .env file.")
 
 app = Flask(__name__,
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
 app.secret_key = KEY
-socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins="*")
+socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins="https://theorangecow.org")
 
 active_users = {}
 away_users = set()
@@ -64,4 +70,3 @@ def handle_disconnect():
         if user not in [v["username"] for v in active_users.values()]:
             away_users.discard(user)
         emit_status_update()
-
