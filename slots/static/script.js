@@ -70,8 +70,7 @@ async function startSpin() {
         }
 
         document.getElementById("chips-display").textContent = `${result.chips} chips`;
-        document.getElementById("bet-input").max = result.chips;
-        
+
         btn.disabled = false;
     }, allLanded);
 }
