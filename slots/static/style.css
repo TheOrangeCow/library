@@ -340,9 +340,19 @@ body {
     color: var(--gold);
 }
 
+#payout-table {
+    min-width: 320px;
+}
+
 #payout-table table {
     width: 100%;
     border-collapse: collapse;
+    white-space: nowrap;
+}
+
+#payout-table th,
+#payout-table td {
+    padding: 0.3rem 0.8rem;
 }
 
 #payout-table th {
