@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>Enraged Pooheads – {{ roomCode }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('enraged.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body class="in-game">
+
+    <div id="notif"></div>
+
+    <div id="aceModal">
+        <div class="mbox">
+            <h2>Ace Played</h2>
+            <p>Choose the value of your Ace</p>
+            <div class="ace-btns">
+                <button onclick="confirmAce('low')">1 — Low</button>
+                <button onclick="confirmAce('high')">14 — High</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="header">
+        <h1>Enraged <span style="font-weight:400;color:var(--gold);font-size:0.85rem;">· {{ roomCode }}</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span>
+            <button class="index" onclick="copyLink()">Copy Link</button>
+            <button class="index" onclick="startGame()">Start Game</button>
+            <button class="index" onclick="window.location.href='/enraged'">Back</button>
+        </span>
+    </div>
+
+    <div id="arena">
+        <div id="table"></div>
+
+        <div id="pile-area">
+            <div id="pile-cards"></div>
+            <div id="pile-count"></div>
+            <div id="ruleIndicator"></div>
+            <div id="pileHistory"></div>
+            <button id="pickupBtn" onclick="doPickup()">Pick Up Pile</button>
+        </div>
+
+        <div id="opp-container"></div>
+
+        <div id="your-zone">
+            <div id="your-label-row">
+                <span id="your-name">{{ username }}</span>
+                <span id="turn-pill">YOUR TURN</span>
+            </div>
+
+            <div id="your-pile-wrap">
+                <div id="your-pile-stack"></div>
+                <div id="your-pile-count"></div>
+            </div>
+
+            <div id="action-row">
+                <button id="shuffle-btn" onclick="doShuffle()">🔀 Shuffle</button>
+                <button id="flip-btn" onclick="doFlip()">▶ Flip &amp; Play</button>
+                <button id="pickup-prompt-btn" onclick="doPickup()">Pick Up Pile</button>
+            </div>
+
+            <div id="flipped-display"></div>
+        </div>
+
+        <div id="finished-bar"></div>
+    </div>
+
+    <div id="play-feed"></div>
+
+    <div id="chat-container" class="chat-window">
+        <div id="chat-header" class="chat-header">
+            <span style="color:var(--gold);">Game Chat</span>
+            <button onclick="resetChat()"
+                style="background:none;border:none;color:var(--gold);cursor:pointer;">X</button>
+        </div>
+        <div id="chat-messages" style="font-size:0.8rem;color:var(--gold);"></div>
+        <div class="chat-input-area">
+            <input type="text" class="index" id="chat-input" placeholder="Type a message...">
+            <button class="index" id="chat-send">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const roomCode = "{{ roomCode }}";
+        const username = "{{ username }}";
+    </script>
+    <script src="{{ url_for('enraged.static', filename='script.js') }}"></script>
+</body>
+
+</html>

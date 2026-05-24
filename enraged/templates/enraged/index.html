@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>Enraged Pooheads</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color:var(--gold);font-size:0.85rem;">· Enraged Pooheads</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span><a class="logout" href="/">Back</a></span>
+    </div><br>
+
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
+        </div>
+    </nav>
+
+    <div id="rooms" style="padding:1rem 1.4rem;display:none;">
+        <div class="game-card">
+            <h1 style="color:var(--gold);">Rooms</h1><br>
+            <h2>Join a Public Room</h2>
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color:var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
+            </div><br>
+            <h2>Join Private Room</h2>
+            <p style="font-size:0.85rem;color:var(--gold-dim);">Have a code? Enter it below.</p>
+            <form method="POST">
+                <input class="index" name="room_code" placeholder="Room Code" /><br><br>
+                <button class="index" type="submit" name="join">Join Game</button>
+            </form><br><br>
+            <h2>Create Room</h2>
+            <form method="POST">
+                <label style="font-size:0.85rem;color:var(--gold-dim);">
+                    <input class="index" type="checkbox" name="public" checked> Make this room public
+                </label><br><br>
+                <button class="index" type="submit" name="create">Create Game</button>
+            </form>
+            {% if error %}<p style="color:var(--gold)">{{ error }}</p>{% endif %}
+        </div>
+    </div>
+
+    <div id="rules" style="padding:1rem 1.4rem;display:none;">
+        <div class="game-card index-text">
+            <h2>Rules</h2>
+            <h3>Setup</h3>
+            <ul>
+                <li>The full deck is <span class="highlight">equally split</span> face-down into each player's pile.
+                </li>
+                <li>No face-up or face-down table cards — just your pile.</li>
+            </ul>
+            <h3>Objective</h3>
+            <ul>
+                <li>Be the first to <span class="highlight">empty your pile</span>.</li>
+            </ul>
+            <h3>On Your Turn</h3>
+            <ul>
+                <li>You <span class="highlight">flip the top card</span> of your pile and play it if legal.</li>
+                <li>If it's illegal, it's added to the centre pile and you <span class="highlight">pick up the whole
+                        pile</span>.</li>
+                <li>You may <span class="highlight">shuffle your pile once per turn</span> before or after flipping.
+                </li>
+            </ul>
+            <h3>Special Cards</h3>
+            <ul>
+                <li><span class="special">2 — Reset</span>: Anything can be played next.</li>
+                <li><span class="special">3 — Invisible</span>: Acts as the previous non-3 card.</li>
+                <li><span class="special">7 — Low</span>: Next player must play 7 or lower.</li>
+                <li><span class="special">8 — Skip</span>: Skips the next player. Multiple 8s stack.</li>
+                <li><span class="special">10 — Burn</span>: Clears the pile; you go again.</li>
+                <li><span class="special">A — High or Low</span>: Ace is always played as high (14). If a 7 is active,
+                    it plays as low (1).</li>
+                <li><span class="special">Joker — Rotate</span>: Everyone's pile shifts one place around the table.</li>
+                <li><span class="special">4-of-a-Kind Burn</span>: Four of the same rank on top burns the pile; you go
+                    again.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="strategy" style="padding:1rem 1.4rem;display:none;">
+        <div class="game-card index-text">
+            <h2>Strategy</h2>
+            <ul>
+                <li>Shuffle before flipping if you suspect a weak card is on top.</li>
+                <li>Save your shuffle — you only get one per turn.</li>
+                <li>When a 7 is active, hope for a low card; shuffle if you think you have one buried.</li>
+                <li>Jokers can save or doom you — they rotate everyone's pile, not just yours.</li>
+                <li>Picking up the pile is brutal — avoid it at all costs late game.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script>
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
+
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+    function hide(el) {
+        ["rooms", "rules", "strategy"].forEach(p => {
+            document.getElementById(p).style.display = p === el ? "" : "none";
+        });
+    }
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+            hide(this.getAttribute('href').slice(1));
+        });
+    });
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
+        hide('rooms');
+    }
+    document.fonts ? document.fonts.ready.then(init) : window.addEventListener('load', init);
+    window.addEventListener('resize', () => { const cur = pill.querySelector('a.active'); if (cur) moveSlider(cur); });
+
+    function loadPublicRooms() {
+        fetch('/enraged/rooms').then(r => r.json()).then(data => {
+            const el = document.getElementById('public-rooms-list');
+            if (!data.rooms.length) {
+                el.innerHTML = '<p style="color:var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                return;
+            }
+            el.innerHTML = data.rooms.map(r => `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                    <span style="color:var(--gold-dim);font-size:0.85rem;">Room <b style="color:var(--gold)">${r.code}</b> · ${r.names.join(', ') || 'Empty'}</span>
+                    <span style="color:var(--gold-dim);font-size:0.8rem;">${r.players}/${r.max}</span>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="room_code" value="${r.code}">
+                        <button class="index" type="submit" name="join" style="font-size:0.75rem;padding:0.2rem 0.7rem;">Join →</button>
+                    </form>
+                </div>`).join('');
+        });
+    }
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
+
+    const socket = io();
+    socket.on("connect", () => socket.emit("set_page", { page: "Lobby" }));
+    document.addEventListener("visibilitychange", () => {
+        socket.emit(document.visibilityState === 'hidden' ? 'tab_hidden' : 'tab_visible');
+    });
+</script>
+
+</html>

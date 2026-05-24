@@ -11,11 +11,14 @@ from blackjack.blackjack import blackjack_bp
 from flask_socketio import SocketIO, emit
 from slots.slots import slots_bp
 from poker.poker import poker_bp
+from enraged.enraged_pooheads import enraged_bp
 import os
 import logging
 
 logger = logging.getLogger(__name__)
 
+
+app.register_blueprint(enraged_bp)
 app.register_blueprint(poker_bp)
 app.register_blueprint(slots_bp)
 app.register_blueprint(blackjack_bp)
@@ -32,7 +35,6 @@ def login_required(f):
     return decorated
 
 def validate_message(msg, max_length=500):
-    """Validate and sanitize message content."""
     if not isinstance(msg, str):
         return None
     msg = msg.strip()
@@ -42,7 +44,6 @@ def validate_message(msg, max_length=500):
 
 @socketio.on('send_global_msg')
 def handle_global(data):
-    """Handle global message broadcast with validation."""
     try:
         if not session.get("username"):
             return False
@@ -67,7 +68,6 @@ def handle_global(data):
 
 @socketio.on('send_private_msg')
 def handle_private(data):
-    """Handle private message with validation."""
     try:
         if not session.get("username"):
             return False
@@ -82,8 +82,6 @@ def handle_private(data):
         
         if not msg or not recipient:
             return False
-        
-        # Validate recipient exists
         users_data = load_users()
         if recipient not in users_data.get("users", {}):
             logger.warning(f"User {sender} attempted to message non-existent user {recipient}")
@@ -104,7 +102,6 @@ def handle_private(data):
         return False
 
 def render_game_dashboard(template_name, username):
-    """Shared logic for rendering game dashboard pages."""
     try:
         data = load_users()
         user = data["users"].get(username, {})
