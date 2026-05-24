@@ -4,27 +4,22 @@ from dotenv import load_dotenv
 import os
 import logging
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv()
 
-# Validate secret key
 KEY = os.getenv("KEY")
 if not KEY:
     raise ValueError("SECRET_KEY environment variable (KEY) not set! Please set it in .env file.")
-
-# CORS configuration - restrict to specific origins
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:5000").split(",")
 
 app = Flask(__name__,
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
 app.secret_key = KEY
-socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins=CORS_ORIGINS)
+socketio = SocketIO(app, async_mode="gevent", cors_allowed_origins="https://theorangecow.org")
 
 active_users = {}
 away_users = set()
