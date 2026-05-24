@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for
 from functools import wraps
-from auth.auth import get_chips, update_chips, record_result
+from auth.auth import get_chips, update_chips, record_result, get_theme
 import os, random
 
 
@@ -129,6 +129,7 @@ def index():
         error=error,
         payouts=PAYOUTS,
         two_payouts=TWO_PAYOUTS,
+        theme=get_theme(username),
     )
 
 from flask import jsonify

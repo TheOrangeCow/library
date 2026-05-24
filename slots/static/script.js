@@ -68,6 +68,10 @@ async function startSpin() {
                 display.innerHTML = `<div class="result-lose">✗ No win</div>`;
             }
         }
+
+        document.getElementById("chips-display").textContent = `${result.chips} chips`;
+        document.getElementById("bet-input").max = result.chips;
+        
         btn.disabled = false;
     }, allLanded);
 }
