@@ -146,6 +146,4 @@ def school2():
     return render_game_dashboard("school2.html", session["username"])
 
 if __name__ == "__main__":
-    # Use environment variable to control debug mode (default: False)
-    debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
-    socketio.run(app, debug=debug_mode, host="0.0.0.0", port=5000)
+    socketio.run(app, debug=True, host="0.0.0.0", port=5000)
