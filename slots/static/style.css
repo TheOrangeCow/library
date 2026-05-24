@@ -308,7 +308,7 @@ body {
     letter-spacing: 0.1em;
     margin-bottom: 0.8rem;
     text-align: center;
-    border-bottom: 1px solid rgba(212, 168, 67, 0.15);
+    border-bottom: 1px solid var(--glass-border);
     padding-bottom: 0.5rem;
 }
 
@@ -326,7 +326,7 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 0.18rem 0;
-    border-bottom: 1px solid rgba(212, 168, 67, 0.06);
+    border-bottom: 1px solid var(--glass-border);
     font-size: 0.85rem;
 }
 
