@@ -6,7 +6,7 @@
     height: 62vh;
     min-width: 500px;
     min-height: 320px;
-    background: radial-gradient(ellipse at 50% 45%, #236040 0%, #0f3222 60%, #081a12 100%);
+    background: radial-gradient(ellipse at 38% 38%, var(--felt-highlight) 0%, var(--felt-mid) 55%, var(--felt-dark) 100%);
     border-radius: 200px / 120px;
     border: 3px solid var(--gold-dim);
     box-shadow: 0 0 80px rgba(0, 0, 0, 0.7), inset 0 0 60px rgba(0, 0, 0, 0.4);

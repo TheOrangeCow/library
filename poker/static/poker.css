@@ -33,7 +33,7 @@ body.in-game {
     height: 54vh;
     min-width: 360px;
     min-height: 240px;
-    background: radial-gradient(ellipse at 38% 38%, #236040 0%, #0f3222 55%, #081a12 100%);
+    background: radial-gradient(ellipse at 38% 38%, var(--felt-highlight) 0%, var(--felt-mid) 55%, var(--felt-dark) 100%);
     border-radius: 50%;
     border: 3px solid var(--gold-dim);
     box-shadow:
