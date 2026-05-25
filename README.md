@@ -1,5 +1,5 @@
 # Library
-
+[![Deploy](https://github.com/TheOrangeCow/library/actions/workflows/deploy.yml/badge.svg)](https://github.com/TheOrangeCow/library/actions/workflows/deploy.yml)
 A Flask-based web application featuring multiple card and casino games with real-time multiplayer capabilities using WebSocket.
 
 ## Games Supported
