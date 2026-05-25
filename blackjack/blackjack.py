@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for
-from flask_socketio import join_room
+from flask_socketio import join_room, emit
 from auth.auth import get_chips, update_chips, get_theme
 from functools import wraps
 import json, os, random, threading
