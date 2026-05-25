@@ -1,6 +1,8 @@
 const socket = io();
 let lastState = null;
 let pendingAceFlip = false;
+const chatsendid = "enraged_game_msg";
+const chatreceiveid = "enraged_receive_msg";
 
 function getRank(card) {
     if (card.includes("JOKER")) return "JOKER";
@@ -72,13 +74,6 @@ socket.on("enraged_state", (data) => {
 socket.on("enraged_invalid", (data) => {
     showNotif(data.msg || "Invalid play!");
 });
-
-socket.on("enraged_receive_msg", (data) => {
-    const msgDiv = document.getElementById("chat-messages");
-    msgDiv.appendChild(buildMessage(data.msg, data.sender === username));
-    msgDiv.scrollTop = msgDiv.scrollHeight;
-});
-
 
 function startGame() {
     socket.emit("enraged_start", { code: roomCode });
@@ -238,44 +233,3 @@ function render(data) {
     ).join("");
 
 }
-
-
-function sendMessage() {
-    const input = document.getElementById("chat-input");
-    const msg = input.value.trim();
-    if (!msg) return;
-    socket.emit("enraged_game_msg", { msg, code: roomCode });
-    input.value = "";
-}
-
-function resetChat() {
-    document.getElementById("chat-messages").innerHTML = "";
-}
-
-document.getElementById("chat-send").onclick = sendMessage;
-document.getElementById("chat-input").onkeydown = e => { if (e.key === "Enter") sendMessage(); };
-
-document.addEventListener("visibilitychange", () => {
-    socket.emit(document.visibilityState === "hidden" ? "tab_hidden" : "tab_visible");
-});
-
-
-const dragItem = document.getElementById("chat-container");
-const dragHeader = document.getElementById("chat-header");
-let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-dragHeader.onmousedown = (e) => {
-    initialX = e.clientX - xOffset;
-    initialY = e.clientY - yOffset;
-    active = true;
-};
-document.onmouseup = () => active = false;
-document.onmousemove = (e) => {
-    if (active) {
-        e.preventDefault();
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-        xOffset = currentX; yOffset = currentY;
-        dragItem.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-    }
-};
