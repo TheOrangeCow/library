@@ -87,3 +87,16 @@ socket.on(chatreceiveid, (data) => {
     msgDiv.appendChild(buildMessage(data.msg, data.sender === username));
     msgDiv.scrollTop = msgDiv.scrollHeight;
 });
+
+socket.on('update_user_list', function(users) {
+    const listElement = document.getElementById('user-list');
+    listElement.innerHTML = '';
+    users
+        .filter(u => u.name !== username && u.page === `Gaming:${roomCode}`)
+        .forEach(user => {
+            const li = document.createElement('li');
+            const dotClass = user.status === "Active" ? "dot-active" : "dot-away";
+            li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
+            listElement.appendChild(li);
+        });
+});

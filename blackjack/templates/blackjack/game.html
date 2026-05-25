@@ -65,11 +65,14 @@
 </div>
 
 <div id="play-feed"></div>
+<div id="user-list"></div>
 
 <script>
     const roomCode = "{{ roomCode }}";
     const username = "{{ username }}";
 </script>
 <script src="{{ url_for('blackjack.static', filename='script.js') }}"></script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+<script src="{{ url_for('static', filename='chat.js') }}"></script>
 </body>
 </html>

@@ -89,9 +89,9 @@ function quickBet(amount) {
     socket.emit("bj_bet", { code: roomCode, username, amount });
 }
 
-function doHit()    { socket.emit("bj_hit",       { code: roomCode, username }); }
-function doStand()  { socket.emit("bj_stand",     { code: roomCode, username }); }
-function doDouble() { socket.emit("bj_double",    { code: roomCode, username }); }
+function doHit() { socket.emit("bj_hit", { code: roomCode, username }); }
+function doStand() { socket.emit("bj_stand", { code: roomCode, username }); }
+function doDouble() { socket.emit("bj_double", { code: roomCode, username }); }
 function newRound() { socket.emit("bj_new_round", { code: roomCode, username }); }
 
 function renderCards(hand, container, small=false) {
