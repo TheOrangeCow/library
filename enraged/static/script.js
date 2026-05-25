@@ -150,7 +150,7 @@ function render(data) {
 
     const ruleEl = document.getElementById("ruleIndicator");
     if (data.sevenRule) ruleEl.textContent = "7 or lower only";
-    else if (data.afterTwo) ruleEl.textContent = "Reset — 2 played";
+    else if (data.afterTwo) ruleEl.textContent = "Reset - 2 played";
     else {
         let er = null;
         for (let i = centerPile.length - 1; i >= 0; i--) {

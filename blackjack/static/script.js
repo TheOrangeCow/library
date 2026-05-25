@@ -177,7 +177,7 @@ function render(data) {
         if (!banner.textContent) {
             banner.textContent = msgs[r] || "";
             banner.className   = `result-${r === "blackjack" ? "blackjack" : r} result-win-anim`;
-            showFeedToast(`<span class="fp">${username}</span> — ${msgs[r]}`);
+            showFeedToast(`<span class="fp">${username}</span> - ${msgs[r]}`);
         }
     } else if (phase !== "done") {
         banner.textContent = "";

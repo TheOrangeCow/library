@@ -90,7 +90,7 @@ const CHIPS = [
 
 function chipsHTML(amount) {
     if (!amount || amount <= 0) {
-        return `<span class="chip-zero">—</span>`;
+        return `<span class="chip-zero">-</span>`;
     }
 
     let remaining = amount;
@@ -278,7 +278,7 @@ function renderShowdown(data) {
             ${Object.entries(results).map(([p, r]) => `
             <tr class="${r.won > 0 ? 'winner-row' : ''}">
                 <td>${p}</td>
-                <td>${r.folded ? "Folded" : r.hand || "—"}</td>
+                <td>${r.folded ? "Folded" : r.hand || "-"}</td>
                 <td>${(r.cards || []).map(c => cardHTML(c)).join("")}</td>
                 <td>${r.won > 0 ? `+${r.won}` : ""}</td>
             </tr>`).join("")}

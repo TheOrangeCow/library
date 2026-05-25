@@ -508,7 +508,7 @@ def poker_action(data):
 
     elif action == "check":
         if to_call > 0:
-            emit("poker_error", {"msg": "Can't check — there's a bet to call."})
+            emit("poker_error", {"msg": "Can't check - there's a bet to call."})
             return
         g["round_done"].append(username)
 

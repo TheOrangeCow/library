@@ -276,7 +276,7 @@ def enraged_play(data):
         next_player(g, user)
         save_json(GAME_FILE, games)
         socketio.emit("enraged_state", g, to=code)
-        socketio.emit("enraged_invalid", {"msg": "Can't play that — picked up the pile!"}, to=request.sid)
+        socketio.emit("enraged_invalid", {"msg": "Can't play that - picked up the pile!"}, to=request.sid)
         return
 
     pile.pop()

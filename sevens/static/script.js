@@ -75,17 +75,17 @@ function detectPlays(newState) {
         if (!newS) continue;
         if (!oldS) {
             showFeedToast(`${who} played <b>7${suitHtml(s)}</b>`);
-            if (newCompleted.includes(s)) showFeedToast(`${who} completed ${suitHtml(s)} — extra turn!`);
+            if (newCompleted.includes(s)) showFeedToast(`${who} completed ${suitHtml(s)} - extra turn!`);
             return;
         }
         if (newS.low < oldS.low) {
             showFeedToast(`${who} played <b>${RANKS[newS.low]}${suitHtml(s)}</b>`);
-            if (!oldCompleted.includes(s) && newCompleted.includes(s)) showFeedToast(`${who} completed ${suitHtml(s)} — extra turn!`);
+            if (!oldCompleted.includes(s) && newCompleted.includes(s)) showFeedToast(`${who} completed ${suitHtml(s)} - extra turn!`);
             return;
         }
         if (newS.high > oldS.high) {
             showFeedToast(`${who} played <b>${RANKS[newS.high]}${suitHtml(s)}</b>`);
-            if (!oldCompleted.includes(s) && newCompleted.includes(s)) showFeedToast(`${who} completed ${suitHtml(s)} — extra turn!`);
+            if (!oldCompleted.includes(s) && newCompleted.includes(s)) showFeedToast(`${who} completed ${suitHtml(s)} - extra turn!`);
             return;
         }
     }

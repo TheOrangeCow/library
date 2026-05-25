@@ -256,7 +256,7 @@ def sevens_pass(data):
 
     hand = g["hands"].get(user, [])
     if get_playable(g["board"], hand):
-        socketio.emit("sevens_invalid", {"msg": "You must play — you have a valid card!"}, to=request.sid)
+        socketio.emit("sevens_invalid", {"msg": "You must play - you have a valid card!"}, to=request.sid)
         return
 
     if user not in g["passed"]:
