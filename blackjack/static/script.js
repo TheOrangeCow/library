@@ -1,5 +1,7 @@
 const socket = io();
 let lastState = null;
+const chatsendid = "black_game_msg";
+const chatreceiveid = "black_receive_msg";
 
 const OPP_SLOTS = [
     ["pos-left-2"],

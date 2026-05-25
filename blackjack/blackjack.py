@@ -362,6 +362,17 @@ def bj_new_round(data):
     save_json(GAME_FILE, games)
     socketio.emit("bj_state", g, to=code)
 
+
+@socketio.on('black_game_msg')
+def handle_enraged_msg(data):
+    if session.get("username"):
+        code = data.get("code")
+        emit('black_receive_msg', {
+            'sender': session.get("username"),
+            'msg': data['msg'],
+        }, to=code)
+        
+
 @blackjack_bp.route("/blackjack/rooms")
 @login_required
 def public_rooms():
