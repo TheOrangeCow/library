@@ -2,12 +2,24 @@ const socket = io();
 let lastState = null;
 let pendingAceFlip = false;
 
-
 function getRank(card) {
     if (card.includes("JOKER")) return "JOKER";
     return card.replace(/[^0-9JQKA]/g, "");
 }
-function cardImg(card) { return `url('/static/cards/${card}.png')`; }
+
+function cardBackImg(theme) {
+  if (!cardBackSVG) return `url('/static/cards/back.svg')`;
+  const tinted = tintCardBackSVG(cardBackSVG, theme);
+  const blob = new Blob([tinted], { type: 'image/svg+xml' });
+  return `url('${URL.createObjectURL(blob)}')`;
+}
+
+function cardImg(card) { 
+    if (card === 'back'){
+        return cardBackImg(getCurrentTheme());
+    }
+    return `url('/static/cards/${card}.png')`; 
+}
 
 function showNotif(msg, dur = 2500) {
     const el = document.getElementById("notif");
