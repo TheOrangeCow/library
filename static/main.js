@@ -75,37 +75,33 @@ const CARD_BACK_THEMES = {
 function tintCardBackSVG(svgText, theme) {
   const map = CARD_BACK_THEMES[theme];
   if (!map) return svgText;
-  
+
+  const entries = Object.entries(map).sort((a, b) => b[0].length - a[0].length);
+
   let result = svgText;
-  for (const [from, to] of Object.entries(map)) {
-    const regex = new RegExp(from.replace('#', '#?'), 'gi');
-    result = result.replaceAll(from.toUpperCase(), to)
-                   .replaceAll(from.toLowerCase(), to)
-                   .replaceAll(from, to);
+  for (const [from, to] of entries) {
+    const escaped = from.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    result = result.replace(new RegExp(escaped, 'gi'), to);
   }
   return result;
 }
 
+let previousCardBackURL = null;
 
 function applyThemeToCardBack(theme) {
   if (!cardBackSVG) return;
-  
-  console.log('SVG contains #2e2303:', cardBackSVG.includes('#2e2303'));
-  console.log('SVG contains #2E2303:', cardBackSVG.includes('#2E2303'));
-  console.log('SVG contains #2F2405:', cardBackSVG.includes('#2F2405'));
-  console.log('Theme:', theme);
-  console.log('Map:', CARD_BACK_THEMES[theme]);
 
   const tinted = tintCardBackSVG(cardBackSVG, theme);
-  
-  console.log('Still has #2e2303 after tint:', tinted.includes('#2e2303'));
-  console.log('CSS var before:', document.documentElement.style.getPropertyValue('--card-back'));
-  
+
+  if (previousCardBackURL) {
+    URL.revokeObjectURL(previousCardBackURL);
+  }
+
   const blob = new Blob([tinted], { type: 'image/svg+xml' });
   const url = URL.createObjectURL(blob);
+  previousCardBackURL = url;
+
   document.documentElement.style.setProperty('--card-back', `url('${url}')`);
-  
-  console.log('CSS var after:', document.documentElement.style.getPropertyValue('--card-back'));
 }
 
 
