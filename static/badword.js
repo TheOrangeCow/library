@@ -17,9 +17,9 @@ function buildMessage(text, fromSelf, sender) {
 
     const textNode = document.createElement("span");
     if (fromSelf){
-        textNode.textContent = `<strong>You:</strong> ${text}`
+        textNode.innerHTML = `<strong>You:</strong> ${text}`
     }else{
-        textNode.textContent = `<strong>${sender}:</strong> ${text}`;
+        textNode.innerHTML = `<strong>${sender}:</strong> ${text}`;
     }
 
     if (hasProfanity) {
@@ -29,7 +29,6 @@ function buildMessage(text, fromSelf, sender) {
         textNode.style.display = "inline-block";
 
         bubble.appendChild(textNode);
-        bubble.appendChild(badge);
         bubble.style.cursor = "pointer";
 
         bubble.addEventListener("click", () => {
