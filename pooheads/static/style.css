@@ -1,4 +1,7 @@
 @import url('/static/style.css');
+:root {
+    --card-back: url('/static/cards/back.png');
+}
 
 body.in-game {
     height: 100vh;
@@ -187,7 +190,7 @@ body.in-game {
     width: 16px;
     height: 24px;
     border-radius: 2px;
-    background: url('/static/cards/back.png') center/cover;
+    background: var(--card-back) center/cover;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
 }
@@ -214,7 +217,7 @@ body.in-game {
     position: absolute;
     inset: 0;
     border-radius: 4px;
-    background: url('/static/cards/back.png') center/cover;
+    background: var(--card-back) center/cover;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
@@ -335,7 +338,7 @@ body.in-game {
     width: var(--card-w);
     height: var(--card-h);
     border-radius: var(--radius);
-    background: url('/static/cards/back.png') center/cover;
+    background: var(--card-back) center/cover;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.65);
     transition: transform 0.15s, box-shadow 0.15s;
