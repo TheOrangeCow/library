@@ -33,22 +33,21 @@
         <div class="game-card">
             <h1 class="index-text">Rooms</h1><br>
 
-
-
-
-            <h2 class="index-text">Public Rooms</h2>
+            <h2 class="index-text">Join a Public Room</h2>
             <div id="public-rooms-list" style="margin-bottom:1rem;">
                 <p style="color:var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
             </div>
-
+            <br>
             <h2 class="index-text">Join Private Room</h2>
             <p style="font-size:0.85rem;color:var(--gold-dim);">Have a code? Enter it to join any room.</p>
             <form method="post">
                 <input type="hidden" name="action" value="join">
-                <input type="text" class="index" name="code" placeholder="6-digit room code" maxlength="6">
+                <input type="text" class="index" name="code" placeholder="6-digit room code" maxlength="6"><br><br>
                 <button class="index" type="submit">Join</button>
             </form>
+            <br><br>
 
+            <h2 class="index-text">Create Room</h2>
             <form method="post">
                 <input type="hidden" name="action" value="create">
                 <select class="index" name="stake">
@@ -56,10 +55,10 @@
                     <option value="{{ key }}">{{ key|capitalize }} — blinds {{ lvl.small }}/{{ lvl.big }} (buy-in {{
                         lvl.min_buy }}–{{ lvl.max_buy }})</option>
                     {% endfor %}
-                </select>
+                </select><br><br>
                 <label style="font-size:0.85rem;color:var(--gold-dim);">
-                    <input type="checkbox" name="public" checked> Make this room public
-                </label>
+                    <input class="index" type="checkbox" name="public" checked> Make this room public
+                </label><br><br>
                 <button class="index" type="submit">Create Table</button>
             </form>
 
