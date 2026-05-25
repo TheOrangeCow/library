@@ -57,7 +57,7 @@ def save_json(p, d):
 
 
 def get_rank(c):
-    return re.sub(r'[^0-9JQKA]', '', c) if "JOKER" not in c else "JOKER"
+    return re.sub(r'[^0-9JQKA]', '', c) if not c.startswith("JOKER") else "JOKER"
 
 def value(c, ace_high=True):
     r = get_rank(c)
