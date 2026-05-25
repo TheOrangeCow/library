@@ -1,6 +1,8 @@
 const socket = io();
 let lastState = null;
 let myHole = [];
+const chatsendid = "send_pgame_msg";
+const chatreceiveid = "receive_pgame_msg";
 
 
 socket.on("connect", () => {
@@ -61,7 +63,7 @@ const SUIT_COLOR = { S: "black", H: "red", D: "red", C: "black" };
 
 function cardHTML(c, facedown = false) {
     if (facedown) {
-        return `<div class="card-img"><img src="/static/cards/back.png" draggable="false"></div>`;
+        return `<div class="card-img"><img src="${previousCardBackURL}" draggable="false"></div>`;
     }
     const suit = c.slice(-1);
     const rank = c.slice(0, -1);
@@ -72,7 +74,7 @@ function cardHTML(c, facedown = false) {
                 <img src="/static/cards/${filename}.png" draggable="false">
             </div>
             <div class="card-back">
-                <img src="/static/cards/back.png" draggable="false">
+                <img src="${previousCardBackURL}" draggable="false">
             </div>
         </div>`;
 }
@@ -294,71 +296,3 @@ function showNotif(msg, dur = 2500) {
     clearTimeout(el._t);
     el._t = setTimeout(() => el.style.display = "none", dur);
 }
-
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === 'hidden') {
-        socket.emit('tab_hidden');
-    } else {
-        socket.emit('tab_visible');
-    }
-});
-
-socket.on('update_user_list', function(users) {
-    const listElement = document.getElementById('user-list');
-    listElement.innerHTML = '';
-    users
-        .filter(u => u.name !== username && u.page === `Gaming:${roomCode}`)
-        .forEach(user => {
-            const li = document.createElement('li');
-            const dotClass = user.status === "Active" ? "dot-active" : "dot-away";
-            li.innerHTML = `<span class="status-dot ${dotClass}"></span>${user.name}`;
-            listElement.appendChild(li);
-        });
-});
-
-const dragItem = document.getElementById("chat-container");
-const dragHeader = document.getElementById("chat-header");
-let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
-
-dragHeader.onmousedown = (e) => {
-    initialX = e.clientX - xOffset;
-    initialY = e.clientY - yOffset;
-    active = true;
-};
-document.onmouseup = () => active = false;
-document.onmousemove = (e) => {
-    if (active) {
-        e.preventDefault();
-        currentX = e.clientX - initialX;
-        currentY = e.clientY - initialY;
-        xOffset = currentX; yOffset = currentY;
-        dragItem.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-    }
-};
-
-
-
-document.getElementById('chat-send').onclick = sendMessage;
-document.getElementById('chat-input').onkeydown = (e) => { if (e.key === "Enter") sendMessage(); };
-
-function sendMessage() {
-    const input = document.getElementById('chat-input');
-    const msg = input.value.trim();
-    if (!msg) return;
-
-    socket.emit('send_pgame_msg', { msg: input.value, code: roomCode });
-    input.value = '';
-}
-
-socket.on('receive_pgame_msg', function (data) {
-    const msgDiv = document.getElementById('chat-messages');
-    const p = document.createElement('p');
-    p.className = 'msg-global';
-    if(data.sender != username){
-        p.innerHTML = `<strong>${data.sender}:</strong> ${data.msg}`;
-    }else{
-        p.innerHTML = `<strong>You:</strong> ${data.msg}`;
-    }
-    msgDiv.appendChild(p);
-    msgDiv.scrollTop = msgDiv.scrollHeight;
-});
