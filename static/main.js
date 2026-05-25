@@ -89,10 +89,23 @@ function tintCardBackSVG(svgText, theme) {
 
 function applyThemeToCardBack(theme) {
   if (!cardBackSVG) return;
+  
+  console.log('SVG contains #2e2303:', cardBackSVG.includes('#2e2303'));
+  console.log('SVG contains #2E2303:', cardBackSVG.includes('#2E2303'));
+  console.log('SVG contains #2F2405:', cardBackSVG.includes('#2F2405'));
+  console.log('Theme:', theme);
+  console.log('Map:', CARD_BACK_THEMES[theme]);
+
   const tinted = tintCardBackSVG(cardBackSVG, theme);
+  
+  console.log('Still has #2e2303 after tint:', tinted.includes('#2e2303'));
+  console.log('CSS var before:', document.documentElement.style.getPropertyValue('--card-back'));
+  
   const blob = new Blob([tinted], { type: 'image/svg+xml' });
   const url = URL.createObjectURL(blob);
   document.documentElement.style.setProperty('--card-back', `url('${url}')`);
+  
+  console.log('CSS var after:', document.documentElement.style.getPropertyValue('--card-back'));
 }
 
 
