@@ -85,3 +85,22 @@ function tintCardBackSVG(svgText, theme) {
   }
   return result;
 }
+
+
+function applyThemeToCardBack(theme) {
+  if (!cardBackSVG) return;
+  const tinted = tintCardBackSVG(cardBackSVG, theme);
+  const blob = new Blob([tinted], { type: 'image/svg+xml' });
+  const url = URL.createObjectURL(blob);
+  document.documentElement.style.setProperty('--card-back', `url('${url}')`);
+}
+
+
+fetch('/static/cards/back.svg')
+  .then(r => r.text())
+  .then(svgText => {
+    cardBackSVG = svgText;
+    
+    const theme = document.documentElement.getAttribute('data-theme') || 'gold';
+    applyThemeToCardBack(theme);
+  });
