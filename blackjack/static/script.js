@@ -19,7 +19,7 @@ const CHIP_COLORS = {
 };
 
 function cardImg(c) {
-    if (c === "back") return "url('/static/cards/back.png')";
+    if (c === "back") return `url('${previousCardBackURL})`;
     return `url('/static/cards/${c}.png')`;
 }
 

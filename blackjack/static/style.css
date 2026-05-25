@@ -1,9 +1,5 @@
 @import url('/pooheads/static/style.css');
 
-:root {
-    --card-back: url('/static/cards/back.png');
-}
-
 #table {
     position: absolute;
     width: 68vw;
@@ -54,7 +50,6 @@
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6);
     animation: cardDeal 0.3s ease-out forwards;
     transform-origin: top center;
-    background: var(--card-back) center/cover;
 
 }
 
