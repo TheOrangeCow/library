@@ -19,6 +19,8 @@ const CHIP_COLORS = {
 };
 
 function cardImg(c) {
+    console.log(previousCardBackURL);
+    
     if (c === "back") return `url('${previousCardBackURL})`;
     return `url('/static/cards/${c}.png')`;
 }
