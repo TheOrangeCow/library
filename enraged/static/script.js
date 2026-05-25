@@ -75,11 +75,7 @@ socket.on("enraged_invalid", (data) => {
 
 socket.on("enraged_receive_msg", (data) => {
     const msgDiv = document.getElementById("chat-messages");
-    const p = document.createElement("p");
-    
-    p.className = "msg-global";
-    p.innerHTML = buildMessage(data.msg, data.sender === username)
-    msgDiv.appendChild(p);
+    msgDiv.appendChild(buildMessage(data.msg, data.sender === username));
     msgDiv.scrollTop = msgDiv.scrollHeight;
 });
 
