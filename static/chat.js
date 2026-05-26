@@ -1,10 +1,21 @@
-const badword_lsit = ["badword1", "badword2", "damn", "hell", "crap", "idiot", "stupid"];
+const filter = new window.badWords.Filter();
+
+filter.addWords("hurry up max");
 
 function badword(msg) {
-    return badword_lsit.some(w => {
-        const re = new RegExp(`\\b${w}\\b`, "i");
-        return re.test(msg);
-    });
+    msg = msg
+        .toLowerCase()
+        .replace(/1/g, "i")
+        .replace(/3/g, "e")
+        .replace(/4/g, "a")
+        .replace(/0/g, "o")
+        .replace(/5/g, "s")
+        .replace(/7/g, "t")
+        .replace(/@/g, "a")
+        .replace(/\$/g, "s")
+        .replace(/!/g, "i");
+
+    return filter.isProfane(msg);
 }
 
 function buildMessage(text, fromSelf, sender) {
