@@ -1,4 +1,6 @@
-const filter = new window.badWords.Filter();
+const Filter = window.Filter;
+
+const filter = new Filter();
 
 filter.addWords("hurry up max");
 
