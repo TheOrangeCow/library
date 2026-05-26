@@ -168,27 +168,6 @@ body {
     overflow: auto;
 }
 
-
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background-image: url('/static/bg.svg');
-    background-size: 60px 60px;
-    opacity: 0.35;
-    pointer-events: none;
-    z-index: 0;
-
-    animation: drift 120s linear infinite;
-}
-
-@keyframes drift {
-    from { transform: translate(0, 0); }
-    to   { transform: translate(-200px, 200px); }
-}
-
-
-
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -361,7 +340,6 @@ button.index:hover {
     box-shadow: 0 0 18px rgba(232, 184, 75, 0.18);
 }
 
-
 .nav {
     display: flex;
     justify-content: center;
@@ -419,6 +397,7 @@ button.index:hover {
         gap: 0.8rem;
     }
 }
+
 #search-wrap {
     padding: 0.8rem 1.4rem 0;
 }
@@ -538,7 +517,7 @@ button.index:hover {
 #friends,
 #users,
 #changelog,
-#bug .game-card {
+#bug{
     display: block;
     flex: 1;
     min-width: 200px;
