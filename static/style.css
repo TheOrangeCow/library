@@ -738,6 +738,14 @@ input[type="checkbox"].index:hover {
     border-color: var(--gold-alpha45);
 }
 
+@media (max-width: 1210px) {
+    .chat-window {
+        opacity: 0;
+        pointer-events: none;
+        transform: scale(0.95);
+    }
+}
+
 .chat-header {
     padding: 0.7rem 1rem;
     background: transparent;
