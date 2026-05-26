@@ -458,7 +458,7 @@
     socket.on("receive_msg", (data) => {
         const msgDiv = document.getElementById("chat-messages");
 
-        msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.type, data.target));
+        msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.sender,data.type, data.target));
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 
