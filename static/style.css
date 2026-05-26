@@ -164,6 +164,27 @@ body {
     background-size: auto, auto, 60px 60px;
     font-family: 'EB Garamond', serif;
     color: #f5e8b0;
+    position: relative;
+    overflow: auto;
+}
+
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: url('/static/bg.svg');
+    background-size: 60px 60px;
+    opacity: 0.35;
+    pointer-events: none;
+    z-index: 0;
+
+    animation: drift 120s linear infinite;
+}
+
+@keyframes drift {
+    from { transform: translate(0, 0); }
+    to   { transform: translate(-200px, 200px); }
 }
 
 
