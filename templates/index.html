@@ -286,6 +286,74 @@
     const socket = io();
     let currentChatTarget = "Global";
 
+    function normalize(msg) {
+        return msg
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "")
+            .replace(/1/g, "i")
+            .replace(/3/g, "e")
+            .replace(/4/g, "a")
+            .replace(/0/g, "o")
+            .replace(/5/g, "s");
+    }
+
+    function badword(msg) {
+        const clean = normalize(msg);
+        return badword_list.some(w => new RegExp(`\\b${w}\\b`).test(clean));
+    }
+
+    socket.on('receive_msg', function (data) {
+        if (data.type === 'private' && data.target !== username && data.sender !== username) return;
+
+        const msgDiv = document.getElementById('chat-messages');
+        const p = document.createElement('p');
+        const prefix =
+            msgDiv.appendChild(p);
+        msgDiv.scrollTop = msgDiv.scrollHeight;
+    });
+
+    function buildMessage(text, fromSelf, sender, type, to) {
+        const hasProfanity = badword(text);
+        const wrap = document.createElement("div");
+        wrap.className = type === 'private' ? 'msg-private' : 'msg-global';
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+
+        if (type === 'private') {
+            const prefix = `[PM ${fromSelf ? '→ ' + to : '← ' + sender}] `;
+        }else{
+            const prefix = "";
+        }
+
+        const textNode = document.createElement("span");
+        if (fromSelf) {
+            textNode.innerHTML = `<strong>${prefix} You:</strong> ${text}`
+        } else {
+            textNode.innerHTML = `<strong>${prefix} ${sender}:</strong> ${text}`;
+        }
+
+        if (hasProfanity) {
+            let revealed = false;
+            textNode.style.filter = "blur(4px)";
+            textNode.style.transition = "filter 0.25s ease";
+            textNode.style.display = "inline-block";
+
+            bubble.appendChild(textNode);
+            bubble.style.cursor = "pointer";
+
+            bubble.addEventListener("click", () => {
+                revealed = !revealed;
+                textNode.style.filter = revealed ? "none" : "blur(4px)";
+            });
+        } else {
+            bubble.appendChild(textNode);
+        }
+
+        wrap.appendChild(bubble);
+        return wrap;
+    }
+
     const dragItem = document.getElementById("chat-container");
     const dragHeader = document.getElementById("chat-header");
     let active = false, currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
@@ -372,15 +440,10 @@
         input.value = '';
     }
 
-    socket.on('receive_msg', function (data) {
-        if (data.type === 'private' && data.target !== username && data.sender !== username) return;
+    socket.on(chatreceiveid, (data) => {
+        const msgDiv = document.getElementById("chat-messages");
 
-        const msgDiv = document.getElementById('chat-messages');
-        const p = document.createElement('p');
-        p.className = data.type === 'private' ? 'msg-private' : 'msg-global';
-        const prefix = data.type === 'private' ? `[PM ${data.sender === username ? '→ ' + data.target : '← ' + data.sender}] ` : '';
-        p.innerHTML = `<strong>${prefix}${data.sender}:</strong> ${data.msg}`;
-        msgDiv.appendChild(p);
+        msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.type, data.target));
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 

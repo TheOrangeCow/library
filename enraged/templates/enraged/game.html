@@ -92,7 +92,22 @@
         const roomCode = "{{ roomCode }}";
         const username = "{{ username }}";
     </script>
-    <script src="https://unpkg.com/bad-words@3.0.4/lib/badwords.min.js"></script>
+    <!--
+        Loads the profanity / moderation word list.
+
+        This file contains a list of words used ONLY for client-side detection
+        of inappropriate or offensive language in chat messages.
+
+        Purpose:
+        - Improve chat safety
+        - Blur/filter messages containing flagged words
+        - Support moderation features in the UI
+
+        Note:
+        - This is not for displaying content, only for detection/filtering logic
+        - Loaded before main chat script so the list is available globally
+    -->
+    <script src="{{ url_for('static', filename='badword.js') }}"></script>
     <script src="{{ url_for('enraged.static', filename='script.js') }}"></script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
     <script src="{{ url_for('static', filename='chat.js') }}"></script>
