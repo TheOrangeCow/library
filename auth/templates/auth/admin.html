@@ -16,6 +16,7 @@
             min-height: 100vh;
         }
     </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 <div style="max-width: 860px; margin: 2rem auto; padding: 0 1.2rem;">
@@ -167,6 +168,10 @@
     panel.style.display = 'block';
     panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
+  const socket = io();
+  socket.on("connect", () => {
+    socket.emit("set_page", { page: `Profile` });
+  });
 </script>
 </body>
 </html>

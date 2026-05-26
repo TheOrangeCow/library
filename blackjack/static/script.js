@@ -76,7 +76,10 @@ function makeChipStack(amount) {
     return wrap;
 }
 
-socket.on("connect", () => socket.emit("bj_join", { code: roomCode, username }));
+socket.on("connect", () => {
+    socket.emit("bj_join", { code: roomCode, username });
+    socket.emit("set_page", { page: `Gaming:${roomCode}` });
+});
 socket.on("bj_state", (data) => { lastState = data; render(data); });
 socket.on("bj_error", (data) => showNotif(data.msg));
 

@@ -16,6 +16,7 @@
       min-height: 100vh;
     }
   </style>
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 
 <body>
@@ -107,6 +108,10 @@
           body: JSON.stringify({ theme })
         });
       }
+      const socket = io();
+      socket.on("connect", () => {
+        socket.emit("set_page", { page: `Profile` });
+      });
     </script>
     <br>
     {% if is_admin %}
