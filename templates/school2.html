@@ -270,6 +270,22 @@
         <button class="index" id="chat-send">Send</button>
     </div>
 </div>
+<!--
+    Loads the profanity / moderation word list.
+
+    This file contains a list of words used ONLY for client-side detection
+    of inappropriate or offensive language in chat messages.
+
+    Purpose:
+    - Improve chat safety
+    - Blur/filter messages containing flagged words
+    - Support moderation features in the UI
+
+    Note:
+    - This is not for displaying content, only for detection/filtering logic
+    - Loaded before main chat script so the list is available globally
+-->
+<script src="{{ url_for('static', filename='badword.js') }}"></script>
 <script>
     username = "{{ username }}"
     function filterGames(query) {
@@ -283,6 +299,73 @@
 <script>
     const socket = io();
     let currentChatTarget = "Global";
+
+    function normalize(msg) {
+        return msg
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "")
+            .replace(/1/g, "i")
+            .replace(/3/g, "e")
+            .replace(/4/g, "a")
+            .replace(/0/g, "o")
+            .replace(/5/g, "s");
+    }
+
+    function badword(msg) {
+        const clean = normalize(msg);
+        return badword_list.some(w => new RegExp(`\\b${w}\\b`).test(clean));
+    }
+
+    socket.on('receive_msg', function (data) {
+        if (data.type === 'private' && data.target !== username && data.sender !== username) return;
+
+        const msgDiv = document.getElementById('chat-messages');
+        const p = document.createElement('p');
+        const prefix =
+            msgDiv.appendChild(p);
+        msgDiv.scrollTop = msgDiv.scrollHeight;
+    });
+
+    function buildMessage(text, fromSelf, sender, type, to) {
+        const hasProfanity = badword(text);
+        const wrap = document.createElement("div");
+        wrap.className = type === 'private' ? 'msg-private' : 'msg-global';
+
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+
+        let prefix = "";
+        if (type === 'private') {
+            prefix = `[PM ${fromSelf ? '→ ' + to : '← ' + sender}] `;
+        }
+
+        const textNode = document.createElement("span");
+        if (fromSelf) {
+            textNode.innerHTML = `<strong>${prefix} You:</strong> ${text}`
+        } else {
+            textNode.innerHTML = `<strong>${prefix} ${sender}:</strong> ${text}`;
+        }
+
+        if (hasProfanity) {
+            let revealed = false;
+            textNode.style.filter = "blur(4px)";
+            textNode.style.transition = "filter 0.25s ease";
+            textNode.style.display = "inline-block";
+
+            bubble.appendChild(textNode);
+            bubble.style.cursor = "pointer";
+
+            bubble.addEventListener("click", () => {
+                revealed = !revealed;
+                textNode.style.filter = revealed ? "none" : "blur(4px)";
+            });
+        } else {
+            bubble.appendChild(textNode);
+        }
+
+        wrap.appendChild(bubble);
+        return wrap;
+    }
 
     const dragItem = document.getElementById("chat-container");
     const dragHeader = document.getElementById("chat-header");
@@ -339,7 +422,7 @@
                 canPM = true;
             } else if (user.page.startsWith("Gaming:")) {
                 const code = user.page.split(":")[1];
-                pageLabel = `<span style="color:#e8b84b;font-size:0.7rem;"> · In BLEEP ${code}</span>`;
+                pageLabel = `<span style="color:#e8b84b;font-size:0.7rem;"> · In Game ${code}</span>`;
             } else if (user.page === "Lobby") {
                 pageLabel = `<span style="color:#6fe296;font-size:0.7rem;"> · In Lobby</span>`;
             }
@@ -370,15 +453,10 @@
         input.value = '';
     }
 
-    socket.on('receive_msg', function (data) {
-        if (data.type === 'private' && data.target !== username && data.sender !== username) return;
+    socket.on("receive_msg", (data) => {
+        const msgDiv = document.getElementById("chat-messages");
 
-        const msgDiv = document.getElementById('chat-messages');
-        const p = document.createElement('p');
-        p.className = data.type === 'private' ? 'msg-private' : 'msg-global';
-        const prefix = data.type === 'private' ? `[PM ${data.sender === username ? '→ ' + data.target : '← ' + data.sender}] ` : '';
-        p.innerHTML = `<strong>${prefix}${data.sender}:</strong> ${data.msg}`;
-        msgDiv.appendChild(p);
+        msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.sender,data.type, data.target));
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 
