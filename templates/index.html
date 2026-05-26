@@ -272,6 +272,22 @@
         <button class="index" id="chat-send">Send</button>
     </div>
 </div>
+<!--
+    Loads the profanity / moderation word list.
+
+    This file contains a list of words used ONLY for client-side detection
+    of inappropriate or offensive language in chat messages.
+
+    Purpose:
+    - Improve chat safety
+    - Blur/filter messages containing flagged words
+    - Support moderation features in the UI
+
+    Note:
+    - This is not for displaying content, only for detection/filtering logic
+    - Loaded before main chat script so the list is available globally
+-->
+<script src="{{ url_for('static', filename='badword.js') }}"></script>
 <script>
     username = "{{ username }}"
     function filterGames(query) {
@@ -322,7 +338,7 @@
 
         if (type === 'private') {
             const prefix = `[PM ${fromSelf ? '→ ' + to : '← ' + sender}] `;
-        }else{
+        } else {
             const prefix = "";
         }
 
