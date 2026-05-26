@@ -1,22 +1,17 @@
-const Filter = window.Filter;
-const filter = new Filter();
-
-filter.addWords("hurry up max");
-
-function badword(msg) {
-    msg = msg
+function normalize(msg) {
+    return msg
         .toLowerCase()
+        .replace(/[^a-z0-9]/g, "")
         .replace(/1/g, "i")
         .replace(/3/g, "e")
         .replace(/4/g, "a")
         .replace(/0/g, "o")
-        .replace(/5/g, "s")
-        .replace(/7/g, "t")
-        .replace(/@/g, "a")
-        .replace(/\$/g, "s")
-        .replace(/!/g, "i");
+        .replace(/5/g, "s");
+}
 
-    return filter.isProfane(msg);
+function badword(msg) {
+    const clean = normalize(msg);
+    return badword_list.some(w => new RegExp(`\\b${w}\\b`).test(clean));
 }
 
 function buildMessage(text, fromSelf, sender) {
