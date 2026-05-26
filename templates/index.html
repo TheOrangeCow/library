@@ -336,10 +336,9 @@
         const bubble = document.createElement("div");
         bubble.className = "bubble";
 
+        let prefix = "";
         if (type === 'private') {
-            const prefix = `[PM ${fromSelf ? '→ ' + to : '← ' + sender}] `;
-        } else {
-            const prefix = "";
+            prefix = `[PM ${fromSelf ? '→ ' + to : '← ' + sender}] `;
         }
 
         const textNode = document.createElement("span");
