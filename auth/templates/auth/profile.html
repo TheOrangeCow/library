@@ -1,858 +1,872 @@
-{% extends "base.html" %}
-{% block content %}
-<link rel="stylesheet" href="/static/style.css">
-<style>
-    .profile-wrap {
-        max-width: 900px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-        display: flex;
-        flex-direction: column;
-        gap: 1.4rem;
-    }
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
 
-    .profile-top {
-        display: grid;
-        grid-template-columns: auto 1fr;
-        gap: 1.6rem;
-        align-items: start;
-    }
+<head>
+    <title>Blackjack · {{ roomCode }}</title>
+    <link rel="stylesheet" href="{{ url_for('blackjack.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
-    @media(max-width:600px) {
+    <style>
+        .profile-wrap {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.4rem;
+        }
+
         .profile-top {
-            grid-template-columns: 1fr;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1.6rem;
+            align-items: start;
         }
-    }
-
-    .avatar-section {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: .7rem;
-    }
-
-    #avatar-display {
-        image-rendering: pixelated;
-        width: 96px;
-        height: 96px;
-        border: 2px solid var(--gold-alpha45);
-        border-radius: 12px;
-        box-shadow: 0 0 24px rgba(0, 0, 0, .5);
-    }
-
-    .btn-edit-avatar {
-        font-family: 'Cinzel', serif;
-        font-size: .58rem;
-        letter-spacing: .1em;
-        padding: .28rem .9rem;
-        border: 1px solid var(--glass-border);
-        background: rgba(232, 184, 75, .07);
-        color: var(--gold);
-        border-radius: 50px;
-        cursor: pointer;
-        transition: background .2s, border-color .2s;
-    }
-
-    .btn-edit-avatar:hover {
-        background: rgba(232, 184, 75, .18);
-        border-color: var(--gold);
-    }
-
-    .info-card {
-        padding: 1.4rem 1.8rem;
-        border-radius: 20px;
-    }
-
-    .info-card h2 {
-        font-family: 'Cinzel', serif;
-        font-size: 1.5rem;
-        color: var(--gold);
-        letter-spacing: .08em;
-        margin-bottom: .3rem;
-    }
-
-    .chip-bal {
-        font-size: 1rem;
-        color: var(--gold-light);
-        margin-bottom: .8rem;
-    }
-
-    .stat-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .5rem 1.2rem;
-        font-size: .82rem;
-        color: rgba(245, 232, 176, .7);
-    }
-
-    .stat-item b {
-        color: var(--gold-light);
-    }
-
-    .section-title {
-        font-family: 'Cinzel', serif;
-        font-size: .75rem;
-        letter-spacing: .15em;
-        color: var(--gold-dim);
-        text-transform: uppercase;
-        margin-bottom: .8rem;
-        padding-bottom: .4rem;
-        border-bottom: 1px solid var(--glass-border);
-    }
-
-    .tab-bar {
-        display: flex;
-        gap: .3rem;
-        flex-wrap: wrap;
-    }
-
-    .tab-btn {
-        font-family: 'Cinzel', serif;
-        font-size: .58rem;
-        letter-spacing: .1em;
-        padding: .3rem .85rem;
-        border: 1px solid var(--glass-border);
-        background: transparent;
-        color: var(--gold-dim);
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all .2s;
-    }
-
-    .tab-btn.active,
-    .tab-btn:hover {
-        background: rgba(232, 184, 75, .12);
-        border-color: var(--gold-alpha45);
-        color: var(--gold);
-    }
-
-    .tab-panel {
-        display: none;
-        margin-top: 1rem;
-    }
-
-    .tab-panel.active {
-        display: block;
-    }
-
-    .hist-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: .82rem;
-    }
-
-    .hist-table th {
-        font-family: 'Cinzel', serif;
-        font-size: .58rem;
-        letter-spacing: .1em;
-        color: var(--gold-dim);
-        text-align: left;
-        padding: .4rem .6rem;
-        border-bottom: 1px solid var(--glass-border);
-    }
-
-    .hist-table td {
-        padding: .45rem .6rem;
-        border-bottom: 1px solid rgba(232, 184, 75, .06);
-        color: rgba(245, 232, 176, .8);
-    }
-
-    .hist-table tr:last-child td {
-        border-bottom: none;
-    }
-
-    .result-win {
-        color: #4ade80;
-    }
-
-    .result-lose {
-        color: #f87171;
-    }
-
-    .result-push {
-        color: var(--gold-dim);
-    }
-
-    .delta-pos {
-        color: #4ade80;
-    }
-
-    .delta-neg {
-        color: #f87171;
-    }
-
-    .friend-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: .7rem;
-    }
-
-    .friend-card {
-        padding: .8rem 1rem;
-        border-radius: 14px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: .4rem;
-        text-align: center;
-        cursor: pointer;
-        text-decoration: none;
-        transition: transform .2s, border-color .2s;
-    }
-
-    .friend-card:hover {
-        transform: translateY(-2px);
-        border-color: var(--gold-alpha45);
-    }
-
-    .friend-avatar {
-        image-rendering: pixelated;
-        width: 48px;
-        height: 48px;
-        border-radius: 8px;
-        border: 1px solid var(--glass-border);
-    }
-
-    .friend-name {
-        font-family: 'Cinzel', serif;
-        font-size: .65rem;
-        letter-spacing: .07em;
-        color: var(--gold);
-    }
-
-    .friend-chips {
-        font-size: .75rem;
-        color: var(--gold-dim);
-    }
-
-    .no-friends {
-        color: rgba(245, 232, 176, .4);
-        font-size: .85rem;
-        padding: 1rem 0;
-    }
-
-    .req-item {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: .6rem .8rem;
-        border-radius: 12px;
-        border: 1px solid var(--glass-border);
-        background: rgba(255, 255, 255, .03);
-        margin-bottom: .5rem;
-    }
-
-    .req-name {
-        font-family: 'Cinzel', serif;
-        font-size: .7rem;
-        color: var(--gold);
-    }
-
-    .req-btns {
-        display: flex;
-        gap: .4rem;
-    }
-
-    .btn-accept {
-        background: rgba(74, 222, 128, .12);
-        border: 1px solid rgba(74, 222, 128, .3);
-        color: #4ade80;
-        font-family: 'Cinzel', serif;
-        font-size: .55rem;
-        letter-spacing: .08em;
-        padding: .25rem .7rem;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: background .2s;
-    }
-
-    .btn-accept:hover {
-        background: rgba(74, 222, 128, .25);
-    }
-
-    .btn-decline {
-        background: rgba(248, 113, 113, .1);
-        border: 1px solid rgba(248, 113, 113, .25);
-        color: #f87171;
-        font-family: 'Cinzel', serif;
-        font-size: .55rem;
-        letter-spacing: .08em;
-        padding: .25rem .7rem;
-        border-radius: 50px;
-        cursor: pointer;
-        transition: background .2s;
-    }
-
-    .btn-decline:hover {
-        background: rgba(248, 113, 113, .2);
-    }
-
-    .ach-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-        gap: .7rem;
-    }
-
-    .ach-card {
-        padding: .8rem;
-        border-radius: 14px;
-        text-align: center;
-        transition: transform .2s;
-    }
-
-    .ach-card.locked {
-        opacity: .35;
-    }
-
-    .ach-card:not(.locked):hover {
-        transform: translateY(-2px);
-    }
-
-    .ach-icon {
-        font-size: 1.8rem;
-        margin-bottom: .3rem;
-    }
-
-    .ach-name {
-        font-family: 'Cinzel', serif;
-        font-size: .62rem;
-        letter-spacing: .07em;
-        color: var(--gold);
-        margin-bottom: .2rem;
-    }
-
-    .ach-desc {
-        font-size: .72rem;
-        color: rgba(245, 232, 176, .55);
-    }
-
-    .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, .7);
-        backdrop-filter: blur(8px);
-        z-index: 200;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-    }
-
-    .modal-box {
-        background: #0d0d0d;
-        border: 1px solid var(--gold-alpha45);
-        border-radius: 20px;
-        padding: 1.6rem;
-        max-width: 520px;
-        width: 100%;
-        max-height: 90vh;
-        overflow-y: auto;
-        box-shadow: 0 0 80px rgba(232, 184, 75, .15);
-    }
-
-    .modal-box h3 {
-        font-family: 'Cinzel', serif;
-        color: var(--gold);
-        font-size: 1rem;
-        letter-spacing: .1em;
-        margin-bottom: 1rem;
-    }
-
-    .editor-layout {
-        display: flex;
-        gap: 1.2rem;
-        align-items: flex-start;
-        flex-wrap: wrap;
-    }
-
-    #pixel-canvas {
-        image-rendering: pixelated;
-        border: 2px solid var(--gold-alpha45);
-        border-radius: 8px;
-        cursor: crosshair;
-        touch-action: none;
-    }
-
-    .editor-tools {
-        display: flex;
-        flex-direction: column;
-        gap: .7rem;
-        min-width: 140px;
-        flex: 1;
-    }
-
-    .tool-label {
-        font-family: 'Cinzel', serif;
-        font-size: .58rem;
-        letter-spacing: .1em;
-        color: var(--gold-dim);
-        text-transform: uppercase;
-        margin-bottom: .3rem;
-    }
-
-    .palette {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 4px;
-    }
-
-    .pal-swatch {
-        width: 22px;
-        height: 22px;
-        border-radius: 4px;
-        cursor: pointer;
-        border: 2px solid transparent;
-        transition: transform .15s, border-color .15s;
-    }
-
-    .pal-swatch:hover {
-        transform: scale(1.2);
-    }
-
-    .pal-swatch.selected {
-        border-color: white;
-    }
-
-    #custom-color {
-        width: 100%;
-        height: 32px;
-        border: 1px solid var(--glass-border);
-        border-radius: 8px;
-        background: transparent;
-        cursor: pointer;
-        padding: 2px;
-    }
-
-    .editor-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: .5rem;
-        margin-top: .8rem;
-    }
-
-    .ed-btn {
-        font-family: 'Cinzel', serif;
-        font-size: .58rem;
-        letter-spacing: .1em;
-        padding: .3rem .8rem;
-        border: 1px solid var(--glass-border);
-        background: rgba(232, 184, 75, .07);
-        color: var(--gold);
-        border-radius: 50px;
-        cursor: pointer;
-        transition: background .2s, border-color .2s;
-    }
-
-    .ed-btn:hover {
-        background: rgba(232, 184, 75, .18);
-        border-color: var(--gold);
-    }
-
-    .ed-btn.primary {
-        background: rgba(232, 184, 75, .2);
-        border-color: var(--gold);
-    }
-
-    .ed-btn.primary:hover {
-        background: rgba(232, 184, 75, .35);
-    }
-
-    .tool-row {
-        display: flex;
-        gap: .4rem;
-        flex-wrap: wrap;
-    }
-
-    .tool-btn {
-        font-family: 'Cinzel', serif;
-        font-size: .55rem;
-        letter-spacing: .08em;
-        padding: .25rem .6rem;
-        border: 1px solid var(--glass-border);
-        background: transparent;
-        color: var(--gold-dim);
-        border-radius: 50px;
-        cursor: pointer;
-        transition: all .2s;
-    }
-
-    .tool-btn.active {
-        background: rgba(232, 184, 75, .15);
-        border-color: var(--gold-alpha45);
-        color: var(--gold);
-    }
-
-    #preview-big {
-        image-rendering: pixelated;
-        width: 64px;
-        height: 64px;
-        border: 1px solid var(--glass-border);
-        border-radius: 8px;
-    }
-
-    .save-toast {
-        position: fixed;
-        bottom: 2rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(74, 222, 128, .15);
-        border: 1px solid rgba(74, 222, 128, .3);
-        color: #4ade80;
-        font-family: 'Cinzel', serif;
-        font-size: .7rem;
-        letter-spacing: .1em;
-        padding: .5rem 1.4rem;
-        border-radius: 50px;
-        z-index: 300;
-        opacity: 0;
-        transition: opacity .3s;
-        pointer-events: none;
-    }
-</style>
-
-<div class="profile-wrap">
-
-    <div class="profile-top">
-
-        <div class="avatar-section">
-            <canvas id="avatar-display" width="16" height="16"></canvas>
-            <button class="btn-edit-avatar" onclick="openEditor()">✏ Edit Avatar</button>
-        </div>
-
-        <div class="glass info-card">
-            <h2>{{ username }}</h2>
-            <div class="chip-bal"><b>{{ chips }}</b> chips</div>
-            <div class="stat-row">
-                <span class="stat-item">Games: <b>{{ stats.get('games_played', 0) }}</b></span>
-                <span class="stat-item">Wins: <b>{{ stats.get('wins', 0) }}</b></span>
-                <span class="stat-item">Blackjacks: <b>{{ stats.get('blackjacks', 0) }}</b></span>
-                <span class="stat-item">Biggest Win: <b>{{ stats.get('biggest_win', 0) }}</b></span>
-                <span class="stat-item">Peak Chips: <b>{{ stats.get('peak_chips', 0) }}</b></span>
+
+        @media(max-width:600px) {
+            .profile-top {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .7rem;
+        }
+
+        #avatar-display {
+            image-rendering: pixelated;
+            width: 96px;
+            height: 96px;
+            border: 2px solid var(--gold-alpha45);
+            border-radius: 12px;
+            box-shadow: 0 0 24px rgba(0, 0, 0, .5);
+        }
+
+        .btn-edit-avatar {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .1em;
+            padding: .28rem .9rem;
+            border: 1px solid var(--glass-border);
+            background: rgba(232, 184, 75, .07);
+            color: var(--gold);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+        }
+
+        .btn-edit-avatar:hover {
+            background: rgba(232, 184, 75, .18);
+            border-color: var(--gold);
+        }
+
+        .info-card {
+            padding: 1.4rem 1.8rem;
+            border-radius: 20px;
+        }
+
+        .info-card h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--gold);
+            letter-spacing: .08em;
+            margin-bottom: .3rem;
+        }
+
+        .chip-bal {
+            font-size: 1rem;
+            color: var(--gold-light);
+            margin-bottom: .8rem;
+        }
+
+        .stat-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem 1.2rem;
+            font-size: .82rem;
+            color: rgba(245, 232, 176, .7);
+        }
+
+        .stat-item b {
+            color: var(--gold-light);
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: .75rem;
+            letter-spacing: .15em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: .8rem;
+            padding-bottom: .4rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: .3rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .1em;
+            padding: .3rem .85rem;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--gold-dim);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .tab-btn.active,
+        .tab-btn:hover {
+            background: rgba(232, 184, 75, .12);
+            border-color: var(--gold-alpha45);
+            color: var(--gold);
+        }
+
+        .tab-panel {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        .hist-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .82rem;
+        }
+
+        .hist-table th {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .1em;
+            color: var(--gold-dim);
+            text-align: left;
+            padding: .4rem .6rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .hist-table td {
+            padding: .45rem .6rem;
+            border-bottom: 1px solid rgba(232, 184, 75, .06);
+            color: rgba(245, 232, 176, .8);
+        }
+
+        .hist-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .result-win {
+            color: #4ade80;
+        }
+
+        .result-lose {
+            color: #f87171;
+        }
+
+        .result-push {
+            color: var(--gold-dim);
+        }
+
+        .delta-pos {
+            color: #4ade80;
+        }
+
+        .delta-neg {
+            color: #f87171;
+        }
+
+        .friend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: .7rem;
+        }
+
+        .friend-card {
+            padding: .8rem 1rem;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .4rem;
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform .2s, border-color .2s;
+        }
+
+        .friend-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--gold-alpha45);
+        }
+
+        .friend-avatar {
+            image-rendering: pixelated;
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .friend-name {
+            font-family: 'Cinzel', serif;
+            font-size: .65rem;
+            letter-spacing: .07em;
+            color: var(--gold);
+        }
+
+        .friend-chips {
+            font-size: .75rem;
+            color: var(--gold-dim);
+        }
+
+        .no-friends {
+            color: rgba(245, 232, 176, .4);
+            font-size: .85rem;
+            padding: 1rem 0;
+        }
+
+        .req-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .6rem .8rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, .03);
+            margin-bottom: .5rem;
+        }
+
+        .req-name {
+            font-family: 'Cinzel', serif;
+            font-size: .7rem;
+            color: var(--gold);
+        }
+
+        .req-btns {
+            display: flex;
+            gap: .4rem;
+        }
+
+        .btn-accept {
+            background: rgba(74, 222, 128, .12);
+            border: 1px solid rgba(74, 222, 128, .3);
+            color: #4ade80;
+            font-family: 'Cinzel', serif;
+            font-size: .55rem;
+            letter-spacing: .08em;
+            padding: .25rem .7rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .btn-accept:hover {
+            background: rgba(74, 222, 128, .25);
+        }
+
+        .btn-decline {
+            background: rgba(248, 113, 113, .1);
+            border: 1px solid rgba(248, 113, 113, .25);
+            color: #f87171;
+            font-family: 'Cinzel', serif;
+            font-size: .55rem;
+            letter-spacing: .08em;
+            padding: .25rem .7rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .btn-decline:hover {
+            background: rgba(248, 113, 113, .2);
+        }
+
+        .ach-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: .7rem;
+        }
+
+        .ach-card {
+            padding: .8rem;
+            border-radius: 14px;
+            text-align: center;
+            transition: transform .2s;
+        }
+
+        .ach-card.locked {
+            opacity: .35;
+        }
+
+        .ach-card:not(.locked):hover {
+            transform: translateY(-2px);
+        }
+
+        .ach-icon {
+            font-size: 1.8rem;
+            margin-bottom: .3rem;
+        }
+
+        .ach-name {
+            font-family: 'Cinzel', serif;
+            font-size: .62rem;
+            letter-spacing: .07em;
+            color: var(--gold);
+            margin-bottom: .2rem;
+        }
+
+        .ach-desc {
+            font-size: .72rem;
+            color: rgba(245, 232, 176, .55);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .7);
+            backdrop-filter: blur(8px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-box {
+            background: #0d0d0d;
+            border: 1px solid var(--gold-alpha45);
+            border-radius: 20px;
+            padding: 1.6rem;
+            max-width: 520px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 80px rgba(232, 184, 75, .15);
+        }
+
+        .modal-box h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--gold);
+            font-size: 1rem;
+            letter-spacing: .1em;
+            margin-bottom: 1rem;
+        }
+
+        .editor-layout {
+            display: flex;
+            gap: 1.2rem;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        #pixel-canvas {
+            image-rendering: pixelated;
+            border: 2px solid var(--gold-alpha45);
+            border-radius: 8px;
+            cursor: crosshair;
+            touch-action: none;
+        }
+
+        .editor-tools {
+            display: flex;
+            flex-direction: column;
+            gap: .7rem;
+            min-width: 140px;
+            flex: 1;
+        }
+
+        .tool-label {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .1em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: .3rem;
+        }
+
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 4px;
+        }
+
+        .pal-swatch {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform .15s, border-color .15s;
+        }
+
+        .pal-swatch:hover {
+            transform: scale(1.2);
+        }
+
+        .pal-swatch.selected {
+            border-color: white;
+        }
+
+        #custom-color {
+            width: 100%;
+            height: 32px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .editor-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .5rem;
+            margin-top: .8rem;
+        }
+
+        .ed-btn {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .1em;
+            padding: .3rem .8rem;
+            border: 1px solid var(--glass-border);
+            background: rgba(232, 184, 75, .07);
+            color: var(--gold);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+        }
+
+        .ed-btn:hover {
+            background: rgba(232, 184, 75, .18);
+            border-color: var(--gold);
+        }
+
+        .ed-btn.primary {
+            background: rgba(232, 184, 75, .2);
+            border-color: var(--gold);
+        }
+
+        .ed-btn.primary:hover {
+            background: rgba(232, 184, 75, .35);
+        }
+
+        .tool-row {
+            display: flex;
+            gap: .4rem;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            font-family: 'Cinzel', serif;
+            font-size: .55rem;
+            letter-spacing: .08em;
+            padding: .25rem .6rem;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: var(--gold-dim);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+
+        .tool-btn.active {
+            background: rgba(232, 184, 75, .15);
+            border-color: var(--gold-alpha45);
+            color: var(--gold);
+        }
+
+        #preview-big {
+            image-rendering: pixelated;
+            width: 64px;
+            height: 64px;
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+        }
+
+        .save-toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(74, 222, 128, .15);
+            border: 1px solid rgba(74, 222, 128, .3);
+            color: #4ade80;
+            font-family: 'Cinzel', serif;
+            font-size: .7rem;
+            letter-spacing: .1em;
+            padding: .5rem 1.4rem;
+            border-radius: 50px;
+            z-index: 300;
+            opacity: 0;
+            transition: opacity .3s;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="profile-wrap">
+
+        <div class="profile-top">
+
+            <div class="avatar-section">
+                <canvas id="avatar-display" width="16" height="16"></canvas>
+                <button class="btn-edit-avatar" onclick="openEditor()">✏ Edit Avatar</button>
+            </div>
+
+            <div class="glass info-card">
+                <h2>{{ username }}</h2>
+                <div class="chip-bal"><b>{{ chips }}</b> chips</div>
+                <div class="stat-row">
+                    <span class="stat-item">Games: <b>{{ stats.get('games_played', 0) }}</b></span>
+                    <span class="stat-item">Wins: <b>{{ stats.get('wins', 0) }}</b></span>
+                    <span class="stat-item">Blackjacks: <b>{{ stats.get('blackjacks', 0) }}</b></span>
+                    <span class="stat-item">Biggest Win: <b>{{ stats.get('biggest_win', 0) }}</b></span>
+                    <span class="stat-item">Peak Chips: <b>{{ stats.get('peak_chips', 0) }}</b></span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="glass" style="padding:1.4rem 1.8rem;border-radius:20px;">
-        <div class="tab-bar">
-            <button class="tab-btn active" onclick="switchTab('history',this)">History</button>
-            <button class="tab-btn" onclick="switchTab('friends',this)">Friends {% if friend_requests %}({{
-                friend_requests|length }}){% endif %}</button>
-            <button class="tab-btn" onclick="switchTab('achievements',this)">Achievements</button>
-        </div>
+        <div class="glass" style="padding:1.4rem 1.8rem;border-radius:20px;">
+            <div class="tab-bar">
+                <button class="tab-btn active" onclick="switchTab('history',this)">History</button>
+                <button class="tab-btn" onclick="switchTab('friends',this)">Friends {% if friend_requests %}({{
+                    friend_requests|length }}){% endif %}</button>
+                <button class="tab-btn" onclick="switchTab('achievements',this)">Achievements</button>
+            </div>
 
-        <div id="tab-history" class="tab-panel active">
-            {% if history %}
-            <table class="hist-table">
-                <thead>
-                    <tr>
-                        <th>Game</th>
-                        <th>Result</th>
-                        <th>Chips</th>
-                        <th>When</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for h in history %}
-                    <tr>
-                        <td>{{ h.game|title }}</td>
-                        <td class="result-{{ h.result }}">{{ h.result|title }}</td>
-                        <td class="{% if h.chips_delta >= 0 %}delta-pos{% else %}delta-neg{% endif %}">
-                            {{ '+' if h.chips_delta >= 0 else '' }}{{ h.chips_delta }}
-                        </td>
-                        <td style="font-size:.72rem;color:rgba(245,232,176,.45);">
-                            {{ h.timestamp|int|datetimeformat if h.timestamp else '—' }}
-                        </td>
-                    </tr>
+            <div id="tab-history" class="tab-panel active">
+                {% if history %}
+                <table class="hist-table">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Result</th>
+                            <th>Chips</th>
+                            <th>When</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for h in history %}
+                        <tr>
+                            <td>{{ h.game|title }}</td>
+                            <td class="result-{{ h.result }}">{{ h.result|title }}</td>
+                            <td class="{% if h.chips_delta >= 0 %}delta-pos{% else %}delta-neg{% endif %}">
+                                {{ '+' if h.chips_delta >= 0 else '' }}{{ h.chips_delta }}
+                            </td>
+                            <td style="font-size:.72rem;color:rgba(245,232,176,.45);">
+                                {{ h.timestamp|int|datetimeformat if h.timestamp else '—' }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color:rgba(245,232,176,.4);font-size:.85rem;padding:.8rem 0;">No games played yet.</p>
+                {% endif %}
+            </div>
+
+            <div id="tab-friends" class="tab-panel">
+
+                {% if friend_requests %}
+                <div class="section-title" style="margin-bottom:.6rem;">Incoming Requests</div>
+                {% for req in friend_requests %}
+                <div class="req-item">
+                    <span class="req-name">{{ req }}</span>
+                    <div class="req-btns">
+                        <form method="POST" action="/friend_accept/{{ req }}">
+                            <button class="btn-accept">Accept</button>
+                        </form>
+                        <form method="POST" action="/friend_decline/{{ req }}">
+                            <button class="btn-decline">Decline</button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+                <hr style="border:none;border-top:1px solid var(--glass-border);margin:1rem 0;">
+                {% endif %}
+
+                <div class="section-title">Your Friends</div>
+                {% if friends_list %}
+                <div class="friend-grid">
+                    {% for f in friends_list %}
+                    <a class="friend-card glass" href="/u/{{ f.username }}">
+                        <canvas class="friend-avatar" id="favatar-{{ f.username }}" width="16" height="16"
+                            data-user="{{ f.username }}"></canvas>
+                        <div class="friend-name">{{ f.username }}</div>
+                        <div class="friend-chips">{{ f.chips }}</div>
+                    </a>
                     {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <p style="color:rgba(245,232,176,.4);font-size:.85rem;padding:.8rem 0;">No games played yet.</p>
-            {% endif %}
-        </div>
-
-        <div id="tab-friends" class="tab-panel">
-
-            {% if friend_requests %}
-            <div class="section-title" style="margin-bottom:.6rem;">Incoming Requests</div>
-            {% for req in friend_requests %}
-            <div class="req-item">
-                <span class="req-name">{{ req }}</span>
-                <div class="req-btns">
-                    <form method="POST" action="/friend_accept/{{ req }}">
-                        <button class="btn-accept">Accept</button>
-                    </form>
-                    <form method="POST" action="/friend_decline/{{ req }}">
-                        <button class="btn-decline">Decline</button>
-                    </form>
                 </div>
+                {% else %}
+                <p class="no-friends">No friends yet — view someone's profile to send a request!</p>
+                {% endif %}
             </div>
-            {% endfor %}
-            <hr style="border:none;border-top:1px solid var(--glass-border);margin:1rem 0;">
-            {% endif %}
 
-            <div class="section-title">Your Friends</div>
-            {% if friends_list %}
-            <div class="friend-grid">
-                {% for f in friends_list %}
-                <a class="friend-card glass" href="/u/{{ f.username }}">
-                    <canvas class="friend-avatar" id="favatar-{{ f.username }}" width="16" height="16"
-                        data-user="{{ f.username }}"></canvas>
-                    <div class="friend-name">{{ f.username }}</div>
-                    <div class="friend-chips">{{ f.chips }}</div>
-                </a>
-                {% endfor %}
-            </div>
-            {% else %}
-            <p class="no-friends">No friends yet — view someone's profile to send a request!</p>
-            {% endif %}
-        </div>
-
-        <div id="tab-achievements" class="tab-panel">
-            <div class="ach-grid">
-                {% for a in achievements %}
-                <div class="ach-card glass {% if not a.unlocked %}locked{% endif %}">
-                    <div class="ach-icon">{{ a.icon }}</div>
-                    <div class="ach-name">{{ a.name }}</div>
-                    <div class="ach-desc">{{ a.desc }}</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal-overlay" id="editor-modal" style="display:none;" onclick="maybeClose(event)">
-    <div class="modal-box" onclick="event.stopPropagation()">
-        <h3>✏ Design Your Avatar</h3>
-        <div class="editor-layout">
-            <div>
-                <canvas id="pixel-canvas" width="256" height="256"></canvas>
-                <div style="margin-top:.6rem;display:flex;align-items:center;gap:.6rem;">
-                    <span style="font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-dim);">PREVIEW</span>
-                    <canvas id="preview-big" width="16" height="16"></canvas>
-                </div>
-            </div>
-            <div class="editor-tools">
-                <div>
-                    <div class="tool-label">Tool</div>
-                    <div class="tool-row">
-                        <button class="tool-btn active" id="tool-draw" onclick="setTool('draw',this)">Draw</button>
-                        <button class="tool-btn" id="tool-erase" onclick="setTool('erase',this)">Erase</button>
-                        <button class="tool-btn" id="tool-fill" onclick="setTool('fill',this)">Fill</button>
+            <div id="tab-achievements" class="tab-panel">
+                <div class="ach-grid">
+                    {% for a in achievements %}
+                    <div class="ach-card glass {% if not a.unlocked %}locked{% endif %}">
+                        <div class="ach-icon">{{ a.icon }}</div>
+                        <div class="ach-name">{{ a.name }}</div>
+                        <div class="ach-desc">{{ a.desc }}</div>
                     </div>
-                </div>
-                <div>
-                    <div class="tool-label">Palette</div>
-                    <div class="palette" id="palette"></div>
-                </div>
-                <div>
-                    <div class="tool-label">Custom Colour</div>
-                    <input type="color" id="custom-color" value="#e8b84b">
-                </div>
-                <div>
-                    <div class="tool-label">Templates</div>
-                    <div class="tool-row">
-                        <button class="tool-btn" onclick="loadTemplate('face')">Face</button>
-                        <button class="tool-btn" onclick="loadTemplate('diamond')">Diamond</button>
-                        <button class="tool-btn" onclick="loadTemplate('star')">Star</button>
-                    </div>
-                </div>
-                <div class="editor-actions">
-                    <button class="ed-btn" onclick="clearCanvas()">Clear</button>
-                    <button class="ed-btn" onclick="flipH()">Flip H</button>
-                    <button class="ed-btn" onclick="flipV()">Flip V</button>
-                    <button class="ed-btn primary" onclick="saveAvatar()">Save</button>
-                    <button class="ed-btn" onclick="closeEditor()">Cancel</button>
+                    {% endfor %}
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="save-toast" id="save-toast">Avatar Saved ✓</div>
+    <div class="modal-overlay" id="editor-modal" style="display:none;" onclick="maybeClose(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <h3>✏ Design Your Avatar</h3>
+            <div class="editor-layout">
+                <div>
+                    <canvas id="pixel-canvas" width="256" height="256"></canvas>
+                    <div style="margin-top:.6rem;display:flex;align-items:center;gap:.6rem;">
+                        <span style="font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-dim);">PREVIEW</span>
+                        <canvas id="preview-big" width="16" height="16"></canvas>
+                    </div>
+                </div>
+                <div class="editor-tools">
+                    <div>
+                        <div class="tool-label">Tool</div>
+                        <div class="tool-row">
+                            <button class="tool-btn active" id="tool-draw" onclick="setTool('draw',this)">Draw</button>
+                            <button class="tool-btn" id="tool-erase" onclick="setTool('erase',this)">Erase</button>
+                            <button class="tool-btn" id="tool-fill" onclick="setTool('fill',this)">Fill</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tool-label">Palette</div>
+                        <div class="palette" id="palette"></div>
+                    </div>
+                    <div>
+                        <div class="tool-label">Custom Colour</div>
+                        <input type="color" id="custom-color" value="#e8b84b">
+                    </div>
+                    <div>
+                        <div class="tool-label">Templates</div>
+                        <div class="tool-row">
+                            <button class="tool-btn" onclick="loadTemplate('face')">Face</button>
+                            <button class="tool-btn" onclick="loadTemplate('diamond')">Diamond</button>
+                            <button class="tool-btn" onclick="loadTemplate('star')">Star</button>
+                        </div>
+                    </div>
+                    <div class="editor-actions">
+                        <button class="ed-btn" onclick="clearCanvas()">Clear</button>
+                        <button class="ed-btn" onclick="flipH()">Flip H</button>
+                        <button class="ed-btn" onclick="flipV()">Flip V</button>
+                        <button class="ed-btn primary" onclick="saveAvatar()">Save</button>
+                        <button class="ed-btn" onclick="closeEditor()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script>
-    const GRID = 16;
-    const CELL = 16;
-    let pixels = new Array(GRID * GRID).fill('#0d0d0d');
-    let currentColor = '#e8b84b';
-    let currentTool = 'draw';
-    let painting = false;
+    <div class="save-toast" id="save-toast">Avatar Saved ✓</div>
 
-    const INITIAL_AVATAR = {{ avatar | tojson }};
-    if (INITIAL_AVATAR && INITIAL_AVATAR.length === 256) pixels = [...INITIAL_AVATAR];
+    <script>
+        const GRID = 16;
+        const CELL = 16;
+        let pixels = new Array(GRID * GRID).fill('#0d0d0d');
+        let currentColor = '#e8b84b';
+        let currentTool = 'draw';
+        let painting = false;
 
-    const PALETTE = [
-        '#0d0d0d', '#f5e8b0', '#e8b84b', '#b08a30', '#4ade80', '#f87171',
-        '#60a5fa', '#e879f9', '#fb923c', '#a78bfa', '#38bdf8', '#f472b6',
-        '#ffffff', '#6b7280', '#1e3a2f', '#2a1c00',
-    ];
+        const INITIAL_AVATAR = {{ avatar | tojson }};
+        if (INITIAL_AVATAR && INITIAL_AVATAR.length === 256) pixels = [...INITIAL_AVATAR];
 
-    function buildPalette() {
-        const el = document.getElementById('palette');
-        el.innerHTML = '';
-        PALETTE.forEach(c => {
-            const s = document.createElement('div');
-            s.className = 'pal-swatch' + (c === currentColor ? ' selected' : '');
-            s.style.background = c;
-            s.onclick = () => { currentColor = c; document.getElementById('custom-color').value = c; document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('selected')); s.classList.add('selected'); };
-            el.appendChild(s);
+        const PALETTE = [
+            '#0d0d0d', '#f5e8b0', '#e8b84b', '#b08a30', '#4ade80', '#f87171',
+            '#60a5fa', '#e879f9', '#fb923c', '#a78bfa', '#38bdf8', '#f472b6',
+            '#ffffff', '#6b7280', '#1e3a2f', '#2a1c00',
+        ];
+
+        function buildPalette() {
+            const el = document.getElementById('palette');
+            el.innerHTML = '';
+            PALETTE.forEach(c => {
+                const s = document.createElement('div');
+                s.className = 'pal-swatch' + (c === currentColor ? ' selected' : '');
+                s.style.background = c;
+                s.onclick = () => { currentColor = c; document.getElementById('custom-color').value = c; document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('selected')); s.classList.add('selected'); };
+                el.appendChild(s);
+            });
+        }
+        buildPalette();
+        document.getElementById('custom-color').oninput = e => {
+            currentColor = e.target.value;
+            document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('selected'));
+        };
+
+        const canvas = document.getElementById('pixel-canvas');
+        const ctx = canvas.getContext('2d');
+        const preview = document.getElementById('preview-big');
+        const pctx = preview.getContext('2d');
+
+        function renderCanvas() {
+            for (let i = 0; i < GRID * GRID; i++) {
+                const x = (i % GRID) * CELL, y = Math.floor(i / GRID) * CELL;
+                ctx.fillStyle = pixels[i] || '#0d0d0d';
+                ctx.fillRect(x, y, CELL, CELL);
+            }
+            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= GRID; i++) {
+                ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, GRID * CELL); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(GRID * CELL, i * CELL); ctx.stroke();
+            }
+            for (let i = 0; i < GRID * GRID; i++) {
+                const x = i % GRID, y = Math.floor(i / GRID);
+                pctx.fillStyle = pixels[i] || '#0d0d0d';
+                pctx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        function getIdx(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
+            const cx = (e.clientX || e.touches[0].clientX) - rect.left;
+            const cy = (e.clientY || e.touches[0].clientY) - rect.top;
+            const gx = Math.floor(cx * scaleX / CELL), gy = Math.floor(cy * scaleY / CELL);
+            if (gx < 0 || gx >= GRID || gy < 0 || gy >= GRID) return -1;
+            return gy * GRID + gx;
+        }
+
+        function paint(idx) {
+            if (idx < 0) return;
+            if (currentTool === 'draw') pixels[idx] = currentColor;
+            else if (currentTool === 'erase') pixels[idx] = '#0d0d0d';
+            renderCanvas();
+        }
+
+        function floodFill(idx, targetColor, fillColor) {
+            if (idx < 0 || idx >= GRID * GRID) return;
+            if (pixels[idx] !== targetColor) return;
+            if (targetColor === fillColor) return;
+            pixels[idx] = fillColor;
+            const x = idx % GRID, y = Math.floor(idx / GRID);
+            if (x > 0) floodFill(idx - 1, targetColor, fillColor);
+            if (x < GRID - 1) floodFill(idx + 1, targetColor, fillColor);
+            if (y > 0) floodFill(idx - GRID, targetColor, fillColor);
+            if (y < GRID - 1) floodFill(idx + GRID, targetColor, fillColor);
+        }
+
+        canvas.addEventListener('mousedown', e => { painting = true; const i = getIdx(e); if (currentTool === 'fill') { floodFill(i, pixels[i], currentColor); renderCanvas(); } else paint(i); });
+        canvas.addEventListener('mousemove', e => { if (painting) paint(getIdx(e)); });
+        canvas.addEventListener('mouseup', () => painting = false);
+        canvas.addEventListener('mouseleave', () => painting = false);
+        canvas.addEventListener('touchstart', e => { e.preventDefault(); painting = true; const i = getIdx(e); if (currentTool === 'fill') { floodFill(i, pixels[i], currentColor); renderCanvas(); } else paint(i); }, { passive: false });
+        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (painting) paint(getIdx(e)); }, { passive: false });
+        canvas.addEventListener('touchend', () => painting = false);
+
+        function setTool(t, btn) {
+            currentTool = t;
+            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        function clearCanvas() { pixels = new Array(GRID * GRID).fill('#0d0d0d'); renderCanvas(); }
+        function flipH() {
+            const n = [];
+            for (let y = 0; y < GRID; y++)for (let x = 0; x < GRID; x++)n[y * GRID + x] = pixels[y * GRID + (GRID - 1 - x)];
+            pixels = n; renderCanvas();
+        }
+        function flipV() {
+            const n = [];
+            for (let y = 0; y < GRID; y++)for (let x = 0; x < GRID; x++)n[y * GRID + x] = pixels[(GRID - 1 - y) * GRID + x];
+            pixels = n; renderCanvas();
+        }
+
+        const TEMPLATES = {
+            face: (() => {
+                const t = new Array(256).fill('#0d0d0d');
+                const skin = '#e8b84b', eye = '#0d0d0d', mouth = '#b08a30';
+                for (let y = 4; y < 12; y++)for (let x = 4; x < 12; x++)t[y * 16 + x] = skin;
+                [[5, 6], [5, 9]].forEach(([y, x]) => t[y * 16 + x] = eye);
+                [7, 8, 9].forEach(x => t[9 * 16 + x] = mouth);
+                return t;
+            })(),
+            diamond: (() => {
+                const t = new Array(256).fill('#0d0d0d');
+                const c = '#60a5fa', d = '#38bdf8';
+                [[7, 7], [7, 8], [8, 6], [8, 7], [8, 8], [8, 9], [9, 7], [9, 8]].forEach(([y, x]) => t[y * 16 + x] = d);
+                [[6, 7], [6, 8], [7, 5], [7, 6], [7, 9], [7, 10], [8, 5], [8, 10], [9, 6], [9, 9], [10, 7], [10, 8]].forEach(([y, x]) => t[y * 16 + x] = c);
+                return t;
+            })(),
+            star: (() => {
+                const t = new Array(256).fill('#0d0d0d');
+                const s = '#e8b84b';
+                [[6, 7], [6, 8], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9], [7, 10], [8, 6], [8, 7], [8, 8], [8, 9], [9, 5], [9, 6], [9, 9], [9, 10], [10, 5], [10, 10]].forEach(([y, x]) => t[y * 16 + x] = s);
+                return t;
+            })()
+        };
+        function loadTemplate(n) { pixels = [...TEMPLATES[n]]; renderCanvas(); }
+
+        function openEditor() {
+            document.getElementById('editor-modal').style.display = 'flex';
+            renderCanvas();
+        }
+        function closeEditor() { document.getElementById('editor-modal').style.display = 'none'; }
+        function maybeClose(e) { if (e.target === document.getElementById('editor-modal')) closeEditor(); }
+
+        async function saveAvatar() {
+            const res = await fetch('/save_avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pixels }) });
+            if (res.ok) {
+                closeEditor();
+                drawAvatarOnEl(document.getElementById('avatar-display'), pixels);
+                const t = document.getElementById('save-toast');
+                t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000);
+            }
+        }
+
+        function drawAvatarOnEl(el, pxData) {
+            const c = el.getContext('2d');
+            c.clearRect(0, 0, 16, 16);
+            if (!pxData || pxData.length !== 256) {
+                c.fillStyle = '#1e3a2f'; c.fillRect(0, 0, 16, 16);
+                return;
+            }
+            pxData.forEach((col, i) => {
+                c.fillStyle = col || '#0d0d0d';
+                c.fillRect(i % 16, Math.floor(i / 16), 1, 1);
+            });
+        }
+
+        drawAvatarOnEl(document.getElementById('avatar-display'), INITIAL_AVATAR);
+
+        document.querySelectorAll('.friend-avatar[data-user]').forEach(el => {
+            const u = el.dataset.user;
+            fetch('/api/avatar/' + u).then(r => r.json()).then(d => {
+                drawAvatarOnEl(el, d.pixels);
+            }).catch(() => { });
         });
-    }
-    buildPalette();
-    document.getElementById('custom-color').oninput = e => {
-        currentColor = e.target.value;
-        document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('selected'));
-    };
 
-    const canvas = document.getElementById('pixel-canvas');
-    const ctx = canvas.getContext('2d');
-    const preview = document.getElementById('preview-big');
-    const pctx = preview.getContext('2d');
-
-    function renderCanvas() {
-        for (let i = 0; i < GRID * GRID; i++) {
-            const x = (i % GRID) * CELL, y = Math.floor(i / GRID) * CELL;
-            ctx.fillStyle = pixels[i] || '#0d0d0d';
-            ctx.fillRect(x, y, CELL, CELL);
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
         }
-        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-        ctx.lineWidth = 0.5;
-        for (let i = 0; i <= GRID; i++) {
-            ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, GRID * CELL); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(GRID * CELL, i * CELL); ctx.stroke();
-        }
-        for (let i = 0; i < GRID * GRID; i++) {
-            const x = i % GRID, y = Math.floor(i / GRID);
-            pctx.fillStyle = pixels[i] || '#0d0d0d';
-            pctx.fillRect(x, y, 1, 1);
-        }
-    }
+    </script>
+</body>
 
-    function getIdx(e) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-        const cx = (e.clientX || e.touches[0].clientX) - rect.left;
-        const cy = (e.clientY || e.touches[0].clientY) - rect.top;
-        const gx = Math.floor(cx * scaleX / CELL), gy = Math.floor(cy * scaleY / CELL);
-        if (gx < 0 || gx >= GRID || gy < 0 || gy >= GRID) return -1;
-        return gy * GRID + gx;
-    }
-
-    function paint(idx) {
-        if (idx < 0) return;
-        if (currentTool === 'draw') pixels[idx] = currentColor;
-        else if (currentTool === 'erase') pixels[idx] = '#0d0d0d';
-        renderCanvas();
-    }
-
-    function floodFill(idx, targetColor, fillColor) {
-        if (idx < 0 || idx >= GRID * GRID) return;
-        if (pixels[idx] !== targetColor) return;
-        if (targetColor === fillColor) return;
-        pixels[idx] = fillColor;
-        const x = idx % GRID, y = Math.floor(idx / GRID);
-        if (x > 0) floodFill(idx - 1, targetColor, fillColor);
-        if (x < GRID - 1) floodFill(idx + 1, targetColor, fillColor);
-        if (y > 0) floodFill(idx - GRID, targetColor, fillColor);
-        if (y < GRID - 1) floodFill(idx + GRID, targetColor, fillColor);
-    }
-
-    canvas.addEventListener('mousedown', e => { painting = true; const i = getIdx(e); if (currentTool === 'fill') { floodFill(i, pixels[i], currentColor); renderCanvas(); } else paint(i); });
-    canvas.addEventListener('mousemove', e => { if (painting) paint(getIdx(e)); });
-    canvas.addEventListener('mouseup', () => painting = false);
-    canvas.addEventListener('mouseleave', () => painting = false);
-    canvas.addEventListener('touchstart', e => { e.preventDefault(); painting = true; const i = getIdx(e); if (currentTool === 'fill') { floodFill(i, pixels[i], currentColor); renderCanvas(); } else paint(i); }, { passive: false });
-    canvas.addEventListener('touchmove', e => { e.preventDefault(); if (painting) paint(getIdx(e)); }, { passive: false });
-    canvas.addEventListener('touchend', () => painting = false);
-
-    function setTool(t, btn) {
-        currentTool = t;
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-    function clearCanvas() { pixels = new Array(GRID * GRID).fill('#0d0d0d'); renderCanvas(); }
-    function flipH() {
-        const n = [];
-        for (let y = 0; y < GRID; y++)for (let x = 0; x < GRID; x++)n[y * GRID + x] = pixels[y * GRID + (GRID - 1 - x)];
-        pixels = n; renderCanvas();
-    }
-    function flipV() {
-        const n = [];
-        for (let y = 0; y < GRID; y++)for (let x = 0; x < GRID; x++)n[y * GRID + x] = pixels[(GRID - 1 - y) * GRID + x];
-        pixels = n; renderCanvas();
-    }
-
-    const TEMPLATES = {
-        face: (() => {
-            const t = new Array(256).fill('#0d0d0d');
-            const skin = '#e8b84b', eye = '#0d0d0d', mouth = '#b08a30';
-            for (let y = 4; y < 12; y++)for (let x = 4; x < 12; x++)t[y * 16 + x] = skin;
-            [[5, 6], [5, 9]].forEach(([y, x]) => t[y * 16 + x] = eye);
-            [7, 8, 9].forEach(x => t[9 * 16 + x] = mouth);
-            return t;
-        })(),
-        diamond: (() => {
-            const t = new Array(256).fill('#0d0d0d');
-            const c = '#60a5fa', d = '#38bdf8';
-            [[7, 7], [7, 8], [8, 6], [8, 7], [8, 8], [8, 9], [9, 7], [9, 8]].forEach(([y, x]) => t[y * 16 + x] = d);
-            [[6, 7], [6, 8], [7, 5], [7, 6], [7, 9], [7, 10], [8, 5], [8, 10], [9, 6], [9, 9], [10, 7], [10, 8]].forEach(([y, x]) => t[y * 16 + x] = c);
-            return t;
-        })(),
-        star: (() => {
-            const t = new Array(256).fill('#0d0d0d');
-            const s = '#e8b84b';
-            [[6, 7], [6, 8], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9], [7, 10], [8, 6], [8, 7], [8, 8], [8, 9], [9, 5], [9, 6], [9, 9], [9, 10], [10, 5], [10, 10]].forEach(([y, x]) => t[y * 16 + x] = s);
-            return t;
-        })()
-    };
-    function loadTemplate(n) { pixels = [...TEMPLATES[n]]; renderCanvas(); }
-
-    function openEditor() {
-        document.getElementById('editor-modal').style.display = 'flex';
-        renderCanvas();
-    }
-    function closeEditor() { document.getElementById('editor-modal').style.display = 'none'; }
-    function maybeClose(e) { if (e.target === document.getElementById('editor-modal')) closeEditor(); }
-
-    async function saveAvatar() {
-        const res = await fetch('/save_avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pixels }) });
-        if (res.ok) {
-            closeEditor();
-            drawAvatarOnEl(document.getElementById('avatar-display'), pixels);
-            const t = document.getElementById('save-toast');
-            t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000);
-        }
-    }
-
-    function drawAvatarOnEl(el, pxData) {
-        const c = el.getContext('2d');
-        c.clearRect(0, 0, 16, 16);
-        if (!pxData || pxData.length !== 256) {
-            c.fillStyle = '#1e3a2f'; c.fillRect(0, 0, 16, 16);
-            return;
-        }
-        pxData.forEach((col, i) => {
-            c.fillStyle = col || '#0d0d0d';
-            c.fillRect(i % 16, Math.floor(i / 16), 1, 1);
-        });
-    }
-
-    drawAvatarOnEl(document.getElementById('avatar-display'), INITIAL_AVATAR);
-
-    document.querySelectorAll('.friend-avatar[data-user]').forEach(el => {
-        const u = el.dataset.user;
-        fetch('/api/avatar/' + u).then(r => r.json()).then(d => {
-            drawAvatarOnEl(el, d.pixels);
-        }).catch(() => { });
-    });
-
-    function switchTab(name, btn) {
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        btn.classList.add('active');
-    }
-</script>
-{% endblock %}
+</html>
