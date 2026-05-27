@@ -203,7 +203,9 @@ def profile():
     username = session["username"]
 
     data = load_users()
-    user_data = safe_user(data["users"].get(username, {}))
+    user_data = safe_user(data["users"].get(target, {}))
+    my_data   = safe_user(data["users"].get(me, {}))
+    
 
     return render_template(
         "auth/profile.html",
@@ -223,8 +225,7 @@ def profile():
         achievements=get_achievements(username),
         history=user_data["history"][-20:][::-1],
         stats=user_data["stats"],
-        user_data = safe_user(data["users"][target])
-        my_data   = safe_user(data["users"][me])
+    
     )
 @auth_bp.app_template_filter('datetimeformat')
 def datetimeformat(value):
