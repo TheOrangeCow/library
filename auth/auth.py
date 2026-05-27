@@ -165,6 +165,7 @@ def settings():
         success=success,
         is_admin=(username == "daniel"),
     )
+    
 @auth_bp.route("/profile", methods=["GET", "POST"])
 def profile():
     if "username" not in session:
