@@ -29,6 +29,22 @@ def save_users(data):
 def hash_pw(pw):
     return hashlib.sha256(pw.encode()).hexdigest()
 
+def safe_user(user):
+    user.setdefault("chips", 0)
+    user.setdefault("stats", {
+        "games_played": 0,
+        "wins": 0,
+        "blackjacks": 0,
+        "biggest_win": 0,
+        "peak_chips": user.get("chips", 0),
+    })
+    user.setdefault("history", [])
+    user.setdefault("friends", [])
+    user.setdefault("friend_requests", [])
+    user.setdefault("friend_requests_sent", [])
+    user.setdefault("achievements", [])
+    return user
+
  
 def save_avatar(username, avatar_data):
     data = load_users()
@@ -68,7 +84,19 @@ def register():
 
         data["users"][username] = {
             "password": hash_pw(password),
-            "chips": 1000
+            "chips": 1000,
+            "stats": {
+                "games_played": 0,
+                "wins": 0,
+                "blackjacks": 0,
+                "biggest_win": 0,
+                "peak_chips": 1000
+            },
+            "history": [],
+            "friends": [],
+            "friend_requests": [],
+            "friend_requests_sent": [],
+            "achievements": [],
         }
         save_users(data)
         session["username"] = username
@@ -175,31 +203,35 @@ def profile():
     username = session["username"]
 
     data = load_users()
-    user_data = data["users"].get(username, {})
+    user_data = safe_user(data["users"].get(username, {}))
 
     return render_template(
         "auth/profile.html",
         theme=get_theme(username),
         username=username,
-        chips=user_data.get("chips", 0),
+        chips=user_data["chips"],
         error=None,
-
-        friend_requests=get_friend_requests(username),
+        friend_requests=user_data["friend_requests"],
         friends_list=[
             {
                 "username": f,
                 "chips": data["users"].get(f, {}).get("chips", 0)
             }
-            for f in get_friends(username)
+            for f in user_data["friends"]
         ],
-
         avatar=get_avatar(username),
         achievements=get_achievements(username),
-        history=data["users"].get(username, {}).get("history", [])[-20:][::-1],
-
-        stats=user_data.get("stats") or {}
+        history=user_data["history"][-20:][::-1],
+        stats=user_data["stats"],
+        user_data = safe_user(data["users"][target])
+        my_data   = safe_user(data["users"][me])
     )
-
+@auth_bp.app_template_filter('datetimeformat')
+def datetimeformat(value):
+    try:
+        return datetime.fromtimestamp(int(value)).strftime("%d %b %Y %H:%M")
+    except:
+        return "—"
 
 
 @auth_bp.route("/u/<target>")
