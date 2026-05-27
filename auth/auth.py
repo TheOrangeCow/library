@@ -28,6 +28,25 @@ def save_users(data):
 def hash_pw(pw):
     return hashlib.sha256(pw.encode()).hexdigest()
 
+ 
+def save_avatar(username, avatar_data):
+    data = load_users()
+    if username in data["users"]:
+        data["users"][username]["avatar"] = avatar_data
+        save_users(data)
+ 
+def get_avatar(username):
+    data = load_users()
+    return data["users"].get(username, {}).get("avatar", None)
+ 
+def get_friends(username):
+    data = load_users()
+    return data["users"].get(username, {}).get("friends", [])
+ 
+def get_friend_requests(username):
+    data = load_users()
+    return data["users"].get(username, {}).get("friend_requests", [])
+
 @auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
@@ -88,8 +107,8 @@ def logout():
     session.clear()
     return redirect(url_for("auth.login"))
 
-@auth_bp.route("/profile", methods=["GET", "POST"])
-def profile():
+@auth_bp.route("/settings", methods=["GET", "POST"])
+def settings():
     if "username" not in session:
         return redirect(url_for("auth.login"))
  
@@ -138,7 +157,7 @@ def profile():
     data = load_users()
     user_data = data["users"].get(username, {})
     return render_template(
-        "auth/profile.html",
+        "auth/settings.html",
         theme=get_theme(username),
         username=username,
         chips=user_data.get("chips", 0),
@@ -146,6 +165,206 @@ def profile():
         success=success,
         is_admin=(username == "daniel"),
     )
+@auth_bp.route("/profile", methods=["GET", "POST"])
+def profile():
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+ 
+    username = session["username"]
+    error = None
+    success = None
+ 
+
+    data = load_users()
+    user_data = data["users"].get(username, {})
+    return render_template(
+        "auth/profile.html",
+        theme=get_theme(username),
+        username=username,
+        chips=user_data.get("chips", 0),
+        error=error,
+        friend_requests = get_friend_requests(username),
+        friends_list    = [ {"username": f,
+                                "chips": load_users()["users"].get(f,{}).get("chips",0)}
+                                for f in get_friends(username) ],
+        avatar          = get_avatar(username),
+        achievements    = get_achievements(username),
+        history         = load_users()["users"].get(username,{}).get("history",[])[-20:][::-1],
+    )
+
+
+
+@auth_bp.route("/u/<target>")
+def view_profile(target):
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+ 
+    me = session["username"]
+    data = load_users()
+ 
+    if target not in data["users"]:
+        return render_template("auth/profile_not_found.html", theme=get_theme(me), username=me), 404
+ 
+    user_data = data["users"][target]
+    my_data   = data["users"][me]
+
+    friends         = me in user_data.get("friends", [])
+    req_sent        = target in my_data.get("friend_requests_sent", [])
+    req_received    = me in user_data.get("friend_requests", [])
+ 
+    achievements_all = get_achievements(target)
+    unlocked = [a for a in achievements_all if a["unlocked"]]
+ 
+    history = user_data.get("history", [])[-10:][::-1]
+ 
+    return render_template(
+        "auth/view_profile.html",
+        theme=get_theme(me),
+        me=me,
+        target=target,
+        chips=user_data.get("chips", 0),
+        stats=user_data.get("stats", {}),
+        avatar=user_data.get("avatar", None),
+        achievements=unlocked,
+        history=history,
+        friends=friends,
+        req_sent=req_sent,
+        req_received=req_received,
+        friend_count=len(user_data.get("friends", [])),
+        is_me=(me == target),
+    )
+ 
+ 
+@auth_bp.route("/friend_request/<target>", methods=["POST"])
+def friend_request(target):
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+    me = session["username"]
+    if me == target:
+        return redirect(url_for("auth.view_profile", target=target))
+ 
+    data = load_users()
+    if target not in data["users"]:
+        return redirect(url_for("auth.view_profile", target=target))
+ 
+    reqs = data["users"][target].setdefault("friend_requests", [])
+    if me not in reqs:
+        reqs.append(me)
+ 
+    sent = data["users"][me].setdefault("friend_requests_sent", [])
+    if target not in sent:
+        sent.append(target)
+ 
+    save_users(data)
+    return redirect(url_for("auth.view_profile", target=target))
+ 
+ 
+@auth_bp.route("/friend_accept/<requester>", methods=["POST"])
+def friend_accept(requester):
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+    me = session["username"]
+    data = load_users()
+ 
+    if requester not in data["users"]:
+        return redirect(url_for("auth.profile"))
+ 
+    my_friends = data["users"][me].setdefault("friends", [])
+    their_friends = data["users"][requester].setdefault("friends", [])
+    if requester not in my_friends:
+        my_friends.append(requester)
+    if me not in their_friends:
+        their_friends.append(me)
+ 
+    reqs = data["users"][me].setdefault("friend_requests", [])
+    if requester in reqs:
+        reqs.remove(requester)
+    sent = data["users"][requester].setdefault("friend_requests_sent", [])
+    if me in sent:
+        sent.remove(me)
+ 
+    save_users(data)
+    return redirect(url_for("auth.profile"))
+ 
+ 
+@auth_bp.route("/friend_decline/<requester>", methods=["POST"])
+def friend_decline(requester):
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+    me = session["username"]
+    data = load_users()
+ 
+    reqs = data["users"][me].setdefault("friend_requests", [])
+    if requester in reqs:
+        reqs.remove(requester)
+    if requester in data["users"]:
+        sent = data["users"][requester].setdefault("friend_requests_sent", [])
+        if me in sent:
+            sent.remove(me)
+ 
+    save_users(data)
+    return redirect(url_for("auth.profile"))
+ 
+ 
+@auth_bp.route("/friend_remove/<target>", methods=["POST"])
+def friend_remove(target):
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+    me = session["username"]
+    data = load_users()
+ 
+    if me in data["users"]:
+        friends = data["users"][me].setdefault("friends", [])
+        if target in friends:
+            friends.remove(target)
+    if target in data["users"]:
+        friends = data["users"][target].setdefault("friends", [])
+        if me in friends:
+            friends.remove(me)
+ 
+    save_users(data)
+    return redirect(url_for("auth.view_profile", target=target))
+ 
+ 
+@auth_bp.route("/send_chips/<target>", methods=["POST"])
+def send_chips(target):
+    if "username" not in session:
+        return redirect(url_for("auth.login"))
+    me = session["username"]
+    if me == target:
+        return redirect(url_for("auth.view_profile", target=target))
+ 
+    try:
+        amount = int(request.form.get("amount", 0))
+    except ValueError:
+        return redirect(url_for("auth.view_profile", target=target))
+ 
+    if amount <= 0:
+        return redirect(url_for("auth.view_profile", target=target))
+ 
+    data = load_users()
+    if target not in data["users"]:
+        return redirect(url_for("auth.view_profile", target=target))
+ 
+    my_chips = data["users"][me].get("chips", 0)
+    amount = min(amount, my_chips)
+ 
+    data["users"][me]["chips"] = my_chips - amount
+    data["users"][target]["chips"] = data["users"][target].get("chips", 0) + amount
+    save_users(data)
+ 
+    return redirect(url_for("auth.view_profile", target=target))
+ 
+ 
+@auth_bp.route("/save_avatar", methods=["POST"])
+def save_avatar_route():
+    if "username" not in session:
+        return {"ok": False}, 401
+    pixels = request.json.get("pixels", [])
+    if len(pixels) != 256:
+        return {"ok": False, "error": "bad pixel count"}, 400
+    save_avatar(session["username"], pixels)
+    return {"ok": True}
 
 @auth_bp.route("/admin", methods=["GET", "POST"])
 def admin():
