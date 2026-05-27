@@ -170,27 +170,32 @@ def settings():
 def profile():
     if "username" not in session:
         return redirect(url_for("auth.login"))
- 
+
     username = session["username"]
-    error = None
-    success = None
- 
+
+    data = load_users()
+    user_data = data["users"].get(username, {})
 
     return render_template(
         "auth/profile.html",
         theme=get_theme(username),
         username=username,
         chips=user_data.get("chips", 0),
-        error=error,
+        error=None,
+
         friend_requests=get_friend_requests(username),
         friends_list=[
-            {"username": f,
-            "chips": load_users()["users"].get(f, {}).get("chips", 0)}
+            {
+                "username": f,
+                "chips": data["users"].get(f, {}).get("chips", 0)
+            }
             for f in get_friends(username)
         ],
+
         avatar=get_avatar(username),
         achievements=get_achievements(username),
-        history=load_users()["users"].get(username, {}).get("history", [])[-20:][::-1],
+        history=data["users"].get(username, {}).get("history", [])[-20:][::-1],
+
         stats=user_data.get("stats") or {}
     )
 
