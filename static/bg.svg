@@ -1,6 +1,37 @@
-<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60'>
-  <polygon points='30,2 58,58 2,58' fill='none' stroke='#d4a843' stroke-width='0.7' opacity='0.16'/>
-  <polygon points='30,14 50,50 10,50' fill='none' stroke='#d4a843' stroke-width='0.3' opacity='0.08'/>
-  <line x1='0' y1='0' x2='60' y2='60' stroke='#d4a843' stroke-width='0.3' opacity='0.05'/>
-  <line x1='60' y1='0' x2='0' y2='60' stroke='#d4a843' stroke-width='0.3' opacity='0.05'/>
+<svg width="60" height="60"
+     viewBox="0 0 60 60"
+     xmlns="http://www.w3.org/2000/svg">
+
+    <polygon
+        points="30,10 50,45 10,45"
+        fill="rgba(245,232,176,0.08)">
+
+        <animateTransform
+            attributeName="transform"
+            type="translate"
+            values="
+                0 0;
+                4 -3;
+                -3 5;
+                2 -4;
+                0 0
+            "
+            dur="6s"
+            repeatCount="indefinite"/>
+
+        <animateTransform
+            attributeName="transform"
+            additive="sum"
+            type="rotate"
+            values="
+                0 30 30;
+                8 30 30;
+                -6 30 30;
+                0 30 30
+            "
+            dur="8s"
+            repeatCount="indefinite"/>
+
+    </polygon>
+
 </svg>
