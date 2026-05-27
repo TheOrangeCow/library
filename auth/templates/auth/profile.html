@@ -235,7 +235,7 @@
         }
 
         .no-friends {
-            color: rgba(245, 232, 176, .4);
+            color: var(--gold-dim);
             font-size: .85rem;
             padding: 1rem 0;
         }
@@ -332,7 +332,7 @@
 
         .ach-desc {
             font-size: .72rem;
-            color: rgba(245, 232, 176, .55);
+            color: var(--gold-dim);
         }
 
         .modal-overlay {
@@ -574,7 +574,7 @@
                             <td class="{% if h.chips_delta >= 0 %}delta-pos{% else %}delta-neg{% endif %}">
                                 {{ '+' if h.chips_delta >= 0 else '' }}{{ h.chips_delta }}
                             </td>
-                            <td style="font-size:.72rem;color:rgba(245,232,176,.45);">
+                            <td style="font-size:.72rem;color: var(--gold-dim)">
                                 {{ h.timestamp|int|datetimeformat if h.timestamp else '—' }}
                             </td>
                         </tr>
@@ -582,7 +582,7 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p style="color:rgba(245,232,176,.4);font-size:.85rem;padding:.8rem 0;">No games played yet.</p>
+                <p style="color:var(--gold-dim);font-size:.85rem;padding:.8rem 0;">No games played yet.</p>
                 {% endif %}
             </div>
 
