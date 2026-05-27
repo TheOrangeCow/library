@@ -528,7 +528,10 @@
 
             <div class="avatar-section">
                 <canvas id="avatar-display" width="16" height="16"></canvas>
-                <button class="btn-edit-avatar" onclick="openEditor()">✏ Edit Avatar</button>
+                <span>
+                    <button class="btn-edit-avatar" onclick="openEditor()">Edit Avatar</button>
+                    <a class="btn-edit-avatar" href='/settings'>Settings</a>
+                </span>
             </div>
 
             <div class="glass info-card">
@@ -636,7 +639,7 @@
 
     <div class="modal-overlay" id="editor-modal" style="display:none;" onclick="maybeClose(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
-            <h3>✏ Design Your Avatar</h3>
+            <h3>Design Your Avatar</h3>
             <div class="editor-layout">
                 <div>
                     <canvas id="pixel-canvas" width="256" height="256"></canvas>
@@ -682,7 +685,7 @@
         </div>
     </div>
 
-    <div class="save-toast" id="save-toast">Avatar Saved ✓</div>
+    <div class="save-toast" id="save-toast">Avatar Saved</div>
 
     <script>
         const GRID = 16;
