@@ -3,7 +3,7 @@ import json, os, hashlib, time, hmac
 from dotenv import load_dotenv
 from datetime import datetime
 
-auth_bp = Blueprint('auth', __name__, template_folder='templates')
+auth_bp = Blueprint('auth', __name__, template_folder='templates',static_folder='static', static_url_path='/auth/static')
 
 load_dotenv()
 
