@@ -47,7 +47,7 @@
             </svg>
             <input class="search-input" type="text" id="user-search-input" placeholder="Search players…"
                 autocomplete="off" spellcheck="false">
-            <button class="index" type="submit">View Profile</button>
+            <button class="search-btn" type="submit">View Profile</button>
         </form>
     </div>
 
@@ -58,8 +58,8 @@
             <div class="avatar-section">
                 <canvas id="avatar-display" width="16" height="16"></canvas>
                 <span>
-                    <button class="index" onclick="openEditor()">Edit Avatar</button>
-                    <a class="index" href='/settings'>Settings</a>
+                    <button class="btn-edit-avatar" onclick="openEditor()">Edit Avatar</button>
+                    <a class="btn-edit-avatar" href='/settings'>Settings</a>
                 </span>
             </div>
 
@@ -197,13 +197,13 @@
             </div>
 
             <div class="editor-actions">
-                <button class="index primary" onclick="saveAvatar()">Save</button>
-                <button class="index" onclick="closeEditor()">Cancel</button>
+                <button class="ed-btn primary" onclick="saveAvatar()">Save</button>
+                <button class="ed-btn" onclick="closeEditor()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <div class="index" id="save-toast">Avatar Saved</div>
+    <div class="save-toast" id="save-toast">Avatar Saved</div>
 
     <script>
         function searchUser(e) {
@@ -580,9 +580,12 @@
         });
 
         setTimeout(() => {
-            const active = pill.querySelector('a.active');
-            if (active) moveSlider(active);
-            hide('tab-history');
+            const firstLink = pill.querySelector('a');
+            if (firstLink) {
+                firstLink.classList.add('active');
+                moveSlider(firstLink);
+                hide(firstLink.getAttribute('href').slice(1));
+            }
         }, 50);
 
         window.addEventListener('resize', () => {
