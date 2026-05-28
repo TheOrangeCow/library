@@ -146,7 +146,7 @@
     flex-wrap: wrap;
     gap: .5rem 1.2rem;
     font-size: .82rem;
-    color: rgba(245, 232, 176, .7); /* here */
+    color: var(--gold-dim);
 }
 
 .stat-item b {
