@@ -189,12 +189,7 @@
 }
 
 .tab-panel {
-    display: none;
     margin-top: 1rem;
-}
-
-.tab-panel.active {
-    display: block;
 }
 
 .hist-table {
