@@ -11,11 +11,32 @@
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     <style>
-        
+
     </style>
 </head>
 
 <body>
+
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Home</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }})</span>
+        <span>
+            <a class="logout" href="/profile">Home</a>
+        </span>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            
+                <a href="#tab-history" class="tab-btn active" >History</a>
+                <a href="#tab-friends" class="tab-btn" >Friends {% if friend_requests %}({{
+                    friend_requests|length }}){% endif %}</a>
+                <a href="#tab-achievements" class="tab-btn">achievements</a>
+            
+
+        </div>
+    </nav>
 
     <div class="search-wrap">
         <form class="search-form" action="" method="GET" id="user-search-form" onsubmit="searchUser(event)">
@@ -56,12 +77,7 @@
         </div>
 
         <div class="glass" style="padding:1.4rem 1.8rem;border-radius:20px;">
-            <div class="tab-bar">
-                <button class="tab-btn active" onclick="switchTab('history',this)">History</button>
-                <button class="tab-btn" onclick="switchTab('friends',this)">Friends {% if friend_requests %}({{
-                    friend_requests|length }}){% endif %}</button>
-                <button class="tab-btn" onclick="switchTab('achievements',this)">Achievements</button>
-            </div>
+            
 
             <div id="tab-history" class="tab-panel active">
                 {% if history %}
@@ -534,12 +550,45 @@
         });
 
 
-        function switchTab(name, btn) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
-            btn.classList.add('active');
+
+        const pill = document.getElementById('nav-pill');
+        const slider = document.getElementById('nav-slider');
+
+        function moveSlider(el) {
+            slider.style.left = el.offsetLeft + 'px';
+            slider.style.width = el.offsetWidth + 'px';
         }
+
+        function hide(el) {
+            const pages = ["tab-history", "tab-friends", "tab-achievements"];
+            for (const page of pages) {
+                if (page !== el) {
+                    document.getElementById(page).style.display = "none";
+                } else {
+                    document.getElementById(page).style.display = "";
+                }
+            }
+        }
+
+        pill.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function () {
+                pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                moveSlider(this);
+                hide(this.getAttribute('href').slice(1));
+            });
+        });
+
+        setTimeout(() => {
+            const active = pill.querySelector('a.active');
+            if (active) moveSlider(active);
+            hide('games');
+        }, 50);
+
+        window.addEventListener('resize', () => {
+            const cur = pill.querySelector('a.active');
+            if (cur) moveSlider(cur);
+        });
     </script>
 </body>
 
