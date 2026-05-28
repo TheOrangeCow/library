@@ -93,7 +93,7 @@
         </div>
 
         <div class="glass" style="padding:1.4rem 1.8rem;border-radius:20px;">
-            <div id="tab-history" class="tab-panel active">
+            <div id="tab-history" class="tab-panel">
                 {% if history %}
                 <table class="hist-table">
                     <thead>
@@ -120,7 +120,7 @@
                 {% endif %}
             </div>
 
-            <div id="tab-achievements" class="tab-panel">
+            <div id="tab-achievements" class="tab-panel" style="display: none">
                 {% if achievements %}
                 <div class="ach-grid">
                     {% for a in achievements %}
