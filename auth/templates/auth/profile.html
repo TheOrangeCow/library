@@ -29,10 +29,10 @@
         <div class="nav-pill" id="nav-pill">
             <div class="slider" id="nav-slider"></div>
             
-                <a href="#tab-history" class="tab-btn active" >History</a>
-                <a href="#tab-friends" class="tab-btn" >Friends {% if friend_requests %}({{
+                <a href="#tab-history">History</a>
+                <a href="#tab-friends">Friends {% if friend_requests %}({{
                     friend_requests|length }}){% endif %}</a>
-                <a href="#tab-achievements" class="tab-btn">achievements</a>
+                <a href="#tab-achievements">achievements</a>
             
 
         </div>
@@ -79,7 +79,7 @@
         <div class="glass" style="padding:1.4rem 1.8rem;border-radius:20px;">
             
 
-            <div id="tab-history" class="tab-panel active">
+            <div id="tab-history" class="tab-panel">
                 {% if history %}
                 <table class="hist-table">
                     <thead>
