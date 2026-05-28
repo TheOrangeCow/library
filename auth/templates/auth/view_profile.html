@@ -280,6 +280,35 @@
 </head>
 
 <body>
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· {{ target }}</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }})</span>
+        <span>
+            <a class="logout" href="/profile">Back</a>
+        </span>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#tab-history">History</a>
+            <a href="#tab-achievements">achievements</a>
+        </div>
+    </nav>
+
+    <div class="search-wrap">
+        <form class="search-form" action="" method="GET" id="user-search-form" onsubmit="searchUser(event)">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input class="search-input" type="text" id="user-search-input" placeholder="Search players…"
+                autocomplete="off" spellcheck="false">
+            <button class="search-btn" type="submit">View Profile</button>
+        </form>
+    </div>
+
     <div class="profile-wrap">
         <div class="profile-top">
             <canvas id="avatar-display" width="16" height="16"></canvas>
@@ -300,17 +329,17 @@
 
                     {% if friends %}
                     <form method="POST" action="/friend_remove/{{ target }}" style="display:inline;">
-                        <button class="act-btn danger">✕ Unfriend</button>
+                        <button class="act-btn danger">Unfriend</button>
                     </form>
                     {% elif req_sent %}
                     <span class="act-btn pending">Request Sent…</span>
                     {% elif req_received %}
                     <form method="POST" action="/friend_accept/{{ target }}" style="display:inline;">
-                        <button class="act-btn friend">✓ Accept Request</button>
+                        <button class="act-btn friend">Accept Request</button>
                     </form>
                     {% else %}
                     <form method="POST" action="/friend_request/{{ target }}" style="display:inline;">
-                        <button class="act-btn">+ Add Friend</button>
+                        <button class="act-btn">Add Friend</button>
                     </form>
                     {% endif %}
 
@@ -360,7 +389,7 @@
                     </tbody>
                 </table>
                 {% else %}
-                <p style="color:rgba(245,232,176,.4);font-size:.85rem;padding:.8rem 0;">No games played yet.</p>
+                <p style="color:var(--gold-dim);font-size:.85rem;padding:.8rem 0;">No games played yet.</p>
                 {% endif %}
             </div>
 
@@ -376,7 +405,7 @@
                     {% endfor %}
                 </div>
                 {% else %}
-                <p style="color:rgba(245,232,176,.4);font-size:.85rem;padding:.8rem 0;">No achievements unlocked yet.
+                <p style="color: var(--gold-dim);font-size:.85rem;padding:.8rem 0;">No achievements unlocked yet.
                 </p>
                 {% endif %}
             </div>
@@ -399,17 +428,57 @@
         }
         drawAvatar(document.getElementById('avatar-display'), AVATAR_DATA);
 
-        function switchTab(name, btn) {
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('tab-' + name).classList.add('active');
-            btn.classList.add('active');
-        }
-
         function toggleSend() {
             const p = document.getElementById('send-panel');
             p.classList.toggle('open');
         }
+        function searchUser(e) {
+            e.preventDefault();
+            const val = document.getElementById('user-search-input').value.trim();
+            if (val) window.location.href = '/u/' + encodeURIComponent(val);
+        }
+        const pill = document.getElementById('nav-pill');
+        const slider = document.getElementById('nav-slider');
+
+        function moveSlider(el) {
+            slider.style.left = el.offsetLeft + 'px';
+            slider.style.width = el.offsetWidth + 'px';
+        }
+
+        function hide(el) {
+            const pages = ["tab-history", "tab-friends", "tab-achievements"];
+            for (const page of pages) {
+                if (page !== el) {
+                    document.getElementById(page).style.display = "none";
+                } else {
+                    document.getElementById(page).style.display = "";
+                }
+            }
+        }
+
+        pill.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function () {
+                pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                moveSlider(this);
+                hide(this.getAttribute('href').slice(1));
+            });
+        });
+
+        setTimeout(() => {
+            const firstLink = pill.querySelector('a');
+            if (firstLink) {
+                firstLink.classList.add('active');
+                moveSlider(firstLink);
+                hide(firstLink.getAttribute('href').slice(1));
+            }
+        }, 50);
+
+        window.addEventListener('resize', () => {
+            const cur = pill.querySelector('a.active');
+            if (cur) moveSlider(cur);
+        });
+
     </script>
 </body>
 
