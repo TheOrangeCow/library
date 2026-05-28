@@ -18,7 +18,7 @@
 <body>
 
     <div id="header">
-        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Home</span></h1>
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Profile</span></h1>
         <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }})</span>
         <span>
             <a class="logout" href="/profile">Home</a>
@@ -582,7 +582,7 @@
         setTimeout(() => {
             const active = pill.querySelector('a.active');
             if (active) moveSlider(active);
-            hide('games');
+            hide('tab-history');
         }, 50);
 
         window.addEventListener('resize', () => {
