@@ -33,6 +33,70 @@
             }
         }
 
+        /* ── Search bar ── */
+        .search-wrap {
+            position: relative;
+            max-width: 900px;
+            margin: 1.5rem auto 0;
+            padding: 0 1rem;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: .4rem .4rem .4rem 1rem;
+            transition: border-color .2s, box-shadow .2s;
+        }
+
+        .search-form:focus-within {
+            border-color: var(--gold-alpha45);
+            box-shadow: 0 0 0 3px rgba(232, 184, 75, .08);
+        }
+
+        .search-icon {
+            color: var(--gold-dim);
+            font-size: .9rem;
+            flex-shrink: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            font-family: 'EB Garamond', serif;
+            font-size: .95rem;
+            color: var(--gold-light, #f5e8b0);
+            min-width: 0;
+        }
+
+        .search-input::placeholder {
+            color: var(--gold-dim);
+        }
+
+        .search-btn {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .1em;
+            padding: .35rem 1rem;
+            border: 1px solid var(--gold-alpha45);
+            background: rgba(232, 184, 75, .12);
+            color: var(--gold);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+            white-space: nowrap;
+        }
+
+        .search-btn:hover {
+            background: rgba(232, 184, 75, .25);
+            border-color: var(--gold);
+        }
+
         .avatar-section {
             display: flex;
             flex-direction: column;
@@ -59,6 +123,8 @@
             color: var(--gold);
             border-radius: 50px;
             cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
             transition: background .2s, border-color .2s;
         }
 
@@ -338,7 +404,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, .7);
+            background: rgba(0, 0, 0, .75);
             backdrop-filter: blur(8px);
             z-index: 200;
             display: flex;
@@ -352,9 +418,9 @@
             border: 1px solid var(--gold-alpha45);
             border-radius: 20px;
             padding: 1.6rem;
-            max-width: 520px;
+            max-width: 560px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 92vh;
             overflow-y: auto;
             box-shadow: 0 0 80px rgba(232, 184, 75, .15);
         }
@@ -364,86 +430,142 @@
             color: var(--gold);
             font-size: 1rem;
             letter-spacing: .1em;
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
 
-        .editor-layout {
+        .builder-layout {
             display: flex;
-            gap: 1.2rem;
+            gap: 1.4rem;
             align-items: flex-start;
             flex-wrap: wrap;
         }
 
-        #pixel-canvas {
-            image-rendering: pixelated;
-            border: 2px solid var(--gold-alpha45);
-            border-radius: 8px;
-            cursor: crosshair;
-            touch-action: none;
-        }
-
-        .editor-tools {
+        .builder-preview-col {
             display: flex;
             flex-direction: column;
-            gap: .7rem;
-            min-width: 140px;
-            flex: 1;
+            align-items: center;
+            gap: .8rem;
         }
 
-        .tool-label {
+        #char-preview {
+            image-rendering: pixelated;
+            width: 112px;
+            height: 112px;
+            border: 2px solid var(--gold-alpha45);
+            border-radius: 14px;
+            box-shadow: 0 0 28px rgba(0, 0, 0, .6);
+        }
+
+        .preview-label {
             font-family: 'Cinzel', serif;
-            font-size: .58rem;
-            letter-spacing: .1em;
+            font-size: .55rem;
+            letter-spacing: .12em;
             color: var(--gold-dim);
             text-transform: uppercase;
-            margin-bottom: .3rem;
         }
 
-        .palette {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 4px;
+        .builder-options {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .pal-swatch {
-            width: 22px;
-            height: 22px;
-            border-radius: 4px;
+        .opt-section-label {
+            font-family: 'Cinzel', serif;
+            font-size: .58rem;
+            letter-spacing: .12em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            margin-bottom: .45rem;
+        }
+
+
+        .swatch-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .swatch {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
             cursor: pointer;
             border: 2px solid transparent;
             transition: transform .15s, border-color .15s;
+            flex-shrink: 0;
         }
 
-        .pal-swatch:hover {
+        .swatch:hover {
             transform: scale(1.2);
         }
 
-        .pal-swatch.selected {
-            border-color: white;
+        .swatch.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 1px rgba(232, 184, 75, .6);
         }
 
-        #custom-color {
-            width: 100%;
-            height: 32px;
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            background: transparent;
-            cursor: pointer;
-            padding: 2px;
+        .opt-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
         }
+
+        .opt-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 7px 9px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .03);
+            cursor: pointer;
+            transition: border-color .18s, background .18s;
+        }
+
+        .opt-btn:hover {
+            border-color: var(--gold-alpha45);
+            background: rgba(232, 184, 75, .07);
+        }
+
+        .opt-btn.active {
+            border: 2px solid var(--gold);
+            background: rgba(232, 184, 75, .12);
+        }
+
+        .opt-canvas {
+            image-rendering: pixelated;
+            width: 38px;
+            height: 38px;
+        }
+
+        .opt-lbl {
+            font-family: 'Cinzel', serif;
+            font-size: .5rem;
+            letter-spacing: .07em;
+            color: var(--gold-dim);
+        }
+
+        .opt-btn.active .opt-lbl {
+            color: var(--gold);
+        }
+
 
         .editor-actions {
             display: flex;
             flex-wrap: wrap;
             gap: .5rem;
-            margin-top: .8rem;
+            margin-top: 1.2rem;
         }
 
         .ed-btn {
             font-family: 'Cinzel', serif;
             font-size: .58rem;
             letter-spacing: .1em;
-            padding: .3rem .8rem;
+            padding: .32rem .9rem;
             border: 1px solid var(--glass-border);
             background: rgba(232, 184, 75, .07);
             color: var(--gold);
@@ -464,39 +586,6 @@
 
         .ed-btn.primary:hover {
             background: rgba(232, 184, 75, .35);
-        }
-
-        .tool-row {
-            display: flex;
-            gap: .4rem;
-            flex-wrap: wrap;
-        }
-
-        .tool-btn {
-            font-family: 'Cinzel', serif;
-            font-size: .55rem;
-            letter-spacing: .08em;
-            padding: .25rem .6rem;
-            border: 1px solid var(--glass-border);
-            background: transparent;
-            color: var(--gold-dim);
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all .2s;
-        }
-
-        .tool-btn.active {
-            background: rgba(232, 184, 75, .15);
-            border-color: var(--gold-alpha45);
-            color: var(--gold);
-        }
-
-        #preview-big {
-            image-rendering: pixelated;
-            width: 64px;
-            height: 64px;
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
         }
 
         .save-toast {
@@ -521,6 +610,19 @@
 </head>
 
 <body>
+
+    <div class="search-wrap">
+        <form class="search-form" action="" method="GET" id="user-search-form" onsubmit="searchUser(event)">
+            <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input class="search-input" type="text" id="user-search-input" placeholder="Search players…"
+                autocomplete="off" spellcheck="false">
+            <button class="search-btn" type="submit">View Profile</button>
+        </form>
+    </div>
 
     <div class="profile-wrap">
 
@@ -574,7 +676,7 @@
                             <td class="{% if h.chips_delta >= 0 %}delta-pos{% else %}delta-neg{% endif %}">
                                 {{ '+' if h.chips_delta >= 0 else '' }}{{ h.chips_delta }}
                             </td>
-                            <td style="font-size:.72rem;color: var(--gold-dim)">
+                            <td style="font-size:.72rem;color:var(--gold-dim)">
                                 {{ h.timestamp|int|datetimeformat if h.timestamp else '—' }}
                             </td>
                         </tr>
@@ -587,7 +689,6 @@
             </div>
 
             <div id="tab-friends" class="tab-panel">
-
                 {% if friend_requests %}
                 <div class="section-title" style="margin-bottom:.6rem;">Incoming Requests</div>
                 {% for req in friend_requests %}
@@ -640,47 +741,42 @@
     <div class="modal-overlay" id="editor-modal" style="display:none;" onclick="maybeClose(event)">
         <div class="modal-box" onclick="event.stopPropagation()">
             <h3>Design Your Avatar</h3>
-            <div class="editor-layout">
-                <div>
-                    <canvas id="pixel-canvas" width="256" height="256"></canvas>
-                    <div style="margin-top:.6rem;display:flex;align-items:center;gap:.6rem;">
-                        <span style="font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-dim);">PREVIEW</span>
-                        <canvas id="preview-big" width="16" height="16"></canvas>
-                    </div>
+
+            <div class="builder-layout">
+
+                <div class="builder-preview-col">
+                    <span class="preview-label">Preview</span>
+                    <canvas id="char-preview" width="16" height="16"></canvas>
                 </div>
-                <div class="editor-tools">
+
+                <div class="builder-options">
+
                     <div>
-                        <div class="tool-label">Tool</div>
-                        <div class="tool-row">
-                            <button class="tool-btn active" id="tool-draw" onclick="setTool('draw',this)">Draw</button>
-                            <button class="tool-btn" id="tool-erase" onclick="setTool('erase',this)">Erase</button>
-                            <button class="tool-btn" id="tool-fill" onclick="setTool('fill',this)">Fill</button>
-                        </div>
+                        <div class="opt-section-label">Skin Tone</div>
+                        <div class="swatch-row" id="skin-swatches"></div>
                     </div>
+
                     <div>
-                        <div class="tool-label">Palette</div>
-                        <div class="palette" id="palette"></div>
+                        <div class="opt-section-label">Hair Style</div>
+                        <div class="opt-row" id="hair-options"></div>
                     </div>
+
                     <div>
-                        <div class="tool-label">Custom Colour</div>
-                        <input type="color" id="custom-color" value="#e8b84b">
+                        <div class="opt-section-label">Hair Colour</div>
+                        <div class="swatch-row" id="hair-swatches"></div>
                     </div>
+
                     <div>
-                        <div class="tool-label">Templates</div>
-                        <div class="tool-row">
-                            <button class="tool-btn" onclick="loadTemplate('face')">Face</button>
-                            <button class="tool-btn" onclick="loadTemplate('diamond')">Diamond</button>
-                            <button class="tool-btn" onclick="loadTemplate('star')">Star</button>
-                        </div>
+                        <div class="opt-section-label">Expression</div>
+                        <div class="opt-row" id="expr-options"></div>
                     </div>
-                    <div class="editor-actions">
-                        <button class="ed-btn" onclick="clearCanvas()">Clear</button>
-                        <button class="ed-btn" onclick="flipH()">Flip H</button>
-                        <button class="ed-btn" onclick="flipV()">Flip V</button>
-                        <button class="ed-btn primary" onclick="saveAvatar()">Save</button>
-                        <button class="ed-btn" onclick="closeEditor()">Cancel</button>
-                    </div>
+
                 </div>
+            </div>
+
+            <div class="editor-actions">
+                <button class="ed-btn primary" onclick="saveAvatar()">Save</button>
+                <button class="ed-btn" onclick="closeEditor()">Cancel</button>
             </div>
         </div>
     </div>
@@ -688,164 +784,293 @@
     <div class="save-toast" id="save-toast">Avatar Saved</div>
 
     <script>
-        const GRID = 16;
-        const CELL = 16;
-        let pixels = new Array(GRID * GRID).fill('#0d0d0d');
-        let currentColor = '#e8b84b';
-        let currentTool = 'draw';
-        let painting = false;
+        function searchUser(e) {
+            e.preventDefault();
+            const val = document.getElementById('user-search-input').value.trim();
+            if (val) window.location.href = '/u/' + encodeURIComponent(val);
+        }
 
-        const INITIAL_AVATAR = {{ avatar | tojson }};
-        if (INITIAL_AVATAR && INITIAL_AVATAR.length === 256) pixels = [...INITIAL_AVATAR];
+        const G = 16;
 
-        const PALETTE = [
-            '#0d0d0d', '#f5e8b0', '#e8b84b', '#b08a30', '#4ade80', '#f87171',
-            '#60a5fa', '#e879f9', '#fb923c', '#a78bfa', '#38bdf8', '#f472b6',
-            '#ffffff', '#6b7280', '#1e3a2f', '#2a1c00',
+        const SKIN_TONES = [
+            '#fde8c8', '#f5c899', '#e8a96a', '#c68642', '#8d5524', '#4a2912'
         ];
 
-        function buildPalette() {
-            const el = document.getElementById('palette');
+        const HAIR_COLORS = [
+            '#0d0d0d', '#2c1a0e', '#7a4520', '#c8860a', '#e8d5b0',
+            '#c0392b', '#8e44ad', '#2980b9', '#95a5a6'
+        ];
+
+        const HAIR_STYLES = [
+            {
+                id: 'bald', label: 'Bald',
+                pixels: (_hc) => ({})
+            },
+            {
+                id: 'short', label: 'Short',
+                pixels: (hc) => {
+                    const p = {};
+                    for (let x = 4; x <= 11; x++) { p[1 * G + x] = hc; p[2 * G + x] = hc; }
+                    [[3, 3], [3, 4], [3, 11], [3, 12], [4, 3], [4, 12]].forEach(([y, x]) => p[y * G + x] = hc);
+                    return p;
+                }
+            },
+            {
+                id: 'long', label: 'Long',
+                pixels: (hc) => {
+                    const p = {};
+                    for (let x = 4; x <= 11; x++) { p[1 * G + x] = hc; p[2 * G + x] = hc; }
+                    for (let y = 3; y <= 11; y++) { p[y * G + 3] = hc; p[y * G + 12] = hc; }
+                    [[3, 4], [3, 11], [4, 4], [4, 11]].forEach(([y, x]) => p[y * G + x] = hc);
+                    return p;
+                }
+            },
+            {
+                id: 'curly', label: 'Curly',
+                pixels: (hc) => {
+                    const p = {};
+                    [[0, 6], [0, 7], [0, 8], [0, 9], [1, 4], [1, 5], [1, 10], [1, 11],
+                    [2, 3], [2, 4], [2, 11], [2, 12], [3, 3], [3, 12],
+                    [1, 6], [1, 7], [1, 8], [1, 9]].forEach(([y, x]) => p[y * G + x] = hc);
+                    return p;
+                }
+            },
+            {
+                id: 'fringe', label: 'Fringe',
+                pixels: (hc) => {
+                    const p = {};
+                    for (let x = 4; x <= 11; x++) p[1 * G + x] = hc;
+                    for (let x = 4; x <= 9; x++) p[2 * G + x] = hc;
+                    for (let x = 4; x <= 7; x++) p[3 * G + x] = hc;
+                    [[2, 11], [3, 11], [4, 11], [2, 10], [3, 10]].forEach(([y, x]) => p[y * G + x] = hc);
+                    return p;
+                }
+            },
+            {
+                id: 'bun', label: 'Bun',
+                pixels: (hc) => {
+                    const p = {};
+                    for (let x = 5; x <= 10; x++) p[1 * G + x] = hc;
+                    [[0, 7], [0, 8], [1, 6], [1, 11], [2, 4], [2, 11], [3, 4], [3, 11]].forEach(([y, x]) => p[y * G + x] = hc);
+                    return p;
+                }
+            },
+            {
+                id: 'mohawk', label: 'Mohawk',
+                pixels: (hc) => {
+                    const p = {};
+                    [[0, 7], [0, 8], [1, 7], [1, 8], [2, 7], [2, 8]].forEach(([y, x]) => p[y * G + x] = hc);
+                    for (let x = 4; x <= 11; x++) p[3 * G + x] = hc;
+                    return p;
+                }
+            },
+        ];
+
+        const EXPRESSIONS = [
+            {
+                id: 'happy', label: 'Happy',
+                draw: (p) => {
+                    p[6 * G + 5] = '#1a1a1a'; p[6 * G + 6] = '#1a1a1a';
+                    p[6 * G + 9] = '#1a1a1a'; p[6 * G + 10] = '#1a1a1a';
+                    [7, 8].forEach(x => p[9 * G + x] = '#1a1a1a');
+                    p[8 * G + 6] = '#1a1a1a'; p[8 * G + 9] = '#1a1a1a';
+                    p[9 * G + 6] = '#c0392b'; p[9 * G + 9] = '#c0392b';
+                }
+            },
+            {
+                id: 'grin', label: 'Grin',
+                draw: (p) => {
+                    p[6 * G + 5] = '#1a1a1a'; p[6 * G + 6] = '#1a1a1a';
+                    p[6 * G + 9] = '#1a1a1a'; p[6 * G + 10] = '#1a1a1a';
+                    [5, 6, 7, 8, 9, 10].forEach(x => p[9 * G + x] = '#1a1a1a');
+                    p[8 * G + 5] = '#1a1a1a'; p[8 * G + 10] = '#1a1a1a';
+                    [6, 7, 8, 9].forEach(x => p[10 * G + x] = '#c0392b');
+                }
+            },
+            {
+                id: 'cool', label: 'Cool',
+                draw: (p) => {
+                    [4, 5, 6, 7, 8, 9, 10, 11].forEach(x => { p[6 * G + x] = '#1c2a3a'; p[7 * G + x] = '#1c2a3a'; });
+                    [7, 8].forEach(x => p[9 * G + x] = '#1a1a1a');
+                    [6, 7, 8, 9].forEach(x => p[10 * G + x] = '#1a1a1a');
+                    p[9 * G + 6] = '#1a1a1a'; p[9 * G + 9] = '#1a1a1a';
+                }
+            },
+            {
+                id: 'sad', label: 'Sad',
+                draw: (p) => {
+                    p[6 * G + 5] = '#1a1a1a'; p[6 * G + 6] = '#1a1a1a';
+                    p[6 * G + 9] = '#1a1a1a'; p[6 * G + 10] = '#1a1a1a';
+                    [7, 8].forEach(x => p[10 * G + x] = '#1a1a1a');
+                    p[9 * G + 6] = '#1a1a1a'; p[9 * G + 9] = '#1a1a1a';
+                    [6, 7, 8, 9].forEach(x => p[8 * G + x] = '#1a1a1a');
+                }
+            },
+            {
+                id: 'wink', label: 'Wink',
+                draw: (p) => {
+                    p[6 * G + 5] = '#1a1a1a'; p[6 * G + 6] = '#1a1a1a';
+                    [8, 9, 10].forEach(x => p[7 * G + x] = '#1a1a1a');
+                    [7, 8].forEach(x => p[9 * G + x] = '#1a1a1a');
+                    p[8 * G + 6] = '#1a1a1a'; p[8 * G + 9] = '#1a1a1a';
+                    p[9 * G + 6] = '#c0392b'; p[9 * G + 9] = '#c0392b';
+                }
+            },
+            {
+                id: 'surprised', label: 'Woah',
+                draw: (p) => {
+                    [[5, 5], [5, 6], [5, 9], [5, 10], [6, 4], [6, 7], [6, 8], [6, 11]].forEach(([y, x]) => p[y * G + x] = '#1a1a1a');
+                    [7, 8, 9].forEach(y => [7, 8].forEach(x => p[y * G + x] = '#1a1a1a'));
+                    p[10 * G + 6] = '#1a1a1a'; p[10 * G + 9] = '#1a1a1a';
+                }
+            },
+            {
+                id: 'smirk', label: 'Smirk',
+                draw: (p) => {
+                    p[6 * G + 5] = '#1a1a1a'; p[6 * G + 6] = '#1a1a1a';
+                    p[6 * G + 9] = '#1a1a1a'; p[6 * G + 10] = '#1a1a1a';
+                    [8, 9].forEach(x => p[9 * G + x] = '#1a1a1a');
+                    p[8 * G + 9] = '#1a1a1a';
+                    p[9 * G + 9] = '#c0392b';
+                }
+            },
+        ];
+
+
+        const INITIAL_AVATAR = {{ avatar | tojson }};
+
+        let builderState = {
+            skin: SKIN_TONES[1],
+            hair: HAIR_STYLES[1],
+            hairColor: HAIR_COLORS[0],
+            expr: EXPRESSIONS[0],
+        };
+
+        function buildPixels(skin, hair, hairColor, expr) {
+            const p = new Array(G * G).fill('#0d0d0d');
+            for (let y = 3; y <= 12; y++) for (let x = 4; x <= 11; x++) p[y * G + x] = skin;
+            for (let y = 5; y <= 8; y++) { p[y * G + 3] = skin; p[y * G + 12] = skin; }
+            p[3 * G + 4] = '#0d0d0d'; p[3 * G + 11] = '#0d0d0d';
+            for (let x = 6; x <= 9; x++) { p[13 * G + x] = skin; p[14 * G + x] = skin; }
+            const hairMap = hair.pixels(hairColor);
+            Object.entries(hairMap).forEach(([i, c]) => p[parseInt(i)] = c);
+            expr.draw(p, skin);
+            return p;
+        }
+
+        function renderToCanvas(canvas, pixels) {
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, G, G);
+            pixels.forEach((c, i) => {
+                ctx.fillStyle = c || '#0d0d0d';
+                ctx.fillRect(i % G, Math.floor(i / G), 1, 1);
+            });
+        }
+
+        function updatePreview() {
+            const pxs = buildPixels(
+                builderState.skin,
+                builderState.hair,
+                builderState.hairColor,
+                builderState.expr
+            );
+            renderToCanvas(document.getElementById('char-preview'), pxs);
+        }
+
+        function makeMiniCanvas(pixels) {
+            const c = document.createElement('canvas');
+            c.width = G; c.height = G;
+            c.className = 'opt-canvas';
+            renderToCanvas(c, pixels);
+            return c;
+        }
+
+        function buildHairOptions() {
+            const el = document.getElementById('hair-options');
             el.innerHTML = '';
-            PALETTE.forEach(c => {
+            HAIR_STYLES.forEach(h => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn' + (h.id === builderState.hair.id ? ' active' : '');
+                const preview = new Array(G * G).fill('#0d0d0d');
+                for (let y = 3; y <= 12; y++) for (let x = 4; x <= 11; x++) preview[y * G + x] = builderState.skin;
+                for (let y = 5; y <= 8; y++) { preview[y * G + 3] = builderState.skin; preview[y * G + 12] = builderState.skin; }
+                const hm = h.pixels(builderState.hairColor);
+                Object.entries(hm).forEach(([i, c]) => preview[parseInt(i)] = c);
+                const lbl = document.createElement('span');
+                lbl.className = 'opt-lbl';
+                lbl.textContent = h.label;
+                btn.appendChild(makeMiniCanvas(preview));
+                btn.appendChild(lbl);
+                btn.onclick = () => {
+                    builderState.hair = h;
+                    document.querySelectorAll('#hair-options .opt-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updatePreview();
+                };
+                el.appendChild(btn);
+            });
+        }
+
+        function buildExprOptions() {
+            const el = document.getElementById('expr-options');
+            el.innerHTML = '';
+            EXPRESSIONS.forEach(ex => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn' + (ex.id === builderState.expr.id ? ' active' : '');
+                const preview = new Array(G * G).fill('#0d0d0d');
+                for (let y = 3; y <= 12; y++) for (let x = 4; x <= 11; x++) preview[y * G + x] = builderState.skin;
+                for (let y = 5; y <= 8; y++) { preview[y * G + 3] = builderState.skin; preview[y * G + 12] = builderState.skin; }
+                ex.draw(preview, builderState.skin);
+                const lbl = document.createElement('span');
+                lbl.className = 'opt-lbl';
+                lbl.textContent = ex.label;
+                btn.appendChild(makeMiniCanvas(preview));
+                btn.appendChild(lbl);
+                btn.onclick = () => {
+                    builderState.expr = ex;
+                    document.querySelectorAll('#expr-options .opt-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updatePreview();
+                };
+                el.appendChild(btn);
+            });
+        }
+
+        function buildSwatches(containerId, colors, getCurrent, onPick) {
+            const el = document.getElementById(containerId);
+            el.innerHTML = '';
+            colors.forEach(c => {
                 const s = document.createElement('div');
-                s.className = 'pal-swatch' + (c === currentColor ? ' selected' : '');
+                s.className = 'swatch' + (c === getCurrent() ? ' active' : '');
                 s.style.background = c;
-                s.onclick = () => { currentColor = c; document.getElementById('custom-color').value = c; document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('selected')); s.classList.add('selected'); };
+                s.onclick = () => {
+                    onPick(c);
+                    el.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+                    s.classList.add('active');
+                };
                 el.appendChild(s);
             });
         }
-        buildPalette();
-        document.getElementById('custom-color').oninput = e => {
-            currentColor = e.target.value;
-            document.querySelectorAll('.pal-swatch').forEach(x => x.classList.remove('selected'));
-        };
 
-        const canvas = document.getElementById('pixel-canvas');
-        const ctx = canvas.getContext('2d');
-        const preview = document.getElementById('preview-big');
-        const pctx = preview.getContext('2d');
-
-        function renderCanvas() {
-            for (let i = 0; i < GRID * GRID; i++) {
-                const x = (i % GRID) * CELL, y = Math.floor(i / GRID) * CELL;
-                ctx.fillStyle = pixels[i] || '#0d0d0d';
-                ctx.fillRect(x, y, CELL, CELL);
-            }
-            ctx.strokeStyle = 'rgba(255,255,255,0.06)';
-            ctx.lineWidth = 0.5;
-            for (let i = 0; i <= GRID; i++) {
-                ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, GRID * CELL); ctx.stroke();
-                ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(GRID * CELL, i * CELL); ctx.stroke();
-            }
-            for (let i = 0; i < GRID * GRID; i++) {
-                const x = i % GRID, y = Math.floor(i / GRID);
-                pctx.fillStyle = pixels[i] || '#0d0d0d';
-                pctx.fillRect(x, y, 1, 1);
-            }
-        }
-
-        function getIdx(e) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width, scaleY = canvas.height / rect.height;
-            const cx = (e.clientX || e.touches[0].clientX) - rect.left;
-            const cy = (e.clientY || e.touches[0].clientY) - rect.top;
-            const gx = Math.floor(cx * scaleX / CELL), gy = Math.floor(cy * scaleY / CELL);
-            if (gx < 0 || gx >= GRID || gy < 0 || gy >= GRID) return -1;
-            return gy * GRID + gx;
-        }
-
-        function paint(idx) {
-            if (idx < 0) return;
-            if (currentTool === 'draw') pixels[idx] = currentColor;
-            else if (currentTool === 'erase') pixels[idx] = '#0d0d0d';
-            renderCanvas();
-        }
-
-        function floodFill(idx, targetColor, fillColor) {
-            if (idx < 0 || idx >= GRID * GRID) return;
-            if (pixels[idx] !== targetColor) return;
-            if (targetColor === fillColor) return;
-            pixels[idx] = fillColor;
-            const x = idx % GRID, y = Math.floor(idx / GRID);
-            if (x > 0) floodFill(idx - 1, targetColor, fillColor);
-            if (x < GRID - 1) floodFill(idx + 1, targetColor, fillColor);
-            if (y > 0) floodFill(idx - GRID, targetColor, fillColor);
-            if (y < GRID - 1) floodFill(idx + GRID, targetColor, fillColor);
-        }
-
-        canvas.addEventListener('mousedown', e => { painting = true; const i = getIdx(e); if (currentTool === 'fill') { floodFill(i, pixels[i], currentColor); renderCanvas(); } else paint(i); });
-        canvas.addEventListener('mousemove', e => { if (painting) paint(getIdx(e)); });
-        canvas.addEventListener('mouseup', () => painting = false);
-        canvas.addEventListener('mouseleave', () => painting = false);
-        canvas.addEventListener('touchstart', e => { e.preventDefault(); painting = true; const i = getIdx(e); if (currentTool === 'fill') { floodFill(i, pixels[i], currentColor); renderCanvas(); } else paint(i); }, { passive: false });
-        canvas.addEventListener('touchmove', e => { e.preventDefault(); if (painting) paint(getIdx(e)); }, { passive: false });
-        canvas.addEventListener('touchend', () => painting = false);
-
-        function setTool(t, btn) {
-            currentTool = t;
-            document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        function clearCanvas() { pixels = new Array(GRID * GRID).fill('#0d0d0d'); renderCanvas(); }
-        function flipH() {
-            const n = [];
-            for (let y = 0; y < GRID; y++)for (let x = 0; x < GRID; x++)n[y * GRID + x] = pixels[y * GRID + (GRID - 1 - x)];
-            pixels = n; renderCanvas();
-        }
-        function flipV() {
-            const n = [];
-            for (let y = 0; y < GRID; y++)for (let x = 0; x < GRID; x++)n[y * GRID + x] = pixels[(GRID - 1 - y) * GRID + x];
-            pixels = n; renderCanvas();
-        }
-
-        const TEMPLATES = {
-            face: (() => {
-                const t = new Array(256).fill('#0d0d0d');
-                const skin = '#e8b84b', eye = '#0d0d0d', mouth = '#b08a30';
-                for (let y = 4; y < 12; y++)for (let x = 4; x < 12; x++)t[y * 16 + x] = skin;
-                [[5, 6], [5, 9]].forEach(([y, x]) => t[y * 16 + x] = eye);
-                [7, 8, 9].forEach(x => t[9 * 16 + x] = mouth);
-                return t;
-            })(),
-            diamond: (() => {
-                const t = new Array(256).fill('#0d0d0d');
-                const c = '#60a5fa', d = '#38bdf8';
-                [[7, 7], [7, 8], [8, 6], [8, 7], [8, 8], [8, 9], [9, 7], [9, 8]].forEach(([y, x]) => t[y * 16 + x] = d);
-                [[6, 7], [6, 8], [7, 5], [7, 6], [7, 9], [7, 10], [8, 5], [8, 10], [9, 6], [9, 9], [10, 7], [10, 8]].forEach(([y, x]) => t[y * 16 + x] = c);
-                return t;
-            })(),
-            star: (() => {
-                const t = new Array(256).fill('#0d0d0d');
-                const s = '#e8b84b';
-                [[6, 7], [6, 8], [7, 5], [7, 6], [7, 7], [7, 8], [7, 9], [7, 10], [8, 6], [8, 7], [8, 8], [8, 9], [9, 5], [9, 6], [9, 9], [9, 10], [10, 5], [10, 10]].forEach(([y, x]) => t[y * 16 + x] = s);
-                return t;
-            })()
-        };
-        function loadTemplate(n) { pixels = [...TEMPLATES[n]]; renderCanvas(); }
-
-        function openEditor() {
-            document.getElementById('editor-modal').style.display = 'flex';
-            renderCanvas();
-        }
-        function closeEditor() { document.getElementById('editor-modal').style.display = 'none'; }
-        function maybeClose(e) { if (e.target === document.getElementById('editor-modal')) closeEditor(); }
-
-        async function saveAvatar() {
-            const res = await fetch('/save_avatar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pixels }) });
-            if (res.ok) {
-                closeEditor();
-                drawAvatarOnEl(document.getElementById('avatar-display'), pixels);
-                const t = document.getElementById('save-toast');
-                t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000);
-            }
+        function buildAllSwatches() {
+            buildSwatches(
+                'skin-swatches', SKIN_TONES,
+                () => builderState.skin,
+                (c) => { builderState.skin = c; buildHairOptions(); buildExprOptions(); updatePreview(); }
+            );
+            buildSwatches(
+                'hair-swatches', HAIR_COLORS,
+                () => builderState.hairColor,
+                (c) => { builderState.hairColor = c; buildHairOptions(); updatePreview(); }
+            );
         }
 
         function drawAvatarOnEl(el, pxData) {
             const c = el.getContext('2d');
             c.clearRect(0, 0, 16, 16);
             if (!pxData || pxData.length !== 256) {
-                c.fillStyle = '#1e3a2f'; c.fillRect(0, 0, 16, 16);
+                c.fillStyle = '#1e3a2f';
+                c.fillRect(0, 0, 16, 16);
                 return;
             }
             pxData.forEach((col, i) => {
@@ -854,14 +1079,54 @@
             });
         }
 
+        function openEditor() {
+            document.getElementById('editor-modal').style.display = 'flex';
+            buildAllSwatches();
+            buildHairOptions();
+            buildExprOptions();
+            updatePreview();
+        }
+
+        function closeEditor() {
+            document.getElementById('editor-modal').style.display = 'none';
+        }
+
+        function maybeClose(e) {
+            if (e.target === document.getElementById('editor-modal')) closeEditor();
+        }
+
+        async function saveAvatar() {
+            const pixels = buildPixels(
+                builderState.skin,
+                builderState.hair,
+                builderState.hairColor,
+                builderState.expr
+            );
+            const res = await fetch('/save_avatar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pixels })
+            });
+            if (res.ok) {
+                closeEditor();
+                drawAvatarOnEl(document.getElementById('avatar-display'), pixels);
+                const t = document.getElementById('save-toast');
+                t.style.opacity = '1';
+                setTimeout(() => t.style.opacity = '0', 2000);
+            }
+        }
+
+
         drawAvatarOnEl(document.getElementById('avatar-display'), INITIAL_AVATAR);
 
         document.querySelectorAll('.friend-avatar[data-user]').forEach(el => {
             const u = el.dataset.user;
-            fetch('/api/avatar/' + u).then(r => r.json()).then(d => {
-                drawAvatarOnEl(el, d.pixels);
-            }).catch(() => { });
+            fetch('/api/avatar/' + u)
+                .then(r => r.json())
+                .then(d => drawAvatarOnEl(el, d.pixels))
+                .catch(() => { });
         });
+
 
         function switchTab(name, btn) {
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
