@@ -62,7 +62,7 @@
 
             <form method="POST" action="/crash/create">
                 <label style="font-size:0.85rem;color: var(--gold-dim);">
-                   <input class="index" type="checkbox" name="public" id="pub" checked>
+                    <input class="index" type="checkbox" name="public" id="pub" checked>
                 </label><br><br>
                 <button class="index" type="submit">Create Game</button>
             </form>
@@ -86,7 +86,7 @@
                 const r = await fetch('/crash/rooms');
                 const data = await r.json();
                 if (!data.rooms.length) {
-                    list.innerHTML = '<div class="no-rooms">No public rooms open right now.</div>';
+                    list.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
                     return;
                 }
                 list.innerHTML = data.rooms.map(room => `
@@ -106,6 +106,65 @@
         }
         loadRooms();
         setInterval(loadRooms, 6000);
+
+        const socket = io();
+        socket.on("connect", () => {
+            socket.emit("set_page", { page: `Lobby` });
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'hidden') {
+                socket.emit('tab_hidden');
+            } else {
+                socket.emit('tab_visible');
+            }
+        });
+
+        const pill = document.getElementById('nav-pill');
+        const slider = document.getElementById('nav-slider');
+
+        function moveSlider(el) {
+            slider.style.left = el.offsetLeft + 'px';
+            slider.style.width = el.offsetWidth + 'px';
+        }
+
+        function hide(el) {
+            const pages = ["rooms", "rules", "strategy"];
+            for (const page of pages) {
+                if (page !== el) {
+                    document.getElementById(page).style.display = "none";
+                } else {
+                    document.getElementById(page).style.display = "";
+                }
+            }
+        }
+
+        pill.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function () {
+                pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+                this.classList.add('active');
+                moveSlider(this);
+                hide(this.getAttribute('href').slice(1));
+            });
+        });
+
+        function init() {
+            const first = pill.querySelector('a');
+            first.classList.add('active');
+            moveSlider(first);
+            hide('rooms');
+        }
+
+        if (document.fonts) {
+            document.fonts.ready.then(init);
+        } else {
+            window.addEventListener('load', init);
+        }
+
+        window.addEventListener('resize', () => {
+            const cur = pill.querySelector('a.active');
+            if (cur) moveSlider(cur);
+        });
     </script>
 </body>
 
