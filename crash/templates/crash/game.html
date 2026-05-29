@@ -37,12 +37,6 @@
             flex-shrink: 0;
         }
 
-        .hdr-right {
-            display: flex;
-            align-items: center;
-            gap: 1.1rem;
-        }
-
         .main-area {
             display: flex;
             flex: 1;
@@ -368,10 +362,10 @@
 
     <div id="header">
         <h1>Crash <span>· {{ code }}</span></h1>
-        <div class="hdr-right">
-            <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span>
             <a class="logout" href="/crash">Leave</a>
-        </div>
+        </span>
     </div>
 
     <div class="main-area">
