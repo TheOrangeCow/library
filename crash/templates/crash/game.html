@@ -429,7 +429,6 @@
         socket.on("crash_error", (d) => showNotif(d.msg));
         socket.on("crash_cashed_out", (d) => {
             myChips += d.winnings;
-            document.getElementById('chips-disp').textContent = myChips;
             showCashoutToast(`+${d.winnings} @ ${d.multiplier}×`);
         });
         socket.on("disconnect", () => showNotif("Disconnected — reconnecting…"));
@@ -439,7 +438,6 @@
             const mult = document.getElementById('multiplier');
             const phase = document.getElementById('phase-label');
             const sub = document.getElementById('sub-label');
-            const overlay = document.getElementById('lobby-overlay');
             const rocket = document.getElementById('rocket');
             const trail = document.getElementById('trail');
             const cashBtn = document.getElementById('cashout-btn');
@@ -452,7 +450,6 @@
             cashBtn.classList.remove('visible');
 
             if (p === 'lobby') {
-                overlay.style.display = 'flex';
                 mult.textContent = '1.00×';
                 phase.textContent = 'Lobby';
                 sub.textContent = 'Waiting for host to start';
@@ -462,7 +459,6 @@
                 betBtn.disabled = false;
 
             } else if (p === 'countdown') {
-                overlay.style.display = 'none';
                 mult.classList.add('countdown-mode');
                 mult.textContent = state.countdown;
                 phase.textContent = 'Launching in';
@@ -472,7 +468,6 @@
                 trail.style.height = '0'; trailH = 0;
 
             } else if (p === 'flying') {
-                overlay.style.display = 'none';
                 mult.textContent = state.multiplier.toFixed(2) + '×';
                 phase.textContent = 'Flying';
                 sub.textContent = '';
