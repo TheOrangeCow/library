@@ -1,623 +1,663 @@
 <!DOCTYPE html>
-<html data-theme="{{ theme }}">
-
+<html lang="en">
 <head>
-    <title>Crash · Library</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
-        rel="stylesheet">
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRASH — #{{ code }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style>
-        #crash-wrap {
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 1rem 1rem 4rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
+  :root {
+    --bg:      #080a0f;
+    --surface: #0d1017;
+    --border:  #1c2030;
+    --accent:  #e8ff47;
+    --red:     #ff3c5a;
+    --blue:    #7dd3fc;
+    --text:    #c8d0e0;
+    --muted:   #4a5268;
+    --glow:    0 0 32px rgba(232,255,71,.22);
+  }
 
-        #display-card {
-            background: var(--glass-bg, rgba(10, 20, 14, .7));
-            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 240px;
-            position: relative;
-            overflow: hidden;
-        }
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow: hidden;
+  }
 
-        #display-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 50% 110%, rgba(212, 168, 67, .08) 0%, transparent 70%);
-            pointer-events: none;
-        }
+  .grid-bg {
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(28,32,48,.5) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28,32,48,.5) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-        #multiplier-val {
-            font-family: 'Cinzel', serif;
-            font-size: clamp(3.5rem, 10vw, 6rem);
-            font-weight: 900;
-            color: var(--gold, #d4a843);
-            line-height: 1;
-            transition: color .15s;
-            text-shadow: 0 0 40px rgba(212, 168, 67, .35);
-        }
+  #app {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-rows: 52px 1fr;
+    grid-template-columns: 1fr 280px;
+    height: 100vh;
+    gap: 0;
+  }
 
-        #multiplier-val.crashed {
-            color: #c0392b;
-            text-shadow: 0 0 40px rgba(192, 57, 43, .5);
-        }
+  /* ── TOP BAR ── */
+  #topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 20px;
+    justify-content: space-between;
+  }
 
-        #multiplier-val.safe {
-            color: #27ae60;
-            text-shadow: 0 0 40px rgba(39, 174, 96, .4);
-        }
+  .tb-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-right: 24px;
+  }
 
-        #phase-label {
-            font-family: 'EB Garamond', serif;
-            font-size: .85rem;
-            letter-spacing: .14em;
-            color: var(--gold-dim, rgba(212, 168, 67, .55));
-            margin-top: .5rem;
-            text-transform: uppercase;
-        }
+  .tb-code {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+  }
+  .tb-code span { color: var(--text); }
 
-        #rocket {
-            font-size: 2.2rem;
-            position: absolute;
-            bottom: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            transition: bottom 2s ease-out, left 2s ease-out;
-            filter: drop-shadow(0 0 8px rgba(212, 168, 67, .5));
-        }
+  .tb-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
 
-        #bet-card {
-            background: var(--glass-bg, rgba(10, 20, 14, .7));
-            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
-            border-radius: 20px;
-            padding: 1.4rem 1.8rem;
-        }
+  .chips-display {
+    font-size: 13px;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+  }
+  .chips-display::before { content: '◈ '; opacity: .5; }
 
-        .bet-row {
-            display: flex;
-            gap: .7rem;
-            flex-wrap: wrap;
-            align-items: center;
-            margin-bottom: .9rem;
-        }
+  .tb-user {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
 
-        #bet-input {
-            flex: 1;
-            min-width: 100px;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(212, 168, 67, .25);
-            border-radius: 10px;
-            color: var(--gold, #d4a843);
-            font-family: 'Cinzel', serif;
-            font-size: 1rem;
-            padding: .5rem .8rem;
-            outline: none;
-        }
+  .leave-btn {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    transition: color .15s, border-color .15s;
+    text-decoration: none;
+  }
+  .leave-btn:hover { color: var(--red); border-color: var(--red); }
 
-        #bet-input:focus {
-            border-color: var(--gold, #d4a843);
-        }
+  /* ── MAIN STAGE ── */
+  #stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+    overflow: hidden;
+    gap: 0;
+  }
 
-        .quick-btns {
-            display: flex;
-            gap: .5rem;
-            flex-wrap: wrap;
-        }
+  #phase-label {
+    position: absolute;
+    top: 20px; left: 0; right: 0;
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color .3s;
+  }
 
-        .quick-btn {
-            background: rgba(212, 168, 67, .1);
-            border: 1px solid rgba(212, 168, 67, .2);
-            border-radius: 8px;
-            color: var(--gold, #d4a843);
-            font-family: 'Cinzel', serif;
-            font-size: .75rem;
-            padding: .3rem .7rem;
-            cursor: pointer;
-            transition: background .15s;
-        }
+  #multiplier {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 14vw, 140px);
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    text-shadow: var(--glow);
+    line-height: 1;
+    transition: color .2s, text-shadow .2s;
+    position: relative;
+    z-index: 1;
+  }
+  #multiplier.crashed {
+    color: var(--red);
+    text-shadow: 0 0 32px rgba(255,60,90,.35);
+    animation: shake .25s ease;
+  }
+  #multiplier.countdown-mode {
+    font-size: clamp(64px, 10vw, 100px);
+    color: var(--blue);
+    text-shadow: 0 0 32px rgba(125,211,252,.3);
+  }
 
-        .quick-btn:hover {
-            background: rgba(212, 168, 67, .22);
-        }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20%      { transform: translateX(-6px) rotate(-1deg); }
+    40%      { transform: translateX(6px) rotate(1deg); }
+    60%      { transform: translateX(-4px); }
+    80%      { transform: translateX(4px); }
+  }
 
-        .action-btn {
-            font-family: 'Cinzel', serif;
-            font-size: .9rem;
-            font-weight: 600;
-            letter-spacing: .08em;
-            border: none;
-            border-radius: 12px;
-            padding: .6rem 1.6rem;
-            cursor: pointer;
-            transition: opacity .2s, transform .1s;
-        }
+  #sub-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.14em;
+    margin-top: 8px;
+    min-height: 20px;
+    text-transform: uppercase;
+  }
 
-        .action-btn:active {
-            transform: scale(.97);
-        }
+  #cashout-area {
+    position: absolute;
+    bottom: 28px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+  }
 
-        .action-btn:disabled {
-            opacity: .35;
-            cursor: default;
-        }
+  #cashout-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.14em;
+    padding: 14px 56px;
+    background: var(--accent);
+    color: #080a0f;
+    border: none;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+    display: none;
+    position: relative;
+    overflow: hidden;
+  }
+  #cashout-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,.2), transparent 50%);
+    pointer-events: none;
+  }
+  #cashout-btn:hover { opacity: .88; }
+  #cashout-btn:active { transform: scale(.97); }
+  #cashout-btn.visible { display: block; }
 
-        #btn-bet {
-            background: linear-gradient(135deg, #c8860a, #d4a843);
-            color: #0a1410;
-        }
+  #rocket {
+    position: absolute;
+    font-size: 36px;
+    bottom: 120px; left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity .3s;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 0 12px var(--accent));
+  }
+  #rocket.flying { opacity: 1; animation: rocket-float 1.4s ease-in-out infinite alternate; }
+  #rocket.crashed { opacity: 1; filter: drop-shadow(0 0 16px var(--red)); animation: none; }
+  @keyframes rocket-float {
+    from { transform: translateX(-50%) translateY(0) rotate(-8deg); }
+    to   { transform: translateX(-50%) translateY(-18px) rotate(8deg); }
+  }
 
-        #btn-cashout {
-            background: linear-gradient(135deg, #1a7a3e, #27ae60);
-            color: #fff;
-            display: none;
-        }
+  .trail {
+    position: absolute;
+    bottom: 120px; left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 0;
+    background: linear-gradient(to bottom, rgba(232,255,71,0), rgba(232,255,71,.35));
+    transition: height .15s linear;
+    pointer-events: none;
+  }
 
-        #chip-display {
-            font-family: 'EB Garamond', serif;
-            font-size: .85rem;
-            color: var(--gold-dim, rgba(212, 168, 67, .55));
-        }
+  /* ── SIDEBAR ── */
+  #sidebar {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
 
-        #bet-error {
-            color: #c0392b;
-            font-size: .8rem;
-            font-family: 'EB Garamond', serif;
-            min-height: 1.1rem;
-        }
+  .sidebar-section {
+    padding: 16px 18px;
+    border-bottom: 1px solid var(--border);
+  }
 
-        .auto-row {
-            display: flex;
-            align-items: center;
-            gap: .7rem;
-            font-family: 'EB Garamond', serif;
-            font-size: .85rem;
-            color: var(--gold-dim, rgba(212, 168, 67, .55));
-        }
+  .sidebar-label {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
 
-        #auto-input {
-            width: 70px;
-            background: rgba(255, 255, 255, .04);
-            border: 1px solid rgba(212, 168, 67, .2);
-            border-radius: 8px;
-            color: var(--gold, #d4a843);
-            font-family: 'Cinzel', serif;
-            font-size: .85rem;
-            padding: .3rem .5rem;
-            outline: none;
-        }
+  #bet-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
 
-        #players-card {
-            background: var(--glass-bg, rgba(10, 20, 14, .7));
-            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
-            border-radius: 20px;
-            padding: 1.2rem 1.6rem;
-        }
+  .amount-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
 
-        #players-card h3 {
-            font-family: 'Cinzel', serif;
-            font-size: .8rem;
-            letter-spacing: .12em;
-            color: var(--gold-dim, rgba(212, 168, 67, .55));
-            text-transform: uppercase;
-            margin-bottom: .8rem;
-        }
+  .quick-btn {
+    flex: 1;
+    min-width: 44px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 7px 4px;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: color .15s, border-color .15s;
+    text-align: center;
+  }
+  .quick-btn:hover { color: var(--accent); border-color: rgba(232,255,71,.4); }
 
-        #player-list {
-            display: flex;
-            flex-direction: column;
-            gap: .35rem;
-        }
+  #bet-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  #bet-input:focus { border-color: var(--accent); }
 
-        .player-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-family: 'EB Garamond', serif;
-            font-size: .88rem;
-            padding: .25rem .1rem;
-            border-bottom: 1px solid rgba(212, 168, 67, .07);
-        }
+  #bet-btn {
+    width: 100%;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.12em;
+    background: var(--accent);
+    color: #080a0f;
+    border: none;
+    padding: 11px;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  #bet-btn:hover { opacity: .85; }
+  #bet-btn:disabled { opacity: .25; cursor: default; }
 
-        .player-row .p-name {
-            color: var(--gold, #d4a843);
-        }
+  #start-btn {
+    width: 100%;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    letter-spacing: 0.12em;
+    background: transparent;
+    color: var(--blue);
+    border: 1px solid rgba(125,211,252,.4);
+    padding: 11px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    margin-top: 8px;
+    display: none;
+  }
+  #start-btn:hover { background: rgba(125,211,252,.08); }
+  #start-btn.visible { display: block; }
 
-        .player-row .p-bet {
-            color: var(--gold-dim, rgba(212, 168, 67, .55));
-            font-size: .8rem;
-        }
+  #players-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 18px;
+  }
+  #players-list::-webkit-scrollbar { width: 3px; }
+  #players-list::-webkit-scrollbar-thumb { background: var(--border); }
 
-        .player-row .p-win {
-            color: #27ae60;
-            font-weight: 600;
-        }
+  .player-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(28,32,48,.7);
+    gap: 8px;
+  }
+  .player-row:last-child { border-bottom: none; }
 
-        .player-row .p-lose {
-            color: #c0392b;
-        }
+  .p-name {
+    font-size: 12px;
+    color: var(--text);
+    letter-spacing: 0.04em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+  .p-name.is-host::after { content: ' ★'; color: var(--accent); font-size: 10px; }
 
-        #history-card {
-            background: var(--glass-bg, rgba(10, 20, 14, .7));
-            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
-            border-radius: 20px;
-            padding: 1.2rem 1.6rem;
-        }
+  .p-bet {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .p-bet.cashed { color: var(--accent); }
+  .p-bet.lost   { color: var(--red); opacity: .5; }
 
-        #history-card h3 {
-            font-family: 'Cinzel', serif;
-            font-size: .8rem;
-            letter-spacing: .12em;
-            color: var(--gold-dim, rgba(212, 168, 67, .55));
-            text-transform: uppercase;
-            margin-bottom: .7rem;
-        }
+  #error-toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(255,60,90,.12);
+    border: 1px solid rgba(255,60,90,.4);
+    color: var(--red);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    padding: 10px 24px;
+    transition: transform .25s ease, opacity .25s;
+    opacity: 0;
+    z-index: 100;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  #error-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
 
-        #history-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .4rem;
-        }
+  #cashout-toast {
+    position: fixed;
+    top: 80px; left: 50%;
+    transform: translateX(-50%) translateY(-40px);
+    background: rgba(232,255,71,.1);
+    border: 1px solid rgba(232,255,71,.4);
+    color: var(--accent);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    padding: 12px 32px;
+    transition: transform .3s ease, opacity .3s;
+    opacity: 0;
+    z-index: 100;
+    pointer-events: none;
+  }
+  #cashout-toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
 
-        .hist-chip {
-            font-family: 'Cinzel', serif;
-            font-size: .75rem;
-            padding: .2rem .55rem;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .hist-chip.low {
-            background: rgba(192, 57, 43, .18);
-            color: #e74c3c;
-            border: 1px solid rgba(192, 57, 43, .3);
-        }
-
-        .hist-chip.mid {
-            background: rgba(212, 168, 67, .12);
-            color: #d4a843;
-            border: 1px solid rgba(212, 168, 67, .25);
-        }
-
-        .hist-chip.high {
-            background: rgba(39, 174, 96, .15);
-            color: #27ae60;
-            border: 1px solid rgba(39, 174, 96, .3);
-        }
-
-        #toast {
-            position: fixed;
-            bottom: 1.5rem;
-            left: 50%;
-            transform: translateX(-50%) translateY(60px);
-            background: rgba(10, 20, 14, .95);
-            border: 1px solid rgba(212, 168, 67, .3);
-            border-radius: 12px;
-            padding: .6rem 1.4rem;
-            font-family: 'Cinzel', serif;
-            font-size: .85rem;
-            color: var(--gold, #d4a843);
-            opacity: 0;
-            transition: opacity .3s, transform .3s;
-            z-index: 999;
-            pointer-events: none;
-        }
-
-        #toast.show {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        #graph-canvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-    </style>
+  #lobby-overlay {
+    position: absolute; inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(8,10,15,.7);
+    backdrop-filter: blur(2px);
+    z-index: 10;
+  }
+  #lobby-overlay .lo-text {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  #lobby-overlay .lo-code {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--text);
+    letter-spacing: 0.1em;
+  }
+  #lobby-overlay .lo-share {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+</style>
 </head>
-
 <body>
+<div class="grid-bg"></div>
 
-    <div id="header">
-        <h1>Library <span style="font-weight:400;color:var(--gold);font-size:.85rem;">· Crash</span></h1>
-        <span class="you-label">Playing as <b>{{ username }}</b>
-            (<span id="chip-val">{{ chips }}</span>)
-        </span>
-        <span><a class="logout" href="/">Home</a></span>
+<div id="app">
+
+  <div id="topbar">
+    <div style="display:flex;align-items:center;gap:20px;">
+      <div class="tb-logo">Crash</div>
+      <div class="tb-code">Room <span>#{{ code }}</span></div>
+    </div>
+    <div class="tb-right">
+      <div class="chips-display" id="chips-disp">{{ chips }}</div>
+      <div class="tb-user">{{ username }}</div>
+      <a href="/crash" class="leave-btn">Leave</a>
+    </div>
+  </div>
+
+  <div id="stage">
+    <div id="lobby-overlay">
+      <div class="lo-text">Room Code</div>
+      <div class="lo-code">#{{ code }}</div>
+      <div class="lo-share">Share this code with friends</div>
     </div>
 
-    <div id="crash-wrap">
-        <div id="display-card">
-            <canvas id="graph-canvas"></canvas>
-            <div id="multiplier-val">1.00×</div>
-            <div id="phase-label">Waiting for round…</div>
-            <div id="rocket">Start</div>
-        </div>
+    <div class="trail" id="trail"></div>
+    <div id="rocket">🚀</div>
 
-        <div id="bet-card">
-            <div class="bet-row">
-                <input id="bet-input" type="number" min="1" placeholder="Bet amount" value="100">
-                <button id="btn-bet" class="action-btn" onclick="placeBet()">Bet</button>
-                <button id="btn-cashout" class="action-btn" onclick="cashOut()">Cash Out</button>
-            </div>
-            <div class="quick-btns" style="margin-bottom:.7rem;">
-                <button class="quick-btn" onclick="setQuick(10)">10</button>
-                <button class="quick-btn" onclick="setQuick(50)">50</button>
-                <button class="quick-btn" onclick="setQuick(100)">100</button>
-                <button class="quick-btn" onclick="setQuick(250)">250</button>
-                <button class="quick-btn" onclick="setQuick(500)">500</button>
-                <button class="quick-btn" onclick="halfBet()">½</button>
-                <button class="quick-btn" onclick="doubleBet()">2×</button>
-            </div>
-            <div class="auto-row">
-                <label>Auto cash-out at</label>
-                <input id="auto-input" type="number" min="1.01" step="0.01" placeholder="e.g. 2.00">
-                <span>×</span>
-            </div>
-            <div id="bet-error"></div>
-        </div>
+    <div id="phase-label">LOBBY</div>
+    <div id="multiplier">1.00×</div>
+    <div id="sub-label"></div>
 
-        <div id="players-card">
-            <h3>Players this round</h3>
-            <div id="player-list"><em style="color:var(--gold-dim);font-size:.82rem;">No bets yet.</em></div>
-        </div>
+    <div id="cashout-area">
+      <button id="cashout-btn" onclick="cashout()">CASH OUT</button>
+    </div>
+  </div>
 
-        <div id="history-card">
-            <h3>Recent crashes</h3>
-            <div id="history-list"></div>
+  <div id="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Place Bet</div>
+      <div id="bet-form">
+        <div class="amount-row">
+          <button class="quick-btn" onclick="setAmt(50)">50</button>
+          <button class="quick-btn" onclick="setAmt(100)">100</button>
+          <button class="quick-btn" onclick="setAmt(250)">250</button>
+          <button class="quick-btn" onclick="setAmt(500)">500</button>
         </div>
-
+        <input type="number" id="bet-input" placeholder="Amount" min="1">
+        <button id="bet-btn" onclick="placeBet()">Bet</button>
+        <button id="start-btn" onclick="startGame()">Start Round</button>
+      </div>
     </div>
 
-    <div id="toast"></div>
+    <div class="sidebar-label" style="padding:12px 18px 0;">Players</div>
+    <div id="players-list"></div>
+  </div>
 
-    <script>
-        const ME = "{{ username }}";
-        const socket = io();
+</div>
 
-        let phase = "waiting";
-        let multiplier = 1.00;
-        let myBet = null;
-        let hasCashedOut = false;
-        let autoTarget = null;
-        let history = [];
+<div id="error-toast"></div>
+<div id="cashout-toast"></div>
 
-        const canvas = document.getElementById("graph-canvas");
-        const ctx = canvas.getContext("2d");
-        let points = [];
-        let startTime = null;
+<script>
+const USERNAME = "{{ username }}";
+const CODE     = "{{ code }}";
+let state      = null;
+let myChips    = {{ chips }};
+let trailH     = 0;
 
-        socket.on("connect", () => {
-            socket.emit("crash_join", { username: ME });
-        });
+const socket = io();
 
-        socket.on("crash_state", (s) => {
-            const prev = phase;
-            phase = s.phase;
-            multiplier = s.multiplier;
+socket.on("connect", () => {
+  socket.emit("crash_join_room", { username: USERNAME, code: CODE });
+});
 
-            if (phase === "flying" && prev !== "flying") {
-                points = [];
-                startTime = performance.now();
-                myBet = s.bets[ME] ? { amount: s.bets[ME].amount } : null;
-                hasCashedOut = s.bets[ME]?.cashed_out || false;
-            }
+socket.on("crash_state", (s) => {
+  state = s;
+  render();
+});
 
-            if (phase === "waiting") {
-                myBet = null;
-                hasCashedOut = false;
-                points = [];
-                startTime = null;
-            }
+socket.on("crash_error", (d) => showError(d.msg));
 
-            if (phase === "flying") {
-                const t = (performance.now() - (startTime || performance.now())) / 1000;
-                points.push({ t, m: multiplier });
+socket.on("crash_cashed_out", (d) => {
+  myChips += d.winnings;
+  document.getElementById('chips-disp').textContent = myChips;
+  showCashoutToast(`+${d.winnings} @ ${d.multiplier}×`);
+});
 
-                const auto = parseFloat(document.getElementById("auto-input").value);
-                if (!isNaN(auto) && auto > 1 && multiplier >= auto && myBet && !hasCashedOut) {
-                    cashOut();
-                }
-            }
+socket.on("disconnect", () => showError("Disconnected — trying to reconnect…"));
 
-            if (phase === "crashed" && s.crash_at) {
-                history.unshift(s.crash_at);
-                if (history.length > 20) history.pop();
-                renderHistory();
-            }
+function render() {
+  if (!state) return;
 
-            updateUI(s);
-            drawGraph();
-        });
+  const mult   = document.getElementById('multiplier');
+  const phase  = document.getElementById('phase-label');
+  const sub    = document.getElementById('sub-label');
+  const overlay= document.getElementById('lobby-overlay');
+  const rocket = document.getElementById('rocket');
+  const trail  = document.getElementById('trail');
+  const cashBtn= document.getElementById('cashout-btn');
+  const betBtn = document.getElementById('bet-btn');
+  const startBtn=document.getElementById('start-btn');
 
-        socket.on("crash_cashed_out", (d) => {
-            hasCashedOut = true;
-            showToast(`Cashed out at ${d.multiplier.toFixed(2)}× — +${d.winnings} chips`);
-            fetch("/api/chips").then(r => r.json()).then(d => { document.getElementById("chip-val").textContent = d.chips; });
-        });
+  const p = state.phase;
 
-        socket.on("crash_error", (d) => {
-            document.getElementById("bet-error").textContent = d.msg;
-            setTimeout(() => document.getElementById("bet-error").textContent = "", 3000);
-        });
+  mult.className = '';
+  rocket.className = '';
+  cashBtn.classList.remove('visible');
 
-        function updateUI(s) {
-            const multEl = document.getElementById("multiplier-val");
-            const phaseEl = document.getElementById("phase-label");
-            const betBtn = document.getElementById("btn-bet");
-            const cashBtn = document.getElementById("btn-cashout");
-            const rocket = document.getElementById("rocket");
+  if (p === 'lobby') {
+    overlay.style.display = 'flex';
+    mult.textContent = '1.00×';
+    phase.textContent = 'LOBBY';
+    sub.textContent = 'Waiting for host to start';
+    trail.style.height = '0';
+    trailH = 0;
+    if (state.host === USERNAME) startBtn.classList.add('visible');
+    else startBtn.classList.remove('visible');
+    betBtn.disabled = false;
 
-            multEl.className = "";
+  } else if (p === 'countdown') {
+    overlay.style.display = 'none';
+    mult.classList.add('countdown-mode');
+    mult.textContent = state.countdown;
+    phase.textContent = 'LAUNCHING IN';
+    sub.textContent = 'Place your bets';
+    startBtn.classList.remove('visible');
+    betBtn.disabled = false;
+    trail.style.height = '0';
+    trailH = 0;
 
-            if (phase === "waiting") {
-                multEl.textContent = "—";
-                phaseEl.textContent = "Waiting for next round…";
-                betBtn.style.display = "inline-block";
-                cashBtn.style.display = "none";
-                betBtn.disabled = false;
-                rocket.style.bottom = "18px";
-                rocket.style.left = "50%";
+  } else if (p === 'flying') {
+    overlay.style.display = 'none';
+    mult.textContent = state.multiplier.toFixed(2) + '×';
+    phase.textContent = 'FLYING';
+    sub.textContent = '';
+    startBtn.classList.remove('visible');
+    betBtn.disabled = true;
+    rocket.classList.add('flying');
+    trailH = Math.min(trailH + 6, 280);
+    trail.style.height = trailH + 'px';
 
-            } else if (phase === "countdown") {
-                multEl.textContent = s.countdown + "s";
-                phaseEl.textContent = "Round starting — place your bets!";
-                betBtn.style.display = "inline-block";
-                cashBtn.style.display = "none";
-                betBtn.disabled = false;
-                rocket.style.bottom = "18px";
-                rocket.style.left = "50%";
+    const myBet = state.bets[USERNAME];
+    if (myBet && !myBet.cashed_out) {
+      cashBtn.classList.add('visible');
+      cashBtn.textContent = `CASH OUT  ${(myBet.amount * state.multiplier).toFixed(0)}`;
+    }
 
-            } else if (phase === "flying") {
-                multEl.textContent = multiplier.toFixed(2) + "×";
-                multEl.className = "safe";
-                phaseEl.textContent = myBet ? (hasCashedOut ? "Cashed out ✓" : "In flight — cash out!") : "Round in progress";
-                betBtn.style.display = "none";
-                cashBtn.style.display = (myBet && !hasCashedOut) ? "inline-block" : "none";
+  } else if (p === 'crashed') {
+    overlay.style.display = 'none';
+    mult.classList.add('crashed');
+    mult.textContent = (state.crash_at || state.multiplier).toFixed(2) + '×';
+    phase.textContent = 'CRASHED';
+    sub.textContent = 'Round over';
+    rocket.classList.add('crashed');
+    startBtn.classList.remove('visible');
+    betBtn.disabled = true;
+  }
 
-                const pct = Math.min((multiplier - 1) / 9, 1);
-                const bottom = 18 + pct * 160;
-                const left = 50 + pct * 15;
-                rocket.style.bottom = bottom + "px";
-                rocket.style.left = left + "%";
+  renderPlayers();
+}
 
-            } else if (phase === "crashed") {
-                multEl.textContent = (s.crash_at || multiplier).toFixed(2) + "×";
-                multEl.className = "crashed";
-                phaseEl.textContent = "💥 Crashed!";
-                betBtn.style.display = "none";
-                cashBtn.style.display = "none";
-                rocket.style.bottom = "18px";
-                rocket.style.left = "50%";
-            }
+function renderPlayers() {
+  if (!state) return;
+  const list = document.getElementById('players-list');
+  list.innerHTML = state.players.map(p => {
+    const bet = state.bets[p];
+    let betHtml = '<span class="p-bet">—</span>';
+    if (bet) {
+      if (bet.cashed_out) {
+        betHtml = `<span class="p-bet cashed">↑ ${bet.cashout_at}×</span>`;
+      } else if (state.phase === 'crashed') {
+        betHtml = `<span class="p-bet lost">✗ ${bet.amount}</span>`;
+      } else {
+        betHtml = `<span class="p-bet">${bet.amount}</span>`;
+      }
+    }
+    const hostMark = state.host === p ? ' is-host' : '';
+    return `<div class="player-row"><span class="p-name${hostMark}">${p}</span>${betHtml}</div>`;
+  }).join('');
+}
 
-            renderPlayers(s.bets, phase, s.crash_at);
-        }
+function setAmt(v) {
+  document.getElementById('bet-input').value = v;
+}
 
-        function renderPlayers(bets, phase, crashAt) {
-            const el = document.getElementById("player-list");
-            const entries = Object.entries(bets);
-            if (!entries.length) {
-                el.innerHTML = '<em style="color:var(--gold-dim);font-size:.82rem;">No bets yet.</em>';
-                return;
-            }
-            el.innerHTML = entries.map(([user, b]) => {
-                let right = `<span class="p-bet">${b.amount} chips</span>`;
-                if (b.cashed_out) {
-                    const win = Math.floor(b.amount * b.cashout_at);
-                    right = `<span class="p-win">+${win} @ ${b.cashout_at.toFixed(2)}×</span>`;
-                } else if (phase === "crashed") {
-                    right = `<span class="p-lose">-${b.amount}</span>`;
-                }
-                const you = user === ME ? " (you)" : "";
-                return `<div class="player-row">
-            <span class="p-name">${user}${you}</span>
-            ${right}
-        </div>`;
-            }).join("");
-        }
+function placeBet() {
+  const amt = parseInt(document.getElementById('bet-input').value);
+  if (!amt || amt < 1) return showError('Enter a valid amount.');
+  socket.emit('crash_bet', { username: USERNAME, code: CODE, amount: amt });
+}
 
-        function renderHistory() {
-            const el = document.getElementById("history-list");
-            el.innerHTML = history.map(v => {
-                const cls = v < 1.5 ? "low" : v < 3 ? "mid" : "high";
-                return `<span class="hist-chip ${cls}">${v.toFixed(2)}×</span>`;
-            }).join("");
-        }
+function cashout() {
+  socket.emit('crash_cashout', { username: USERNAME, code: CODE });
+  document.getElementById('cashout-btn').classList.remove('visible');
+}
 
-        function drawGraph() {
-            const W = canvas.parentElement.clientWidth;
-            const H = canvas.parentElement.clientHeight;
-            canvas.width = W;
-            canvas.height = H;
-            ctx.clearRect(0, 0, W, H);
+function startGame() {
+  socket.emit('crash_start', { username: USERNAME, code: CODE });
+}
 
-            if (!points.length) return;
+let errTimer = null;
+function showError(msg) {
+  const t = document.getElementById('error-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(errTimer);
+  errTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-            const padL = 14, padB = 14, padR = 14, padT = 20;
-            const gW = W - padL - padR;
-            const gH = H - padT - padB;
+let coTimer = null;
+function showCashoutToast(msg) {
+  const t = document.getElementById('cashout-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(coTimer);
+  coTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
 
-            const maxT = Math.max(...points.map(p => p.t), 1);
-            const maxM = Math.max(...points.map(p => p.m), 2);
-
-            function tx(t) { return padL + (t / maxT) * gW; }
-            function ty(m) { return padT + gH - ((m - 1) / (maxM - 1)) * gH; }
-
-            const grad = ctx.createLinearGradient(0, padT, 0, padT + gH);
-            if (phase === "crashed") {
-                grad.addColorStop(0, "rgba(192,57,43,.25)");
-                grad.addColorStop(1, "rgba(192,57,43,.02)");
-            } else {
-                grad.addColorStop(0, "rgba(212,168,67,.22)");
-                grad.addColorStop(1, "rgba(212,168,67,.02)");
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(tx(points[0].t), ty(points[0].m));
-            for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(tx(points[i].t), ty(points[i].m));
-            }
-            ctx.lineTo(tx(points[points.length - 1].t), padT + gH);
-            ctx.lineTo(tx(points[0].t), padT + gH);
-            ctx.closePath();
-            ctx.fillStyle = grad;
-            ctx.fill();
-
-            ctx.beginPath();
-            ctx.moveTo(tx(points[0].t), ty(points[0].m));
-            for (let i = 1; i < points.length; i++) {
-                ctx.lineTo(tx(points[i].t), ty(points[i].m));
-            }
-            ctx.strokeStyle = phase === "crashed" ? "#c0392b" : "#d4a843";
-            ctx.lineWidth = 2.5;
-            ctx.lineJoin = "round";
-            ctx.stroke();
-        }
-
-        function placeBet() {
-            const amount = parseInt(document.getElementById("bet-input").value, 10);
-            if (isNaN(amount) || amount < 1) {
-                document.getElementById("bet-error").textContent = "Enter a valid bet.";
-                return;
-            }
-            socket.emit("crash_bet", { username: ME, amount });
-            myBet = { amount };
-        }
-
-        function cashOut() {
-            socket.emit("crash_cashout", { username: ME });
-        }
-
-        function setQuick(n) { document.getElementById("bet-input").value = n; }
-        function halfBet() { const v = parseInt(document.getElementById("bet-input").value) || 100; document.getElementById("bet-input").value = Math.max(1, Math.floor(v / 2)); }
-        function doubleBet() { const v = parseInt(document.getElementById("bet-input").value) || 100; document.getElementById("bet-input").value = v * 2; }
-
-        function showToast(msg) {
-            const t = document.getElementById("toast");
-            t.textContent = msg;
-            t.classList.add("show");
-            setTimeout(() => t.classList.remove("show"), 3500);
-        }
-
-        window.addEventListener("resize", drawGraph);
-    </script>
+window.addEventListener('beforeunload', () => {
+  socket.emit('crash_leave_room', { username: USERNAME, code: CODE });
+});
+</script>
 </body>
-
 </html>
