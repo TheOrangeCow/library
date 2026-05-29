@@ -194,6 +194,11 @@ def settings():
         success=success,
         is_admin=(username == "daniel"),
     )
+@auth_bp.route("/api/avatar/<username>")
+def api_avatar(username):
+    from flask import jsonify
+    pixels = get_avatar(username)
+    return jsonify({"pixels": pixels})
 
 @auth_bp.route("/profile", methods=["GET", "POST"])
 def profile():
