@@ -22,9 +22,11 @@ rooms_lock = RLock()
 
 import random
 
+MAX_PLAYERS = 50
+
 def generate_crash_point() -> float:
     seed = os.urandom(16).hex()
-    h = hmac.new(seed.encode(), b"crash", hashlib.sha256).hexdigest()
+    h = hmac.new(b"crash", seed.encode(), hashlib.sha256).hexdigest()
     n = int(h[:8], 16)
     if n % 33 == 0:
         return 1.00
@@ -32,7 +34,6 @@ def generate_crash_point() -> float:
     return round(min(result, 1000.0), 2)
 
 def safe_room(code):
-    """State safe to broadcast (no crash_at spoiler during flight)."""
     r = rooms.get(code)
     if not r:
         return {}
@@ -65,7 +66,7 @@ def run_room(code):
         rooms[code]["countdown"] = 5
     bcast(code)
 
-    for i in range(5, 0, -1):
+    for i in range(4, -1, -1):
         sleep(1)
         with rooms_lock:
             if code not in rooms:
@@ -75,6 +76,8 @@ def run_room(code):
 
     crash_at = generate_crash_point()
     with rooms_lock:
+        if code not in rooms:
+            return
         rooms[code]["phase"]      = "flying"
         rooms[code]["crash_at"]   = crash_at
         rooms[code]["multiplier"] = 1.00
@@ -125,10 +128,13 @@ def on_join_room(data):
         if code not in rooms:
             return emit("crash_error", {"msg": "Room not found."})
         r = rooms[code]
+        if len(r["players"]) >= MAX_PLAYERS and user not in r["players"]:
+            return emit("crash_error", {"msg": "Room is full."})
         if user not in r["players"]:
             r["players"].append(user)
     join_room(f"crash_{code}")
     emit("crash_state", safe_room(code))
+    bcast(code)
 
 @socketio.on("crash_leave_room")
 def on_leave_room(data):
@@ -138,12 +144,13 @@ def on_leave_room(data):
         return
     with rooms_lock:
         if code not in rooms:
+            leave_room(f"crash_{code}")
             return
         r = rooms[code]
-        if user in r["players"]:
-            r["players"].remove(user)
+        r["players"] = [p for p in r["players"] if p != user]
         if r["host"] == user and r["players"]:
             r["host"] = r["players"][0]
+            socketio.emit("crash_state", safe_room(code), to=f"crash_{code}")
         if not r["players"]:
             del rooms[code]
             leave_room(f"crash_{code}")
@@ -186,12 +193,11 @@ def on_bet(data):
             return emit("crash_error", {"msg": "Betting is closed."})
         if user in r["bets"]:
             return emit("crash_error", {"msg": "Already bet this round."})
-    chips = get_chips(user)
-    if chips < amount:
-        return emit("crash_error", {"msg": "Not enough chips."})
-    update_chips(user, -amount)
-    with rooms_lock:
-        rooms[code]["bets"][user] = {
+        chips = get_chips(user)
+        if chips < amount:
+            return emit("crash_error", {"msg": "Not enough chips."})
+        update_chips(user, -amount)
+        r["bets"][user] = {
             "amount": amount, "cashed_out": False, "cashout_at": None
         }
     bcast(code)
@@ -259,8 +265,13 @@ def game():
 def create():
     username = session["username"]
     is_public = request.form.get("public") == "on"
-    code = str(random.randint(100000, 999999))
     with rooms_lock:
+        for _ in range(10):
+            code = str(random.randint(100000, 999999))
+            if code not in rooms:
+                break
+        else:
+            return redirect(url_for("crash.index", error="Could not create room."))
         rooms[code] = {
             "players":    [username],
             "phase":      "lobby",
@@ -283,6 +294,10 @@ def join():
         if code not in rooms:
             return redirect(url_for("crash.index", error="Room not found."))
         r = rooms[code]
+        if r["phase"] not in ("lobby", "countdown"):
+            return redirect(url_for("crash.index", error="Round already in progress."))
+        if len(r["players"]) >= MAX_PLAYERS:
+            return redirect(url_for("crash.index", error="Room is full."))
         if username not in r["players"]:
             r["players"].append(username)
     return redirect(url_for("crash.game", code=code))
