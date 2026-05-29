@@ -12,6 +12,7 @@ from flask_socketio import SocketIO, emit
 from slots.slots import slots_bp
 from poker.poker import poker_bp
 from enraged.enraged_pooheads import enraged_bp
+from crash.crash import crash_bp, start_game_thread
 import os
 import logging
 
@@ -25,6 +26,9 @@ app.register_blueprint(blackjack_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(pooheads_bp)
 app.register_blueprint(sevens_bp)
+app.register_blueprint(crash_bp)
+
+start_game_thread()
 
 def login_required(f):
     @wraps(f)
