@@ -1,370 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="{{ theme }}">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CRASH — Lobby</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg:       #080a0f;
-    --surface:  #0d1017;
-    --border:   #1c2030;
-    --accent:   #e8ff47;
-    --accent2:  #ff3c5a;
-    --text:     #c8d0e0;
-    --muted:    #4a5268;
-    --glow:     0 0 24px rgba(232,255,71,.18);
-  }
-
-  html, body {
-    height: 100%;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(232,255,71,.05) 0%, transparent 70%),
-      radial-gradient(ellipse 50% 50% at 80% 90%, rgba(255,60,90,.04) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .grid-bg {
-    position: fixed; inset: 0;
-    background-image:
-      linear-gradient(rgba(28,32,48,.6) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(28,32,48,.6) 1px, transparent 1px);
-    background-size: 48px 48px;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrap {
-    position: relative; z-index: 1;
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
-
-  header {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    margin-bottom: 56px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(56px, 10vw, 88px);
-    letter-spacing: 0.06em;
-    line-height: 1;
-    color: var(--accent);
-    text-shadow: var(--glow), 0 0 60px rgba(232,255,71,.25);
-    position: relative;
-  }
-  .logo::after {
-    content: 'CRASH';
-    position: absolute; inset: 0;
-    color: transparent;
-    -webkit-text-stroke: 1px rgba(232,255,71,.2);
-    transform: translate(3px, 3px);
-    z-index: -1;
-  }
-
-  .user-bar {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 10px 18px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  .user-name {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-  .user-name span { color: var(--text); }
-
-  .chips-badge {
-    font-size: 13px;
-    color: var(--accent);
-    letter-spacing: 0.08em;
-  }
-  .chips-badge::before { content: '◈ '; opacity: .6; }
-
-  .main-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-  }
-  @media (max-width: 600px) { .main-grid { grid-template-columns: 1fr; } }
-
-  .panel {
-    border: 1px solid var(--border);
-    background: var(--surface);
-    padding: 28px;
-    position: relative;
-    overflow: hidden;
-  }
-  .panel::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
-    opacity: .5;
-  }
-
-  .panel-label {
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 20px;
-  }
-
-  input[type=text], input[type=number] {
-    width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color .2s;
-    margin-bottom: 12px;
-  }
-  input:focus { border-color: var(--accent); }
-  input::placeholder { color: var(--muted); }
-
-  .check-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-    font-size: 12px;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-  }
-  input[type=checkbox] {
-    width: 16px; height: 16px;
-    accent-color: var(--accent);
-    cursor: pointer;
-    margin: 0;
-  }
-
-  .btn {
-    width: 100%;
-    background: var(--accent);
-    color: #080a0f;
-    border: none;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 0.12em;
-    padding: 13px 20px;
-    cursor: pointer;
-    transition: opacity .15s, transform .1s;
-    position: relative;
-    overflow: hidden;
-  }
-  .btn::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 60%);
-    pointer-events: none;
-  }
-  .btn:hover { opacity: .88; }
-  .btn:active { transform: scale(.98); }
-  .btn.danger { background: var(--accent2); color: #fff; }
-
-  .rooms-section {
-    margin-top: 40px;
-  }
-
-  .rooms-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-
-  .section-title {
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .refresh-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 5px 12px;
-    cursor: pointer;
-    letter-spacing: 0.08em;
-    transition: color .15s, border-color .15s;
-  }
-  .refresh-btn:hover { color: var(--accent); border-color: var(--accent); }
-
-  .rooms-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .room-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 18px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-    text-decoration: none;
-    gap: 12px;
-  }
-  .room-card:hover { border-color: var(--accent); background: rgba(232,255,71,.03); }
-
-  .room-code {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 0.08em;
-    color: var(--text);
-  }
-
-  .room-meta {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 0.06em;
-  }
-
-  .room-phase {
-    font-size: 10px;
-    padding: 4px 10px;
-    border: 1px solid;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .room-phase.lobby    { color: var(--accent);  border-color: rgba(232,255,71,.3); }
-  .room-phase.flying   { color: var(--accent2); border-color: rgba(255,60,90,.3); }
-  .room-phase.crashed  { color: var(--muted);   border-color: var(--border); }
-  .room-phase.countdown{ color: #7dd3fc;        border-color: rgba(125,211,252,.3); }
-
-  .no-rooms {
-    padding: 32px;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    border: 1px dashed var(--border);
-  }
-
-  .join-btn-inline {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 14px;
-    letter-spacing: 0.1em;
-    padding: 6px 16px;
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    cursor: pointer;
-    transition: background .15s, color .15s;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-  .join-btn-inline:hover { background: var(--accent); color: #080a0f; }
-
-  .error-msg {
-    font-size: 11px;
-    color: var(--accent2);
-    letter-spacing: 0.06em;
-    padding: 10px 14px;
-    border: 1px solid rgba(255,60,90,.3);
-    background: rgba(255,60,90,.05);
-    margin-bottom: 12px;
-  }
-</style>
+    <title>Crash</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
+
 <body>
-<div class="grid-bg"></div>
-<div class="wrap">
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Crash</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span>
+            <a class="logout" href="/">Back</a>
+        </span>
+    </div><br>
 
-  <header>
-    <div class="logo">Crash</div>
-    <div class="user-bar">
-      <div class="user-name">Player <span>{{ username }}</span></div>
-      <div class="chips-badge">{{ chips }}</div>
-      <a href="/auth/logout" style="font-size:11px;color:var(--muted);text-decoration:none;letter-spacing:.08em;">EXIT</a>
-    </div>
-  </header>
-
-  <div class="main-grid">
-
-    <div class="panel">
-      <div class="panel-label">Create Room</div>
-      {% if request.args.get('error') %}
-      <div class="error-msg">{{ request.args.get('error') }}</div>
-      {% endif %}
-      <form method="POST" action="/crash/create">
-        <div class="check-row">
-          <input type="checkbox" name="public" id="pub">
-          <label for="pub">Public room (visible in lobby)</label>
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
         </div>
-        <button class="btn" type="submit">Launch Room</button>
-      </form>
+    </nav>
+
+    <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card">
+            <h1>Rooms</h1>
+            <h2>Join a Public Room</h2>
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color: var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
+            </div>
+            <br>
+
+
+            <div class="rooms-header">
+                <div class="section-title">Public Rooms</div>
+                <button class="refresh-btn" onclick="loadRooms()">↺ Refresh</button>
+            </div>
+            <div class="rooms-list" id="rooms-list">
+                <div class="no-rooms">Loading rooms…</div>
+            </div>
+
+            <h2>Join Private Room</h2>
+            <p style="font-size:0.85rem;color: var(--gold-dim);">Have a code? Enter it below to join a private or public
+                room.</p>
+
+            <form method="POST" action="/crash/join">
+                <input class="index" type="text" name="code" placeholder="6-digit room code" maxlength="6"
+                    autocomplete="off">
+                <button class="index" type="submit">Join</button>
+            </form>
+            <br><br>
+            <h2>Create Room</h2>
+
+            <form method="POST" action="/crash/create">
+                <label style="font-size:0.85rem;color: var(--gold-dim);">
+                   <input class="index" type="checkbox" name="public" id="pub" checked>
+                </label><br><br>
+                <button class="index" type="submit">Create Game</button>
+            </form>
+
+
+
+            {% if request.args.get('error') %}
+            <p style="color: var(--gold)">{{ request.args.get('error') }}</p>
+            {% endif %}
+
+        </div>
+
+
+
     </div>
 
-    <div class="panel">
-      <div class="panel-label">Join by Code</div>
-      <form method="POST" action="/crash/join">
-        <input type="text" name="code" placeholder="6-digit room code" maxlength="6" autocomplete="off">
-        <button class="btn danger" type="submit">Join</button>
-      </form>
-    </div>
-
-  </div>
-
-  <div class="rooms-section">
-    <div class="rooms-header">
-      <div class="section-title">Public Rooms</div>
-      <button class="refresh-btn" onclick="loadRooms()">↺ Refresh</button>
-    </div>
-    <div class="rooms-list" id="rooms-list">
-      <div class="no-rooms">Loading rooms…</div>
-    </div>
-  </div>
-
-</div>
-
-<script>
-async function loadRooms() {
-  const list = document.getElementById('rooms-list');
-  try {
-    const r = await fetch('/crash/rooms');
-    const data = await r.json();
-    if (!data.rooms.length) {
-      list.innerHTML = '<div class="no-rooms">No public rooms open right now.</div>';
-      return;
-    }
-    list.innerHTML = data.rooms.map(room => `
+    <script>
+        async function loadRooms() {
+            const list = document.getElementById('rooms-list');
+            try {
+                const r = await fetch('/crash/rooms');
+                const data = await r.json();
+                if (!data.rooms.length) {
+                    list.innerHTML = '<div class="no-rooms">No public rooms open right now.</div>';
+                    return;
+                }
+                list.innerHTML = data.rooms.map(room => `
       <div class="room-card">
         <div class="room-code">#${room.code}</div>
         <div class="room-meta">${room.players} player${room.players !== 1 ? 's' : ''} &nbsp;·&nbsp; host: ${room.host}</div>
@@ -375,12 +100,13 @@ async function loadRooms() {
         </form>
       </div>
     `).join('');
-  } catch {
-    list.innerHTML = '<div class="no-rooms">Could not load rooms.</div>';
-  }
-}
-loadRooms();
-setInterval(loadRooms, 6000);
-</script>
+            } catch {
+                list.innerHTML = '<div class="no-rooms">Could not load rooms.</div>';
+            }
+        }
+        loadRooms();
+        setInterval(loadRooms, 6000);
+    </script>
 </body>
+
 </html>
