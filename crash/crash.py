@@ -1,8 +1,9 @@
-import hashlib, hmac, os, time, threading, random
+import hashlib, hmac, os, math
+from gevent import sleep, spawn
+from gevent.lock import RLock
 from flask import Blueprint, session, redirect, url_for, render_template, request
-from flask_socketio import join_room, emit
+from flask_socketio import join_room, leave_room, emit
 from functools import wraps
-
 
 from core import app, socketio
 from auth.auth import get_theme, get_chips, update_chips, record_result
@@ -16,22 +17,13 @@ crash_bp = Blueprint(
 )
 
 
-ROOM = "crash_table"
+rooms = {}
+rooms_lock = RLock()
 
-state = {
-    "phase": "waiting",
-    "multiplier": 1.00,
-    "crash_at": 1.00,
-    "bets": {},
-    "countdown": 5,
-}
-state_lock = threading.Lock()
-game_thread = None
+import random
 
-
-def generate_crash_point(seed: str | None = None) -> float:
-    if seed is None:
-        seed = os.urandom(16).hex()
+def generate_crash_point() -> float:
+    seed = os.urandom(16).hex()
     h = hmac.new(seed.encode(), b"crash", hashlib.sha256).hexdigest()
     n = int(h[:8], 16)
     if n % 33 == 0:
@@ -39,143 +31,194 @@ def generate_crash_point(seed: str | None = None) -> float:
     result = max(1.00, (100 * 2**32) / ((n % 2**32) + 1) / 100)
     return round(min(result, 1000.0), 2)
 
-
-def broadcast(event: str, data: dict):
-    socketio.emit(event, data, to=ROOM)
-
-
-def run_game():
-    global state
-
-    while True:
-        with state_lock:
-            state["phase"]      = "waiting"
-            state["multiplier"] = 1.00
-            state["bets"]       = {}
-            state["countdown"]  = 5
-        broadcast("crash_state", safe_state())
-        time.sleep(1)
-
-        with state_lock:
-            state["phase"] = "countdown"
-        for i in range(5, 0, -1):
-            with state_lock:
-                state["countdown"] = i
-            broadcast("crash_state", safe_state())
-            time.sleep(1)
-
-        crash_at = generate_crash_point()
-        with state_lock:
-            state["phase"]     = "flying"
-            state["crash_at"]  = crash_at
-            state["multiplier"] = 1.00
-        broadcast("crash_state", safe_state())
-
-        start = time.time()
-        while True:
-            elapsed   = time.time() - start
-            import math
-            current = round(1.00 * math.exp(0.06 * elapsed), 2)
-
-            with state_lock:
-                state["multiplier"] = current
-                if current >= state["crash_at"]:
-                    state["phase"]     = "crashed"
-                    state["multiplier"] = state["crash_at"]
-                    for user, bet in state["bets"].items():
-                        if not bet["cashed_out"]:
-                            record_result(user, "crash", "lose", -bet["amount"])
-                    broadcast("crash_state", safe_state())
-                    break
-
-            broadcast("crash_state", safe_state())
-            time.sleep(0.15)
-
-        time.sleep(4)
-
-
-def safe_state() -> dict:
-    """Return a copy of state safe to send to clients (no crash_at spoiler)."""
-    with state_lock:
-        out = {
-            "phase":      state["phase"],
-            "multiplier": state["multiplier"],
-            "countdown":  state["countdown"],
-            "bets":       {
-                u: {
-                    "amount":     b["amount"],
-                    "cashed_out": b["cashed_out"],
-                    "cashout_at": b["cashout_at"],
-                }
-                for u, b in state["bets"].items()
-            },
-        }
-        if state["phase"] == "crashed":
-            out["crash_at"] = state["crash_at"]
+def safe_room(code):
+    """State safe to broadcast (no crash_at spoiler during flight)."""
+    r = rooms.get(code)
+    if not r:
+        return {}
+    out = {
+        "code":       code,
+        "phase":      r["phase"],
+        "multiplier": r["multiplier"],
+        "countdown":  r["countdown"],
+        "players":    r["players"],
+        "host":       r["host"],
+        "bets": {
+            u: {
+                "amount":     b["amount"],
+                "cashed_out": b["cashed_out"],
+                "cashout_at": b["cashout_at"],
+            }
+            for u, b in r["bets"].items()
+        },
+    }
+    if r["phase"] == "crashed":
+        out["crash_at"] = r["crash_at"]
     return out
 
-@socketio.on("crash_join")
-def on_join(data):
-    user = data.get("username") or session.get("username")
-    if not user:
-        return
-    join_room(ROOM)
-    emit("crash_state", safe_state())
+def bcast(code):
+    socketio.emit("crash_state", safe_room(code), to=f"crash_{code}")
 
+def run_room(code):
+    with rooms_lock:
+        rooms[code]["phase"] = "countdown"
+        rooms[code]["countdown"] = 5
+    bcast(code)
+
+    for i in range(5, 0, -1):
+        sleep(1)
+        with rooms_lock:
+            if code not in rooms:
+                return
+            rooms[code]["countdown"] = i
+        bcast(code)
+
+    crash_at = generate_crash_point()
+    with rooms_lock:
+        rooms[code]["phase"]      = "flying"
+        rooms[code]["crash_at"]   = crash_at
+        rooms[code]["multiplier"] = 1.00
+    bcast(code)
+
+    import time
+    start = time.time()
+    while True:
+        sleep(0.15)
+        elapsed = time.time() - start
+        current = round(math.exp(0.06 * elapsed), 2)
+
+        with rooms_lock:
+            if code not in rooms:
+                return
+            rooms[code]["multiplier"] = current
+
+            if current >= rooms[code]["crash_at"]:
+                rooms[code]["phase"]      = "crashed"
+                rooms[code]["multiplier"] = rooms[code]["crash_at"]
+                for user, bet in rooms[code]["bets"].items():
+                    if not bet["cashed_out"]:
+                        record_result(user, "crash", "lose", -bet["amount"])
+                bcast(code)
+                break
+
+        bcast(code)
+
+    sleep(4)
+    with rooms_lock:
+        if code not in rooms:
+            return
+        rooms[code]["phase"]      = "lobby"
+        rooms[code]["multiplier"] = 1.00
+        rooms[code]["bets"]       = {}
+        rooms[code]["countdown"]  = 5
+        rooms[code]["greenlet"]   = None
+    bcast(code)
+
+
+@socketio.on("crash_join_room")
+def on_join_room(data):
+    user = data.get("username") or session.get("username")
+    code = data.get("code")
+    if not user or not code:
+        return
+    with rooms_lock:
+        if code not in rooms:
+            return emit("crash_error", {"msg": "Room not found."})
+        r = rooms[code]
+        if user not in r["players"]:
+            r["players"].append(user)
+    join_room(f"crash_{code}")
+    emit("crash_state", safe_room(code))
+
+@socketio.on("crash_leave_room")
+def on_leave_room(data):
+    user = data.get("username") or session.get("username")
+    code = data.get("code")
+    if not user or not code:
+        return
+    with rooms_lock:
+        if code not in rooms:
+            return
+        r = rooms[code]
+        if user in r["players"]:
+            r["players"].remove(user)
+        if r["host"] == user and r["players"]:
+            r["host"] = r["players"][0]
+        if not r["players"]:
+            del rooms[code]
+            leave_room(f"crash_{code}")
+            return
+    leave_room(f"crash_{code}")
+    bcast(code)
+
+@socketio.on("crash_start")
+def on_start(data):
+    user = data.get("username") or session.get("username")
+    code = data.get("code")
+    if not user or not code:
+        return
+    with rooms_lock:
+        if code not in rooms:
+            return emit("crash_error", {"msg": "Room not found."})
+        r = rooms[code]
+        if r["host"] != user:
+            return emit("crash_error", {"msg": "Only the host can start."})
+        if r["phase"] != "lobby":
+            return emit("crash_error", {"msg": "Round already in progress."})
+        if len(r["players"]) < 1:
+            return emit("crash_error", {"msg": "Need at least 1 player."})
+        g = spawn(run_room, code)
+        r["greenlet"] = g
+    bcast(code)
 
 @socketio.on("crash_bet")
 def on_bet(data):
     user   = data.get("username") or session.get("username")
+    code   = data.get("code")
     amount = int(data.get("amount", 0))
-
-    if not user or amount <= 0:
+    if not user or not code or amount <= 0:
         return emit("crash_error", {"msg": "Invalid bet."})
-
-    with state_lock:
-        phase = state["phase"]
-        if phase not in ("waiting", "countdown"):
+    with rooms_lock:
+        if code not in rooms:
+            return emit("crash_error", {"msg": "Room not found."})
+        r = rooms[code]
+        if r["phase"] not in ("lobby", "countdown"):
             return emit("crash_error", {"msg": "Betting is closed."})
-        if user in state["bets"]:
+        if user in r["bets"]:
             return emit("crash_error", {"msg": "Already bet this round."})
-
     chips = get_chips(user)
     if chips < amount:
         return emit("crash_error", {"msg": "Not enough chips."})
     update_chips(user, -amount)
-
-    with state_lock:
-        state["bets"][user] = {
-            "amount":     amount,
-            "cashed_out": False,
-            "cashout_at": None,
+    with rooms_lock:
+        rooms[code]["bets"][user] = {
+            "amount": amount, "cashed_out": False, "cashout_at": None
         }
-
-    broadcast("crash_state", safe_state())
-
+    bcast(code)
 
 @socketio.on("crash_cashout")
 def on_cashout(data):
     user = data.get("username") or session.get("username")
-    if not user:
+    code = data.get("code")
+    if not user or not code:
         return
-
-    with state_lock:
-        if state["phase"] != "flying":
+    with rooms_lock:
+        if code not in rooms:
+            return
+        r = rooms[code]
+        if r["phase"] != "flying":
             return emit("crash_error", {"msg": "Not in flight."})
-        bet = state["bets"].get(user)
+        bet = r["bets"].get(user)
         if not bet or bet["cashed_out"]:
             return emit("crash_error", {"msg": "Nothing to cash out."})
-
-        mult       = state["multiplier"]
-        winnings   = int(bet["amount"] * mult)
+        mult     = r["multiplier"]
+        winnings = int(bet["amount"] * mult)
         bet["cashed_out"] = True
         bet["cashout_at"] = mult
-
     update_chips(user, winnings)
     record_result(user, "crash", "win", winnings - bet["amount"])
     emit("crash_cashed_out", {"multiplier": mult, "winnings": winnings})
-    broadcast("crash_state", safe_state())
-
+    bcast(code)
 
 def login_required(f):
     @wraps(f)
@@ -185,21 +228,71 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-
 @crash_bp.route("/crash")
 @login_required
 def index():
     username = session["username"]
     return render_template(
-        "crash/game.html",
+        "crash/index.html",
         username=username,
         chips=get_chips(username),
         theme=get_theme(username),
     )
 
+@crash_bp.route("/crash/game")
+@login_required
+def game():
+    code = request.args.get("code")
+    username = session["username"]
+    if not code or code not in rooms:
+        return redirect(url_for("crash.index"))
+    return render_template(
+        "crash/game.html",
+        username=username,
+        chips=get_chips(username),
+        theme=get_theme(username),
+        code=code,
+    )
 
-def start_game_thread():
-    global game_thread
-    if game_thread is None or not game_thread.is_alive():
-        game_thread = threading.Thread(target=run_game, daemon=True)
-        game_thread.start()
+@crash_bp.route("/crash/create", methods=["POST"])
+@login_required
+def create():
+    username = session["username"]
+    is_public = request.form.get("public") == "on"
+    code = str(random.randint(100000, 999999))
+    with rooms_lock:
+        rooms[code] = {
+            "players":    [username],
+            "phase":      "lobby",
+            "multiplier": 1.00,
+            "crash_at":   1.00,
+            "bets":       {},
+            "countdown":  5,
+            "host":       username,
+            "public":     is_public,
+            "greenlet":   None,
+        }
+    return redirect(url_for("crash.game", code=code))
+
+@crash_bp.route("/crash/join", methods=["POST"])
+@login_required
+def join():
+    username = session["username"]
+    code = request.form.get("code", "").strip()
+    with rooms_lock:
+        if code not in rooms:
+            return redirect(url_for("crash.index", error="Room not found."))
+        r = rooms[code]
+        if username not in r["players"]:
+            r["players"].append(username)
+    return redirect(url_for("crash.game", code=code))
+
+@crash_bp.route("/crash/rooms")
+@login_required
+def public_rooms():
+    with rooms_lock:
+        result = [
+            {"code": c, "players": len(r["players"]), "host": r["host"], "phase": r["phase"]}
+            for c, r in rooms.items() if r.get("public")
+        ]
+    return {"rooms": result}
