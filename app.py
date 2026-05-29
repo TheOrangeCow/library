@@ -142,7 +142,7 @@ def home():
     return render_game_dashboard("index.html", session["username"])
 
 
-@auth_bp.route("/api/chips")
+@app.route("/api/chips")
 @login_required
 def api_chips():
     return {"chips": get_chips(session["username"])}
