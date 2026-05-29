@@ -40,10 +40,7 @@
             <br>
 
 
-            <div class="rooms-header">
-                <div class="section-title">Public Rooms</div>
-                <button class="refresh-btn" onclick="loadRooms()">↺ Refresh</button>
-            </div>
+            
             <div class="rooms-list" id="rooms-list">
                 <div class="no-rooms">Loading rooms…</div>
             </div>
@@ -80,32 +77,37 @@
     </div>
 
     <script>
-        async function loadRooms() {
-            const list = document.getElementById('rooms-list');
-            try {
-                const r = await fetch('/crash/rooms');
-                const data = await r.json();
+    function loadPublicRooms() {
+        fetch('/crash/rooms')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('public-rooms-list');
                 if (!data.rooms.length) {
-                    list.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
                     return;
                 }
-                list.innerHTML = data.rooms.map(room => `
-      <div class="room-card">
-        <div class="room-code">#${room.code}</div>
-        <div class="room-meta">${room.players} player${room.players !== 1 ? 's' : ''} &nbsp;·&nbsp; host: ${room.host}</div>
-        <span class="room-phase ${room.phase}">${room.phase}</span>
-        <form method="POST" action="/crash/join" style="margin:0">
-          <input type="hidden" name="code" value="${room.code}">
-          <button type="submit" class="join-btn-inline">Join →</button>
-        </form>
-      </div>
-    `).join('');
-            } catch {
-                list.innerHTML = '<div class="no-rooms">Could not load rooms.</div>';
-            }
-        }
-        loadRooms();
-        setInterval(loadRooms, 6000);
+                el.innerHTML = data.rooms.map(r => `
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                            padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                    <span style="color:var(--gold-dim);font-size:0.85rem;">
+                        Room <b style="color:var(--gold)">${r.code}</b>
+                        · ${r.names.join(', ') || 'Empty'}
+                    </span>
+                    <span style="color: var(--gold-dim);font-size:0.8rem;">${r.players}/${r.max} players</span>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="room_code" value="${r.code}">
+                        <button class="index" type="submit" name="join" 
+                            style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                            Join →
+                        </button>
+                    </form>
+                </div>
+            `).join('');
+            });
+    }
+
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
 
         const socket = io();
         socket.on("connect", () => {
