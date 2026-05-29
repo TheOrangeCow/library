@@ -128,25 +128,27 @@
 
         #rocket {
             position: absolute;
-            font-size: 32px;
+            font-size: 48px;
             bottom: 110px;
             left: 50%;
             transform: translateX(-50%);
             opacity: 0;
             transition: opacity 0.3s;
             pointer-events: none;
-            filter: sepia(1) saturate(2) hue-rotate(5deg);
+            filter: none;
         }
 
         #rocket.flying {
             opacity: 1;
             animation: float 1.4s ease-in-out infinite alternate;
+            drop-shadow: 0 0 12px var(--gold);
+            filter: drop-shadow(0 0 10px var(--gold));
         }
 
         #rocket.crashed {
             opacity: 1;
             animation: none;
-            filter: sepia(1) saturate(3) hue-rotate(-20deg);
+            filter: drop-shadow(0 0 10px #c45f5f) grayscale(0.4);
         }
 
         @keyframes float {
