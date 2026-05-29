@@ -103,7 +103,7 @@ def register():
         return redirect(url_for("home"))
     return render_template("auth/register.html")
 
-@app.route("/api/chips")
+@auth_bp.route("/api/chips")
 @login_required
 def api_chips():
     return {"chips": get_chips(session["username"])}
