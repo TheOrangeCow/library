@@ -208,7 +208,7 @@ def profile():
         "auth/profile.html",
         theme=get_theme(username),
         username=username,
-        chips=user_data["chips"],
+        chips=get_chips(username),
         error=None,
         friend_requests=user_data["friend_requests"],
         friends_list=[
