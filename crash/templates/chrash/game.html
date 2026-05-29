@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>Crash · Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('pooheads.static', filename='style.css') }}">
+
+    <style>
+        #crash-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 1rem 1rem 4rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #display-card {
+            background: var(--glass-bg, rgba(10, 20, 14, .7));
+            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 240px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #display-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 110%, rgba(212, 168, 67, .08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        #multiplier-val {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3.5rem, 10vw, 6rem);
+            font-weight: 900;
+            color: var(--gold, #d4a843);
+            line-height: 1;
+            transition: color .15s;
+            text-shadow: 0 0 40px rgba(212, 168, 67, .35);
+        }
+
+        #multiplier-val.crashed {
+            color: #c0392b;
+            text-shadow: 0 0 40px rgba(192, 57, 43, .5);
+        }
+
+        #multiplier-val.safe {
+            color: #27ae60;
+            text-shadow: 0 0 40px rgba(39, 174, 96, .4);
+        }
+
+        #phase-label {
+            font-family: 'EB Garamond', serif;
+            font-size: .85rem;
+            letter-spacing: .14em;
+            color: var(--gold-dim, rgba(212, 168, 67, .55));
+            margin-top: .5rem;
+            text-transform: uppercase;
+        }
+
+        #rocket {
+            font-size: 2.2rem;
+            position: absolute;
+            bottom: 18px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: bottom 2s ease-out, left 2s ease-out;
+            filter: drop-shadow(0 0 8px rgba(212, 168, 67, .5));
+        }
+
+        #bet-card {
+            background: var(--glass-bg, rgba(10, 20, 14, .7));
+            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
+            border-radius: 20px;
+            padding: 1.4rem 1.8rem;
+        }
+
+        .bet-row {
+            display: flex;
+            gap: .7rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: .9rem;
+        }
+
+        #bet-input {
+            flex: 1;
+            min-width: 100px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(212, 168, 67, .25);
+            border-radius: 10px;
+            color: var(--gold, #d4a843);
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            padding: .5rem .8rem;
+            outline: none;
+        }
+
+        #bet-input:focus {
+            border-color: var(--gold, #d4a843);
+        }
+
+        .quick-btns {
+            display: flex;
+            gap: .5rem;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: rgba(212, 168, 67, .1);
+            border: 1px solid rgba(212, 168, 67, .2);
+            border-radius: 8px;
+            color: var(--gold, #d4a843);
+            font-family: 'Cinzel', serif;
+            font-size: .75rem;
+            padding: .3rem .7rem;
+            cursor: pointer;
+            transition: background .15s;
+        }
+
+        .quick-btn:hover {
+            background: rgba(212, 168, 67, .22);
+        }
+
+        .action-btn {
+            font-family: 'Cinzel', serif;
+            font-size: .9rem;
+            font-weight: 600;
+            letter-spacing: .08em;
+            border: none;
+            border-radius: 12px;
+            padding: .6rem 1.6rem;
+            cursor: pointer;
+            transition: opacity .2s, transform .1s;
+        }
+
+        .action-btn:active {
+            transform: scale(.97);
+        }
+
+        .action-btn:disabled {
+            opacity: .35;
+            cursor: default;
+        }
+
+        #btn-bet {
+            background: linear-gradient(135deg, #c8860a, #d4a843);
+            color: #0a1410;
+        }
+
+        #btn-cashout {
+            background: linear-gradient(135deg, #1a7a3e, #27ae60);
+            color: #fff;
+            display: none;
+        }
+
+        #chip-display {
+            font-family: 'EB Garamond', serif;
+            font-size: .85rem;
+            color: var(--gold-dim, rgba(212, 168, 67, .55));
+        }
+
+        #bet-error {
+            color: #c0392b;
+            font-size: .8rem;
+            font-family: 'EB Garamond', serif;
+            min-height: 1.1rem;
+        }
+
+        .auto-row {
+            display: flex;
+            align-items: center;
+            gap: .7rem;
+            font-family: 'EB Garamond', serif;
+            font-size: .85rem;
+            color: var(--gold-dim, rgba(212, 168, 67, .55));
+        }
+
+        #auto-input {
+            width: 70px;
+            background: rgba(255, 255, 255, .04);
+            border: 1px solid rgba(212, 168, 67, .2);
+            border-radius: 8px;
+            color: var(--gold, #d4a843);
+            font-family: 'Cinzel', serif;
+            font-size: .85rem;
+            padding: .3rem .5rem;
+            outline: none;
+        }
+
+        #players-card {
+            background: var(--glass-bg, rgba(10, 20, 14, .7));
+            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
+            border-radius: 20px;
+            padding: 1.2rem 1.6rem;
+        }
+
+        #players-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: .8rem;
+            letter-spacing: .12em;
+            color: var(--gold-dim, rgba(212, 168, 67, .55));
+            text-transform: uppercase;
+            margin-bottom: .8rem;
+        }
+
+        #player-list {
+            display: flex;
+            flex-direction: column;
+            gap: .35rem;
+        }
+
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'EB Garamond', serif;
+            font-size: .88rem;
+            padding: .25rem .1rem;
+            border-bottom: 1px solid rgba(212, 168, 67, .07);
+        }
+
+        .player-row .p-name {
+            color: var(--gold, #d4a843);
+        }
+
+        .player-row .p-bet {
+            color: var(--gold-dim, rgba(212, 168, 67, .55));
+            font-size: .8rem;
+        }
+
+        .player-row .p-win {
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        .player-row .p-lose {
+            color: #c0392b;
+        }
+
+        #history-card {
+            background: var(--glass-bg, rgba(10, 20, 14, .7));
+            border: 1px solid var(--glass-border, rgba(212, 168, 67, .18));
+            border-radius: 20px;
+            padding: 1.2rem 1.6rem;
+        }
+
+        #history-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: .8rem;
+            letter-spacing: .12em;
+            color: var(--gold-dim, rgba(212, 168, 67, .55));
+            text-transform: uppercase;
+            margin-bottom: .7rem;
+        }
+
+        #history-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: .4rem;
+        }
+
+        .hist-chip {
+            font-family: 'Cinzel', serif;
+            font-size: .75rem;
+            padding: .2rem .55rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .hist-chip.low {
+            background: rgba(192, 57, 43, .18);
+            color: #e74c3c;
+            border: 1px solid rgba(192, 57, 43, .3);
+        }
+
+        .hist-chip.mid {
+            background: rgba(212, 168, 67, .12);
+            color: #d4a843;
+            border: 1px solid rgba(212, 168, 67, .25);
+        }
+
+        .hist-chip.high {
+            background: rgba(39, 174, 96, .15);
+            color: #27ae60;
+            border: 1px solid rgba(39, 174, 96, .3);
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 1.5rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(60px);
+            background: rgba(10, 20, 14, .95);
+            border: 1px solid rgba(212, 168, 67, .3);
+            border-radius: 12px;
+            padding: .6rem 1.4rem;
+            font-family: 'Cinzel', serif;
+            font-size: .85rem;
+            color: var(--gold, #d4a843);
+            opacity: 0;
+            transition: opacity .3s, transform .3s;
+            z-index: 999;
+            pointer-events: none;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        #graph-canvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color:var(--gold);font-size:.85rem;">· Crash</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b>
+            (<span id="chip-val">{{ chips }}</span>)
+        </span>
+        <span><a class="logout" href="/">Home</a></span>
+    </div>
+
+    <div id="crash-wrap">
+        <div id="display-card">
+            <canvas id="graph-canvas"></canvas>
+            <div id="multiplier-val">1.00×</div>
+            <div id="phase-label">Waiting for round…</div>
+            <div id="rocket">Start</div>
+        </div>
+
+        <div id="bet-card">
+            <div class="bet-row">
+                <input id="bet-input" type="number" min="1" placeholder="Bet amount" value="100">
+                <button id="btn-bet" class="action-btn" onclick="placeBet()">Bet</button>
+                <button id="btn-cashout" class="action-btn" onclick="cashOut()">Cash Out</button>
+            </div>
+            <div class="quick-btns" style="margin-bottom:.7rem;">
+                <button class="quick-btn" onclick="setQuick(10)">10</button>
+                <button class="quick-btn" onclick="setQuick(50)">50</button>
+                <button class="quick-btn" onclick="setQuick(100)">100</button>
+                <button class="quick-btn" onclick="setQuick(250)">250</button>
+                <button class="quick-btn" onclick="setQuick(500)">500</button>
+                <button class="quick-btn" onclick="halfBet()">½</button>
+                <button class="quick-btn" onclick="doubleBet()">2×</button>
+            </div>
+            <div class="auto-row">
+                <label>Auto cash-out at</label>
+                <input id="auto-input" type="number" min="1.01" step="0.01" placeholder="e.g. 2.00">
+                <span>×</span>
+            </div>
+            <div id="bet-error"></div>
+        </div>
+
+        <div id="players-card">
+            <h3>Players this round</h3>
+            <div id="player-list"><em style="color:var(--gold-dim);font-size:.82rem;">No bets yet.</em></div>
+        </div>
+
+        <div id="history-card">
+            <h3>Recent crashes</h3>
+            <div id="history-list"></div>
+        </div>
+
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        const ME = "{{ username }}";
+        const socket = io();
+
+        let phase = "waiting";
+        let multiplier = 1.00;
+        let myBet = null;
+        let hasCashedOut = false;
+        let autoTarget = null;
+        let history = [];
+
+        const canvas = document.getElementById("graph-canvas");
+        const ctx = canvas.getContext("2d");
+        let points = [];
+        let startTime = null;
+
+        socket.on("connect", () => {
+            socket.emit("crash_join", { username: ME });
+        });
+
+        socket.on("crash_state", (s) => {
+            const prev = phase;
+            phase = s.phase;
+            multiplier = s.multiplier;
+
+            if (phase === "flying" && prev !== "flying") {
+                points = [];
+                startTime = performance.now();
+                myBet = s.bets[ME] ? { amount: s.bets[ME].amount } : null;
+                hasCashedOut = s.bets[ME]?.cashed_out || false;
+            }
+
+            if (phase === "waiting") {
+                myBet = null;
+                hasCashedOut = false;
+                points = [];
+                startTime = null;
+            }
+
+            if (phase === "flying") {
+                const t = (performance.now() - (startTime || performance.now())) / 1000;
+                points.push({ t, m: multiplier });
+
+                const auto = parseFloat(document.getElementById("auto-input").value);
+                if (!isNaN(auto) && auto > 1 && multiplier >= auto && myBet && !hasCashedOut) {
+                    cashOut();
+                }
+            }
+
+            if (phase === "crashed" && s.crash_at) {
+                history.unshift(s.crash_at);
+                if (history.length > 20) history.pop();
+                renderHistory();
+            }
+
+            updateUI(s);
+            drawGraph();
+        });
+
+        socket.on("crash_cashed_out", (d) => {
+            hasCashedOut = true;
+            showToast(`Cashed out at ${d.multiplier.toFixed(2)}× — +${d.winnings} chips`);
+            fetch("/api/chips").then(r => r.json()).then(d => { document.getElementById("chip-val").textContent = d.chips; });
+        });
+
+        socket.on("crash_error", (d) => {
+            document.getElementById("bet-error").textContent = d.msg;
+            setTimeout(() => document.getElementById("bet-error").textContent = "", 3000);
+        });
+
+        function updateUI(s) {
+            const multEl = document.getElementById("multiplier-val");
+            const phaseEl = document.getElementById("phase-label");
+            const betBtn = document.getElementById("btn-bet");
+            const cashBtn = document.getElementById("btn-cashout");
+            const rocket = document.getElementById("rocket");
+
+            multEl.className = "";
+
+            if (phase === "waiting") {
+                multEl.textContent = "—";
+                phaseEl.textContent = "Waiting for next round…";
+                betBtn.style.display = "inline-block";
+                cashBtn.style.display = "none";
+                betBtn.disabled = false;
+                rocket.style.bottom = "18px";
+                rocket.style.left = "50%";
+
+            } else if (phase === "countdown") {
+                multEl.textContent = s.countdown + "s";
+                phaseEl.textContent = "Round starting — place your bets!";
+                betBtn.style.display = "inline-block";
+                cashBtn.style.display = "none";
+                betBtn.disabled = false;
+                rocket.style.bottom = "18px";
+                rocket.style.left = "50%";
+
+            } else if (phase === "flying") {
+                multEl.textContent = multiplier.toFixed(2) + "×";
+                multEl.className = "safe";
+                phaseEl.textContent = myBet ? (hasCashedOut ? "Cashed out ✓" : "In flight — cash out!") : "Round in progress";
+                betBtn.style.display = "none";
+                cashBtn.style.display = (myBet && !hasCashedOut) ? "inline-block" : "none";
+
+                const pct = Math.min((multiplier - 1) / 9, 1);
+                const bottom = 18 + pct * 160;
+                const left = 50 + pct * 15;
+                rocket.style.bottom = bottom + "px";
+                rocket.style.left = left + "%";
+
+            } else if (phase === "crashed") {
+                multEl.textContent = (s.crash_at || multiplier).toFixed(2) + "×";
+                multEl.className = "crashed";
+                phaseEl.textContent = "💥 Crashed!";
+                betBtn.style.display = "none";
+                cashBtn.style.display = "none";
+                rocket.style.bottom = "18px";
+                rocket.style.left = "50%";
+            }
+
+            renderPlayers(s.bets, phase, s.crash_at);
+        }
+
+        function renderPlayers(bets, phase, crashAt) {
+            const el = document.getElementById("player-list");
+            const entries = Object.entries(bets);
+            if (!entries.length) {
+                el.innerHTML = '<em style="color:var(--gold-dim);font-size:.82rem;">No bets yet.</em>';
+                return;
+            }
+            el.innerHTML = entries.map(([user, b]) => {
+                let right = `<span class="p-bet">${b.amount} chips</span>`;
+                if (b.cashed_out) {
+                    const win = Math.floor(b.amount * b.cashout_at);
+                    right = `<span class="p-win">+${win} @ ${b.cashout_at.toFixed(2)}×</span>`;
+                } else if (phase === "crashed") {
+                    right = `<span class="p-lose">-${b.amount}</span>`;
+                }
+                const you = user === ME ? " (you)" : "";
+                return `<div class="player-row">
+            <span class="p-name">${user}${you}</span>
+            ${right}
+        </div>`;
+            }).join("");
+        }
+
+        function renderHistory() {
+            const el = document.getElementById("history-list");
+            el.innerHTML = history.map(v => {
+                const cls = v < 1.5 ? "low" : v < 3 ? "mid" : "high";
+                return `<span class="hist-chip ${cls}">${v.toFixed(2)}×</span>`;
+            }).join("");
+        }
+
+        function drawGraph() {
+            const W = canvas.parentElement.clientWidth;
+            const H = canvas.parentElement.clientHeight;
+            canvas.width = W;
+            canvas.height = H;
+            ctx.clearRect(0, 0, W, H);
+
+            if (!points.length) return;
+
+            const padL = 14, padB = 14, padR = 14, padT = 20;
+            const gW = W - padL - padR;
+            const gH = H - padT - padB;
+
+            const maxT = Math.max(...points.map(p => p.t), 1);
+            const maxM = Math.max(...points.map(p => p.m), 2);
+
+            function tx(t) { return padL + (t / maxT) * gW; }
+            function ty(m) { return padT + gH - ((m - 1) / (maxM - 1)) * gH; }
+
+            const grad = ctx.createLinearGradient(0, padT, 0, padT + gH);
+            if (phase === "crashed") {
+                grad.addColorStop(0, "rgba(192,57,43,.25)");
+                grad.addColorStop(1, "rgba(192,57,43,.02)");
+            } else {
+                grad.addColorStop(0, "rgba(212,168,67,.22)");
+                grad.addColorStop(1, "rgba(212,168,67,.02)");
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(tx(points[0].t), ty(points[0].m));
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(tx(points[i].t), ty(points[i].m));
+            }
+            ctx.lineTo(tx(points[points.length - 1].t), padT + gH);
+            ctx.lineTo(tx(points[0].t), padT + gH);
+            ctx.closePath();
+            ctx.fillStyle = grad;
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(tx(points[0].t), ty(points[0].m));
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(tx(points[i].t), ty(points[i].m));
+            }
+            ctx.strokeStyle = phase === "crashed" ? "#c0392b" : "#d4a843";
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = "round";
+            ctx.stroke();
+        }
+
+        function placeBet() {
+            const amount = parseInt(document.getElementById("bet-input").value, 10);
+            if (isNaN(amount) || amount < 1) {
+                document.getElementById("bet-error").textContent = "Enter a valid bet.";
+                return;
+            }
+            socket.emit("crash_bet", { username: ME, amount });
+            myBet = { amount };
+        }
+
+        function cashOut() {
+            socket.emit("crash_cashout", { username: ME });
+        }
+
+        function setQuick(n) { document.getElementById("bet-input").value = n; }
+        function halfBet() { const v = parseInt(document.getElementById("bet-input").value) || 100; document.getElementById("bet-input").value = Math.max(1, Math.floor(v / 2)); }
+        function doubleBet() { const v = parseInt(document.getElementById("bet-input").value) || 100; document.getElementById("bet-input").value = v * 2; }
+
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 3500);
+        }
+
+        window.addEventListener("resize", drawGraph);
+    </script>
+</body>
+
+</html>
