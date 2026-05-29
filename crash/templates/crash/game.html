@@ -22,8 +22,20 @@
 
         body.crash-game {
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
         }
 
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.2rem;
+            height: 48px;
+            border-bottom: 1px solid rgba(212, 168, 67, 0.12);
+            flex-shrink: 0;
+        }
 
         .hdr-right {
             display: flex;
@@ -31,14 +43,21 @@
             gap: 1.1rem;
         }
 
-        .chips-display {
-            font-family: 'Cinzel', serif;
-            font-size: 0.8rem;
-            color: var(--gold);
-            letter-spacing: 0.07em;
+        .main-area {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
         }
 
-
+        #stage {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
 
         #phase-label {
             text-align: center;
@@ -141,6 +160,9 @@
         }
 
         .trail {
+            position: absolute;
+            bottom: 110px;
+            left: 50%;
             transform: translateX(-50%);
             width: 1px;
             height: 0;
@@ -185,43 +207,16 @@
             display: block;
         }
 
-        #lobby-overlay {
-            position: absolute;
-            inset: 0;
+        #buttons {
+            width: 220px;
+            min-width: 220px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            background: rgba(8, 6, 0, 0.65);
-            backdrop-filter: blur(2px);
-            z-index: 10;
+            padding: 16px;
+            border-left: 1px solid rgba(212, 168, 67, 0.12);
+            gap: 6px;
+            overflow-y: auto;
         }
-
-        .lo-text {
-            font-family: 'Cinzel', serif;
-            font-size: 0.62rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--gold-dim);
-        }
-
-        .lo-code {
-            font-family: 'Cinzel', serif;
-            font-size: 3.2rem;
-            font-weight: 900;
-            color: var(--gold);
-            letter-spacing: 0.1em;
-        }
-
-        .lo-share {
-            font-family: 'EB Garamond', serif;
-            font-size: 0.88rem;
-            font-style: italic;
-            color: var(--gold-dim);
-        }
-
-
 
         .amount-row {
             display: flex;
@@ -229,8 +224,6 @@
             flex-wrap: wrap;
             margin-bottom: 8px;
         }
-
-        
 
         #start-btn {
             display: none;
@@ -260,7 +253,7 @@
         #players-list {
             flex: 1;
             overflow-y: auto;
-            padding: 10px 16px;
+            padding: 10px 0;
         }
 
         #players-list::-webkit-scrollbar {
@@ -375,24 +368,23 @@
         <h1>Crash <span>· {{ code }}</span></h1>
         <div class="hdr-right">
             <span class="you-label">Playing as <b>{{ username }}</b></span>
-            <a class="logout" href="/crash" class="index">Leave</a>
+            <a class="logout" href="/crash">Leave</a>
         </div>
     </div>
 
-    <div id="stage">
-        <div class="trail" id="trail"></div>
-        <div id="rocket">.</div>
-
-        <div id="phase-label">Lobby</div>
-        <div id="multiplier">1.00×</div>
-        <div id="sub-label"></div>
-
-        <div id="cashout-area">
-            <button id="cashout-btn" onclick="cashout()">Cash Out</button>
+    <div class="main-area">
+        <div id="stage">
+            <div class="trail" id="trail"></div>
+            <div id="rocket">🚀</div>
+            <div id="phase-label">Lobby</div>
+            <div id="multiplier">1.00×</div>
+            <div id="sub-label"></div>
+            <div id="cashout-area">
+                <button id="cashout-btn" onclick="cashout()">Cash Out</button>
+            </div>
         </div>
-    </div>
 
-    <div id="buttons">
+        <div id="buttons">
             <div class="sidebar-label">Place Bet</div>
             <div class="amount-row">
                 <button class="index" onclick="setAmt(50)">50</button>
@@ -403,10 +395,9 @@
             <input class="index" type="number" id="bet-input" placeholder="Amount" min="1">
             <button class="index" id="bet-btn" onclick="placeBet()">Place Bet</button>
             <button class="index" id="start-btn" onclick="startGame()">Start Round</button>
+            <h2>Players</h2>
+            <div id="players-list"></div>
         </div>
-
-        <h2>Players</h2>
-        <div id="players-list"></div>
     </div>
 
     <div id="notif"></div>
@@ -483,7 +474,6 @@
                 }
 
             } else if (p === 'crashed') {
-                overlay.style.display = 'none';
                 mult.classList.add('crashed');
                 mult.textContent = (state.crash_at || state.multiplier).toFixed(2) + '×';
                 phase.textContent = 'Crashed';
