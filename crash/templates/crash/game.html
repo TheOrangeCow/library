@@ -483,9 +483,9 @@
 <body class="crash-game">
 
     <div id="header">
-        <h1>Crash <span>· #{{ code }}</span></h1>
+        <h1>Crash <span>· {{ code }}</span></h1>
         <div class="hdr-right">
-            <span class="chips-display" id="chips-disp">◈ {{ chips }}</span>
+            <span class="chips-display" id="chips-disp">{{ chips }}</span>
             <span class="you-label">Playing as <b>{{ username }}</b></span>
             <a href="/crash" class="index">Leave</a>
         </div>
@@ -494,12 +494,12 @@
     <div id="stage">
         <div id="lobby-overlay">
             <div class="lo-text">Room Code</div>
-            <div class="lo-code">#{{ code }}</div>
+            <div class="lo-code">{{ code }}</div>
             <div class="lo-share">Share this code with friends</div>
         </div>
 
         <div class="trail" id="trail"></div>
-        <div id="rocket">🚀</div>
+        <div id="rocket">.</div>
 
         <div id="phase-label">Lobby</div>
         <div id="multiplier">1.00×</div>
