@@ -2,6 +2,7 @@ import hashlib, hmac, os, time, threading, random
 from flask import Blueprint, session, redirect, url_for, render_template, request
 from flask_socketio import join_room, emit
 from functools import wraps
+from gevent import sleep as gsleep
 
 from core import app, socketio
 from auth.auth import get_theme, get_chips, update_chips, record_result
@@ -199,6 +200,6 @@ def index():
 
 def start_game_thread():
     global game_thread
-    if game_thread is None or not game_thread.is_alive():
-        game_thread = threading.Thread(target=run_game, daemon=True)
-        game_thread.start()
+    from gevent import spawn
+    if game_thread is None or not game_thread:
+        game_thread = spawn(run_game)
