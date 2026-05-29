@@ -152,11 +152,29 @@ def on_leave_room(data):
             r["host"] = r["players"][0]
             socketio.emit("crash_state", safe_room(code), to=f"crash_{code}")
         if not r["players"]:
-            del rooms[code]
-            leave_room(f"crash_{code}")
-            return
+             if r["phase"] == "lobby":
+                del rooms[code]
+                leave_room(f"crash_{code}")
+                return
+            
     leave_room(f"crash_{code}")
     bcast(code)
+
+@socketio.on("disconnect")
+def on_disconnect():
+    user = session.get("username")
+    if not user:
+        return
+    with rooms_lock:
+        for code, r in list(rooms.items()):
+            if user in r["players"]:
+                r["players"] = [p for p in r["players"] if p != user]
+                if not r["players"] and r["phase"] == "lobby":
+                    del rooms[code]
+                elif r["host"] == user and r["players"]:
+                    r["host"] = r["players"][0]
+                bcast(code)
+                break
 
 @socketio.on("crash_start")
 def on_start(data):
