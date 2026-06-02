@@ -11,7 +11,7 @@ if __name__ == "main":
     app.secret_key = "secret_key"
     socketio = SocketIO(app, cors_allowed_origins="*")
 else:
-    from core import app, socketio 
+    from core import app, socketio
 
 pooheads_bp = Blueprint(
     'pooheads',
@@ -24,7 +24,7 @@ pooheads_bp = Blueprint(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 GAME_FILE = os.path.join(BASE_DIR, "game.json")
 CARDS_FILE = os.path.join(BASE_DIR, "cards.json")
-MAX_PLAYERS = 5
+MAX_PLAYERS = 6
 
 def login_required(f):
     @wraps(f)
@@ -68,7 +68,6 @@ def value(c, ace_high=True):
     return {"J": 11, "Q": 12, "K": 13}.get(r, int(r) if r.isdigit() else 0)
 
 
-
 def refill(g, p):
     while len(g["hands"].get(p, [])) < 3 and g["deck"]:
         g["hands"][p].append(g["deck"].pop(0))
@@ -86,9 +85,6 @@ def next_player_n(g, cur, n):
         return
     i = g["players"].index(cur)
     g["turn"] = g["players"][(i + n) % len(g["players"])]
-
-
-
 
 
 def check_win(g, p):
@@ -121,12 +117,10 @@ def effective_top_value(g):
 
 
 def apply_jokers(g, count):
-
     players = g["players"]
     n = len(players)
     if n < 2:
         return
-
     old_hands = {p: g["hands"].get(p, [])[:] for p in players}
     for i, p in enumerate(players):
         donor_idx = (i - count) % n
@@ -135,7 +129,6 @@ def apply_jokers(g, count):
 
 
 def record_pile_history(g, cards):
-
     history = g.setdefault("pileHistory", [])
     r = get_rank(cards[0])
     if r != "3":
@@ -146,7 +139,6 @@ def record_pile_history(g, cards):
         }
         history.append(entry)
         g["pileHistory"] = history[-5:]
-
 
 
 def valid_move(g, p, cards, from_facedown=False):
@@ -192,7 +184,6 @@ def valid_move(g, p, cards, from_facedown=False):
 
 
 def valid_move_with_ace(g, p, cards, ace_mode):
-
     r = get_rank(cards[0]) if cards else None
     if r != "A":
         return valid_move(g, p, cards)
@@ -207,10 +198,10 @@ def valid_move_with_ace(g, p, cards, ace_mode):
         if ace_mode == "low":
             return True
         else:
-            return False 
+            return False
 
     if top_v is None:
-        return True 
+        return True
 
     ace_v = 1 if ace_mode == "low" else 14
     return ace_v >= top_v
@@ -242,7 +233,6 @@ def pickup_pile(g, user):
     g["aceMode"] = "high"
 
 
-
 swap_timers = {}
 
 def end_swap_phase(code):
@@ -252,6 +242,222 @@ def end_swap_phase(code):
         return
     g["phase"] = "playing"
     g.pop("swapReady", None)
+    save_json(GAME_FILE, games)
+    socketio.emit("state", g, to=code)
+    trigger_bot_if_needed(code)
+
+def trigger_bot_if_needed(code):
+    games = load_json(GAME_FILE)
+    g = games["games"].get(code)
+    if not g or g.get("phase") != "playing":
+        return
+    turn = g.get("turn")
+    if turn and turn in g.get("bots", []):
+        t = threading.Thread(target=bot_move, args=[code], daemon=True)
+        t.start()
+
+
+def bot_move(code):
+    import time
+    time.sleep(1.2)
+
+    games = load_json(GAME_FILE)
+    g = games["games"].get(code)
+    if not g or g.get("phase") != "playing":
+        return
+
+    bot = g.get("turn")
+    if not bot or bot not in g.get("bots", []):
+        return
+
+    hand = g["hands"].get(bot, [])
+    faceup = g["faceup"].get(bot, [])
+    facedown = g["facedown"].get(bot, [])
+
+    if hand:
+        candidates = hand
+    elif faceup:
+        candidates = faceup
+    else:
+        chosen = [random.choice(facedown)]
+        _bot_play_cards(code, bot, chosen, "high")
+        return
+
+    by_rank = {}
+    for c in candidates:
+        r = get_rank(c)
+        by_rank.setdefault(r, []).append(c)
+
+    best = None
+    for r, group in by_rank.items():
+        sample = group[:1]
+        if not valid_move(g, bot, sample):
+            continue
+
+        if r == "10":
+            score = 1000
+        elif r == "2":
+            score = 900
+        elif r == "JOKER":
+            score = 800
+        elif r == "7":
+            score = 700
+        else:
+            score = len(group) * 100 - value(group[0])
+
+        if best is None or score > best[0]:
+            best = (score, group)
+
+    if best is None:
+        pickup_pile(g, bot)
+        next_player(g, bot)
+        save_json(GAME_FILE, games)
+        socketio.emit("state", g, to=code)
+        trigger_bot_if_needed(code)
+        return
+
+    chosen = best[1]
+
+    ace_mode = "high"
+    if get_rank(chosen[0]) == "A":
+        top_v, _ = effective_top_value(g)
+        ace_mode = "low" if (top_v and top_v > 7 and g.get("sevenRule")) else "high"
+
+    _bot_play_cards(code, bot, chosen, ace_mode)
+
+
+def _bot_play_cards(code, bot, cards, ace_mode):
+    games = load_json(GAME_FILE)
+    g = games["games"].get(code)
+    if not g:
+        return
+
+    r = get_rank(cards[0]) if cards else None
+
+    hand = g["hands"].get(bot, [])
+    faceup = g["faceup"].get(bot, [])
+    facedown = g["facedown"].get(bot, [])
+    playing_from_facedown = not hand and not faceup
+
+    move_ok = valid_move_with_ace(g, bot, cards, ace_mode) if r == "A" else valid_move(g, bot, cards)
+
+    if not move_ok:
+        if playing_from_facedown:
+            for c in cards:
+                if c in g["facedown"].get(bot, []):
+                    g["facedown"][bot].remove(c)
+            g["pile"] += cards
+        pickup_pile(g, bot)
+        next_player(g, bot)
+        save_json(GAME_FILE, games)
+        socketio.emit("state", g, to=code)
+        trigger_bot_if_needed(code)
+        return
+
+    for c in cards:
+        for k in ("hands", "faceup", "facedown"):
+            if c in g[k].get(bot, []):
+                g[k][bot].remove(c)
+
+    extra_turn = False
+    burn = False
+    record_pile_history(g, cards)
+
+    if r == "2":
+        g["pile"] += cards
+        g["afterTwo"] = True
+        g["sevenRule"] = False
+        g["aceMode"] = "high"
+    elif r == "3":
+        g["pile"] += cards
+    elif r == "7":
+        g["pile"] += cards
+        g["sevenRule"] = True
+        g["afterTwo"] = False
+        g["aceMode"] = "high"
+    elif r == "8":
+        g["pile"] += cards
+        g["sevenRule"] = False
+        g["afterTwo"] = False
+        g["pendingSkip"] = len(cards)
+    elif r == "10":
+        g["pile"] += cards
+        g["pile"] = []
+        g["pileHistory"] = []
+        g["afterTwo"] = False
+        g["sevenRule"] = False
+        g["aceMode"] = "high"
+        burn = True
+        extra_turn = True
+    elif r == "A":
+        g["pile"] += cards
+        g["aceMode"] = ace_mode
+        g["afterTwo"] = False
+        g["sevenRule"] = False
+    else:
+        g["pile"] += cards
+        g["afterTwo"] = False
+        g["sevenRule"] = False
+        g["aceMode"] = "high"
+
+    if not burn and len(g["pile"]) >= 4:
+        top4 = g["pile"][-4:]
+        if len(set(get_rank(c) for c in top4)) == 1:
+            g["pile"] = []
+            g["pileHistory"] = []
+            g["afterTwo"] = False
+            g["sevenRule"] = False
+            g["aceMode"] = "high"
+            extra_turn = True
+
+    players_before = g["players"][:]
+    idx = players_before.index(bot)
+    next_p = players_before[(idx + 1) % len(players_before)]
+
+    refill(g, bot)
+    won = check_win(g, bot)
+
+    if won:
+        if g["players"]:
+            g["turn"] = next_p if next_p in g["players"] else g["players"][0]
+    elif extra_turn:
+        pass
+    else:
+        skip = g.pop("pendingSkip", 0)
+        if skip:
+            n = len(g["players"])
+            net = skip % n
+            if net:
+                next_player_n(g, bot, net + 1)
+            else:
+                next_player(g, bot)
+        else:
+            next_player(g, bot)
+
+    if len(g["players"]) <= 1:
+        all_players = list(g["dead"]) + g["players"]
+        record_played_with_all(all_players)
+
+    save_json(GAME_FILE, games)
+    socketio.emit("state", g, to=code)
+    trigger_bot_if_needed(code)
+
+@socketio.on("add_bot")
+def add_bot(data):
+    games = load_json(GAME_FILE)
+    code = data["code"]
+    g = games["games"].get(code)
+
+    if not g or g.get("phase") != "lobby":
+        return
+    if len(g["players"]) >= MAX_PLAYERS:
+        return
+
+    bot_num = sum(1 for p in g["players"] if p.startswith("BOT_")) + 1
+    bot_name = f"BOT_{bot_num}"
+    g["players"].append(bot_name)
+    g.setdefault("bots", []).append(bot_name)
+
     save_json(GAME_FILE, games)
     socketio.emit("state", g, to=code)
 
@@ -323,6 +529,10 @@ def swap_ready(data):
     if user not in ready_set:
         ready_set.append(user)
 
+    for bot in g.get("bots", []):
+        if bot not in ready_set:
+            ready_set.append(bot)
+
     save_json(GAME_FILE, games)
 
     if set(ready_set) >= set(g["players"]):
@@ -332,6 +542,9 @@ def swap_ready(data):
         g["phase"] = "playing"
         g.pop("swapReady", None)
         save_json(GAME_FILE, games)
+        socketio.emit("state", g, to=code)
+        trigger_bot_if_needed(code)
+        return
 
     socketio.emit("state", g, to=code)
 
@@ -340,7 +553,7 @@ def swap_ready(data):
 def play(data):
     games = load_json(GAME_FILE)
     code = data["code"]
-    cards = data.get("cards", [])  
+    cards = data.get("cards", [])
     user = data.get("username")
     ace_choice = data.get("aceMode", "high")
 
@@ -348,17 +561,16 @@ def play(data):
 
     if g.get("phase") == "swap":
         return
-    
+
     if g["turn"] != user or user not in g["players"]:
         return
 
-
-    hand    = g["hands"].get(user, [])
-    faceup  = g["faceup"].get(user, [])
+    hand = g["hands"].get(user, [])
+    faceup = g["faceup"].get(user, [])
     facedown = g["facedown"].get(user, [])
 
     playing_from_facedown = False
-    playing_from_faceup   = False
+    playing_from_faceup = False
 
     if hand:
         source = "hand"
@@ -389,6 +601,7 @@ def play(data):
 
         save_json(GAME_FILE, games)
         socketio.emit("state", g, to=code)
+        trigger_bot_if_needed(code)
         return
 
     cards = non_jokers
@@ -402,7 +615,6 @@ def play(data):
 
     if not move_ok:
         if playing_from_faceup or playing_from_facedown:
-
             for c in cards:
                 if c in g[source].get(user, []):
                     g[source][user].remove(c)
@@ -411,7 +623,8 @@ def play(data):
             next_player(g, user)
             save_json(GAME_FILE, games)
             socketio.emit("state", g, to=code)
-            socketio.emit("invalidPlay", {"msg": f"Picked up the pile."}, to=request.sid)
+            socketio.emit("invalidPlay", {"msg": "Picked up the pile."}, to=request.sid)
+            trigger_bot_if_needed(code)
         else:
             socketio.emit("invalidPlay", {"msg": "You can't play that card!"}, to=request.sid)
         return
@@ -432,22 +645,18 @@ def play(data):
         g["afterTwo"] = True
         g["sevenRule"] = False
         g["aceMode"] = "high"
-
     elif r == "3":
         g["pile"] += cards
-
     elif r == "7":
         g["pile"] += cards
         g["sevenRule"] = True
         g["afterTwo"] = False
         g["aceMode"] = "high"
-
     elif r == "8":
         g["pile"] += cards
         g["sevenRule"] = False
-        g["afterTwo"]  = False
+        g["afterTwo"] = False
         g["pendingSkip"] = count
-
     elif r == "10":
         g["pile"] += cards
         g["pile"] = []
@@ -457,13 +666,11 @@ def play(data):
         g["aceMode"] = "high"
         burn = True
         extra_turn = True
-
     elif r == "A":
         g["pile"] += cards
         g["aceMode"] = ace_choice
         g["afterTwo"] = False
         g["sevenRule"] = False
-        
     else:
         g["pile"] += cards
         g["afterTwo"] = False
@@ -479,10 +686,10 @@ def play(data):
             g["sevenRule"] = False
             g["aceMode"] = "high"
             extra_turn = True
-    players_before_win = g["players"][:] 
+
+    players_before_win = g["players"][:]
     idx = players_before_win.index(user)
     next_p = players_before_win[(idx + 1) % len(players_before_win)]
-
 
     refill(g, user)
     won = check_win(g, user)
@@ -500,12 +707,14 @@ def play(data):
                 next_player_n(g, user, net + 1)
         else:
             next_player(g, user)
-    
+
     if len(g["players"]) <= 1:
         all_players = list(g["dead"]) + g["players"]
         record_played_with_all(all_players)
+
     save_json(GAME_FILE, games)
     socketio.emit("state", g, to=code)
+    trigger_bot_if_needed(code)
 
 
 @socketio.on("pickup")
@@ -522,6 +731,7 @@ def pickup(data):
     next_player(g, user)
     save_json(GAME_FILE, games)
     socketio.emit("state", g, to=code)
+    trigger_bot_if_needed(code)
 
 
 @socketio.on("start")
@@ -557,6 +767,9 @@ def start(data):
     g["deck"] = deck
     g["turn"] = g["players"][0]
 
+    for bot in g.get("bots", []):
+        g["swapReady"].append(bot)
+
     save_json(GAME_FILE, games)
     socketio.emit("state", g, to=code)
 
@@ -567,6 +780,7 @@ def start(data):
     t.daemon = True
     t.start()
     swap_timers[code] = t
+
 
 @socketio.on('send_game_msg')
 def handle_global(data):
@@ -588,10 +802,11 @@ def index():
 
         if "create" in request.form:
             code = str(random.randint(100000, 999999))
-            is_public = "public" in request.form 
+            is_public = "public" in request.form
 
             games.setdefault("games", {})[code] = {
                 "players": [],
+                "bots": [],
                 "deck": [],
                 "pile": [],
                 "pileHistory": [],
@@ -616,13 +831,14 @@ def index():
                     return render_template("/pooheads/index.html", theme=get_theme(username), error=f'The name "{username}" is already taken in room {code}.', username=username)
 
                 if len(room["players"]) >= MAX_PLAYERS:
-                    return render_template("/pooheads/index.html", theme=get_theme(username), error="That room is full (max 5 players).", username=username)
- 
+                    return render_template("/pooheads/index.html", theme=get_theme(username), error="That room is full (max 6 players).", username=username)
+
                 room["players"].append(username)
                 save_json(GAME_FILE, games)
                 return redirect(url_for("game", theme=get_theme(username), code=code))
 
     return render_template("/pooheads/index.html", theme=get_theme(username), username=username)
+
 
 @app.route("/pooheads/rooms")
 @login_required
@@ -639,6 +855,7 @@ def public_rooms():
             })
     return {"rooms": rooms}
 
+
 @app.route("/pooheads/game")
 @login_required
 def game():
@@ -654,4 +871,3 @@ def game():
         theme=get_theme(username),
         username=username
     )
-

@@ -108,7 +108,13 @@ socket.on("connect", () => {
 socket.on("state", (data) => { detectPlays(data); render(data); });
 socket.on("invalidPlay", (data) => { showNotif(data.msg || "Can't play that!"); selectedCards = []; renderLastState(); });
 
-function startGame() { socket.emit("start", { code: roomCode }); }
+function startGame() {
+    socket.emit("start", { code: roomCode }); 
+    const addBotBtn = document.getElementById("addBotBtn");
+    if (addBotBtn) {
+        addBotBtn.disabled = g.players.length >= 6 || g.phase !== "lobby";
+    }
+}
 function copyLink() { navigator.clipboard.writeText(window.location.href); showNotif("Link copied!"); }
 
 function playSelected() {
@@ -370,3 +376,6 @@ function renderLastState() {
     finBar.innerHTML = dead.map((p, i) => `<div class="fin-badge">${["🥇", "🥈", "🥉"][i] || "•"} ${p}</div>`).join("");
 }
 
+function addBot() {
+    socket.emit("add_bot", { code: roomCode, username: username });
+}
