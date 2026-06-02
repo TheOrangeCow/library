@@ -5,6 +5,7 @@ from flask import Blueprint
 from functools import wraps
 from auth.auth import record_result, get_theme
 from auth.auth import record_result, record_played_with_all
+import time
 
 if __name__ == "main":
     app = Flask(__name__)
@@ -49,12 +50,33 @@ def load_json(p):
                 return json.loads(content)
         except json.JSONDecodeError:
             return {}
+    if p == GAME_FILE and "games" in data:
+        if prune_expired_games(data):
+            save_json(p, data)
+
+    return data
 
 def save_json(p, d):
     with file_lock:
         with open(p, "w") as f:
             json.dump(d, f, indent=4)
 
+
+LOBBY_TTL = 30 * 60
+GAME_TTL  = 24 * 60 * 60
+
+def prune_expired_games(games):
+    now = time.time()
+    to_delete = []
+    for code, g in games.get("games", {}).items():
+        created = g.get("created_at", now)
+        phase = g.get("phase", "lobby")
+        ttl = LOBBY_TTL if phase == "lobby" else GAME_TTL
+        if now - created > ttl:
+            to_delete.append(code)
+    for code in to_delete:
+        del games["games"][code]
+    return bool(to_delete)
 
 def get_rank(c):
     return re.sub(r'[^0-9JQKA]', '', c) if not c.startswith("JOKER") else "JOKER"
@@ -258,7 +280,6 @@ def trigger_bot_if_needed(code):
 
 
 def bot_move(code):
-    import time
     time.sleep(1.2)
 
     games = load_json(GAME_FILE)
@@ -816,7 +837,8 @@ def index():
                 "aceMode": "high",
                 "dead": [],
                 "phase": "lobby",
-                "public": is_public
+                "public": is_public,
+                "created_at": time.time(),
             }
 
             save_json(GAME_FILE, games)
