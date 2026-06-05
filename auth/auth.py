@@ -2,7 +2,7 @@ from flask import Blueprint, request, session, redirect, url_for, render_templat
 import json, os, hashlib, time, hmac
 from dotenv import load_dotenv
 from datetime import datetime
-from auth.plus import is_plus
+from auth.plus_checker import is_plus 
 
 auth_bp = Blueprint('auth', __name__, template_folder='templates',static_folder='static', static_url_path='/auth/static')
 
