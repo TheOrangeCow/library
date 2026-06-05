@@ -2,7 +2,7 @@ from flask import Blueprint, request, session, redirect, url_for, render_templat
 import time
 from auth import load_users, save_users, get_chips, get_theme, hash_pw
 
-plus_bp = Blueprint('plus', __name__, template_folder='templates', static_folder='static')
+plus_bp = Blueprint('plus', __name__, template_folder='templates', static_folder='static', static_url_path='/auth/static')
 
 PLUS_UPFRONT_COST = 1000
 PLUS_MONTHLY_COST = 10

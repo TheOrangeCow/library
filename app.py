@@ -15,7 +15,9 @@ from enraged.enraged_pooheads import enraged_bp
 from crash.crash import crash_bp
 import os
 import logging
+from auth.plus import plus_bp
 
+app.register_blueprint(plus_bp)
 logger = logging.getLogger(__name__)
 
 
