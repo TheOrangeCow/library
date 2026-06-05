@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>Library Plus</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        .plus-hero {
+            text-align: center;
+            padding: 3rem 1.4rem 1.5rem;
+            position: relative;
+        }
+
+        .plus-crown {
+            font-size: 2.8rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 18px rgba(212, 168, 67, 0.6));
+            animation: crownPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes crownPulse {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 14px rgba(212, 168, 67, 0.5));
+                transform: translateY(0);
+            }
+
+            50% {
+                filter: drop-shadow(0 0 28px rgba(212, 168, 67, 0.9));
+                transform: translateY(-4px);
+            }
+        }
+
+        .plus-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            color: var(--gold);
+            margin: 0 0 0.3rem;
+        }
+
+        .plus-title span {
+            background: linear-gradient(135deg, #f5d170, #d4a843, #f5d170);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .plus-subtitle {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 1.05rem;
+            color: var(--gold-dim);
+            margin-bottom: 2rem;
+        }
+
+        .plus-pricing {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            padding: 0 1.4rem 1.5rem;
+        }
+
+        .price-card {
+            background: var(--glass-bg, rgba(20, 16, 8, 0.7));
+            border: 1px solid var(--glass-border, rgba(212, 168, 67, 0.25));
+            border-radius: 14px;
+            padding: 1.6rem 2rem;
+            min-width: 220px;
+            max-width: 280px;
+            flex: 1;
+            text-align: center;
+            position: relative;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .price-card:hover {
+            border-color: var(--gold);
+            box-shadow: 0 0 28px rgba(212, 168, 67, 0.18);
+        }
+
+        .price-card .badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gold);
+            color: #1a1408;
+            font-family: 'Cinzel', serif;
+            font-size: 0.58rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            padding: 0.2rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .price-card h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.14em;
+            color: var(--gold-dim);
+            margin: 0 0 0.6rem;
+            text-transform: uppercase;
+        }
+
+        .price-amount {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .price-unit {
+            font-family: 'EB Garamond', serif;
+            font-size: 0.82rem;
+            color: var(--gold-dim);
+            font-style: italic;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .price-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.2rem;
+            text-align: left;
+        }
+
+        .price-card ul li {
+            font-family: 'EB Garamond', serif;
+            font-size: 0.88rem;
+            color: var(--gold-dim);
+            padding: 0.22rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .price-card ul li::before {
+            content: '✦';
+            color: var(--gold);
+            font-size: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .btn-plus {
+            display: inline-block;
+            width: 100%;
+            padding: 0.6rem 1.2rem;
+            background: linear-gradient(135deg, #c49a2a, #e8c84b, #c49a2a);
+            color: #1a1408;
+            font-family: 'Cinzel', serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: filter 0.2s, transform 0.15s;
+            box-sizing: border-box;
+        }
+
+        .btn-plus:hover {
+            filter: brightness(1.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-plus:disabled,
+        .btn-plus.disabled {
+            background: rgba(212, 168, 67, 0.2);
+            color: var(--gold-dim);
+            cursor: not-allowed;
+            filter: none;
+            transform: none;
+        }
+
+        .plus-features {
+            padding: 0.5rem 1.4rem 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .feature-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(212, 168, 67, 0.1);
+            background: rgba(212, 168, 67, 0.04);
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .feature-icon {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .feature-text h4 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.72rem;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            margin: 0 0 0.2rem;
+        }
+
+        .feature-text p {
+            font-family: 'EB Garamond', serif;
+            font-size: 0.85rem;
+            color: var(--gold-dim);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .plus-active-banner {
+            margin: 1rem 1.4rem;
+            padding: 1rem 1.4rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(212, 168, 67, 0.12), rgba(212, 168, 67, 0.06));
+            border: 1px solid rgba(212, 168, 67, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .plus-active-banner .crown-sm {
+            font-size: 1.4rem;
+        }
+
+        .plus-active-banner h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.82rem;
+            letter-spacing: 0.1em;
+            color: var(--gold);
+            margin: 0 0 0.2rem;
+        }
+
+        .plus-active-banner p {
+            font-family: 'EB Garamond', serif;
+            font-size: 0.85rem;
+            color: var(--gold-dim);
+            margin: 0;
+            font-style: italic;
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid rgba(212, 168, 67, 0.12);
+            margin: 0.5rem 1.4rem 1rem;
+        }
+
+        .section-label {
+            font-family: 'Cinzel', serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.18em;
+            color: var(--gold-dim);
+            text-transform: uppercase;
+            padding: 0 1.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .error-msg {
+            margin: 0 1.4rem 1rem;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            background: rgba(224, 85, 85, 0.1);
+            border: 1px solid rgba(224, 85, 85, 0.3);
+            font-family: 'EB Garamond', serif;
+            font-size: 0.88rem;
+            color: #e05555;
+            font-style: italic;
+        }
+
+        .success-msg {
+            margin: 0 1.4rem 1rem;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            background: rgba(111, 226, 150, 0.1);
+            border: 1px solid rgba(111, 226, 150, 0.25);
+            font-family: 'EB Garamond', serif;
+            font-size: 0.88rem;
+            color: #6fe296;
+            font-style: italic;
+        }
+
+        .chips-note {
+            font-family: 'EB Garamond', serif;
+            font-size: 0.8rem;
+            color: var(--gold-dim);
+            font-style: italic;
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Plus</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b> ({{ chips }} chips)</span>
+        <span>
+            <a class="logout" href="/">Home</a>
+            <a class="logout" href="/profile">Profile</a>
+            <a class="logout" href="/logout">Logout</a>
+        </span>
+    </div>
+
+    <div class="plus-hero">
+        <h1 class="plus-title">Library <span>Plus</span></h1>
+        <p class="plus-subtitle">Elevate your game. Unlock the vault.</p>
+    </div>
+
+    {% if error %}
+    <div class="error-msg">{{ error }}</div>
+    {% endif %}
+    {% if success %}
+    <div class="success-msg">{{ success }}</div>
+    {% endif %}
+
+    {% if is_plus %}
+    <div class="plus-active-banner">
+        <div>
+            <h3>Plus Active</h3>
+            <p>
+                You're a Plus member. Next renewal costs 10 chips, charged on
+                <b style="color:var(--gold);">{{ next_billing | datetimeformat }}</b>.
+            </p>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <p class="section-label">Manage Subscription</p>
+    <div style="padding: 0 1.4rem 2rem;">
+        <form method="POST" action="/plus/cancel">
+            <button type="submit" class="btn-plus disabled"
+                style="max-width:260px; background:rgba(224,85,85,0.15); color:#e05555; border:1px solid rgba(224,85,85,0.3);"
+                onclick="return confirm('Cancel Plus? You keep access until end of billing period.')">
+                Cancel Plus
+            </button>
+        </form>
+        <p class="chips-note" style="text-align:left; margin-top:0.6rem;">
+            Cancelling stops future charges. You retain Plus until your next billing date.
+        </p>
+    </div>
+
+    {% else %}
+    <p class="section-label">Choose Your Plan</p>
+
+    <div class="plus-pricing">
+        <div class="price-card">
+            <div class="badge">RECOMMENDED</div>
+            <h3>Plus Membership</h3>
+            <div class="price-amount">1,000</div>
+            <span class="price-unit">chips upfront · then 10 chips/month</span>
+            <ul>
+                <li>Plus badge on your profile</li>
+                <li>Exclusive profile themes</li>
+                <li>Priority chip top-up access</li>
+                <li>Early access to new games</li>
+            </ul>
+            {% if chips >= 1000 %}
+            <form method="POST" action="/plus/subscribe">
+                <button type="submit" class="btn-plus">
+                    Subscribe · 1,000 chips
+                </button>
+            </form>
+            {% else %}
+            <button class="btn-plus disabled" disabled>
+                Need {{ 1000 - chips }} more chips
+            </button>
+            {% endif %}
+            <p class="chips-note">You have {{ chips }} chips</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <hr class="divider">
+
+    <p class="section-label">What you get</p>
+    <div class="plus-features">
+        <div class="feature-row">
+            <div class="feature-text">
+                <h4>Plus Badge</h4>
+                <p>A golden crown beside your name on your profile and in lobbies. Let everyone know.</p>
+            </div>
+        </div>
+        <div class="feature-row">
+            <div class="feature-text">
+                <h4>Exclusive Themes</h4>
+                <p>Unlock Plus-only visual themes unavailable to standard members.</p>
+            </div>
+        </div>
+        <div class="feature-row">
+            <div class="feature-text">
+                <h4>Early Access</h4>
+                <p>Be first to try new games and features before they go public.</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

@@ -151,5 +151,6 @@ def api_chips():
 def school2():
     return render_game_dashboard("school2.html", session["username"])
 
+
 if __name__ == "__main__":
     socketio.run(app, debug=True, host="0.0.0.0", port=5000)
