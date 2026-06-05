@@ -120,12 +120,23 @@ def login():
 @auth_bp.route("/set_theme", methods=["POST"])
 def set_theme():
     if "username" not in session:
-        return {"ok": False}, 401
+        return {"ok": False, "error": "Not logged in"}, 401
+
     theme = request.json.get("theme", "")
     data = load_users()
-    if session["username"] in data["users"]:
-        data["users"][session["username"]]["theme"] = theme
+
+    username = session["username"]
+
+    if username in data["users"]:
+        if theme in ["violet", "silver"] and not is_plus(username):
+            return {
+                "ok": False,
+                "error": "You must have Plus to use this theme."
+            }, 403
+
+        data["users"][username]["theme"] = theme
         save_users(data)
+
     return {"ok": True}
 
 def get_theme(username):

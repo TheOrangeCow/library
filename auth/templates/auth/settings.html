@@ -100,13 +100,22 @@
     </div>
 
     <script>
-      function setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        fetch('/set_theme', {
+      async function setTheme(theme) {
+        const response = await fetch('/set_theme', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify({ theme })
         });
+
+        const data = await response.json();
+
+        if (data.ok) {
+          document.documentElement.setAttribute('data-theme', theme);
+        } else {
+          alert(data.error);
+        }
       }
       const socket = io();
       socket.on("connect", () => {
