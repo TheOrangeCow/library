@@ -1,3 +1,12 @@
+USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
+
+def load_users():
+    if not os.path.exists(USERS_FILE):
+        return {"users": {}}
+    with open(USERS_FILE) as f:
+        return json.load(f)
+
+
 def is_plus(username: str) -> bool:
     data = load_users()
     user = data["users"].get(username, {})
