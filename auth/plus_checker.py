@@ -1,3 +1,5 @@
+import os
+
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
 
 def load_users():
