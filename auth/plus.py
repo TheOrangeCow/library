@@ -59,7 +59,7 @@ def plus_page():
 
     plus_info = get_plus_info(username)
     return render_template(
-        "plus.html",
+        "auth/plus.html",
         theme=get_theme(username),
         username=username,
         chips=get_chips(username),
