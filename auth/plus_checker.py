@@ -1,4 +1,4 @@
-import os
+import os, json
 
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
 
