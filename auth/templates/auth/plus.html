@@ -10,49 +10,21 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
     <style>
+        body{
+            text-align: center;
+            align-items: center;
+        }
+
+
+
         .plus-hero {
             text-align: center;
             padding: 3rem 1.4rem 1.5rem;
             position: relative;
         }
 
-        .plus-crown {
-            font-size: 2.8rem;
-            display: block;
-            margin-bottom: 0.5rem;
-            filter: drop-shadow(0 0 18px rgba(212, 168, 67, 0.6));
-            animation: crownPulse 3s ease-in-out infinite;
-        }
+    
 
-        @keyframes crownPulse {
-
-            0%,
-            100% {
-                filter: drop-shadow(0 0 14px rgba(212, 168, 67, 0.5));
-                transform: translateY(0);
-            }
-
-            50% {
-                filter: drop-shadow(0 0 28px rgba(212, 168, 67, 0.9));
-                transform: translateY(-4px);
-            }
-        }
-
-        .plus-title {
-            font-family: 'Cinzel', serif;
-            font-size: 2.2rem;
-            font-weight: 900;
-            letter-spacing: 0.12em;
-            color: var(--gold);
-            margin: 0 0 0.3rem;
-        }
-
-        .plus-title span {
-            background: linear-gradient(135deg, #f5d170, #d4a843, #f5d170);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
 
         .plus-subtitle {
             font-family: 'EB Garamond', serif;
@@ -157,7 +129,7 @@
             display: inline-block;
             width: 100%;
             padding: 0.6rem 1.2rem;
-            background: linear-gradient(135deg, #c49a2a, #e8c84b, #c49a2a);
+            background: linear-gradient(135deg, var(--gold-dim), var(--gold-light), var(--gold));
             color: #1a1408;
             font-family: 'Cinzel', serif;
             font-size: 0.75rem;
@@ -388,30 +360,6 @@
         </div>
     </div>
     {% endif %}
-
-    <hr class="divider">
-
-    <p class="section-label">What you get</p>
-    <div class="plus-features">
-        <div class="feature-row">
-            <div class="feature-text">
-                <h4>Plus Badge</h4>
-                <p>A golden crown beside your name on your profile and in lobbies. Let everyone know.</p>
-            </div>
-        </div>
-        <div class="feature-row">
-            <div class="feature-text">
-                <h4>Exclusive Themes</h4>
-                <p>Unlock Plus-only visual themes unavailable to standard members.</p>
-            </div>
-        </div>
-        <div class="feature-row">
-            <div class="feature-text">
-                <h4>Early Access</h4>
-                <p>Be first to try new games and features before they go public.</p>
-            </div>
-        </div>
-    </div>
 
 </body>
 
