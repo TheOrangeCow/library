@@ -115,4 +115,9 @@ def cancel():
         user["plus"]["cancelled_at"] = time.time()
         save_users(data)
 
+    data = load_users()
+    username = session["username"]
+    data["users"][username]["theme"] = ""
+    save_users(data)
+
     return redirect(url_for("plus.plus_page") + "?success=Plus+cancelled.+Access+remains+until+your+billing+date.")
