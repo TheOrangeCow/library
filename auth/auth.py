@@ -133,7 +133,7 @@ def set_theme():
             return {
                 "ok": False,
                 "error": "You must have Plus to use this theme."
-            }, 403
+            }, 200
 
         data["users"][username]["theme"] = theme
         save_users(data)
