@@ -296,8 +296,13 @@
     </div>
 
     <div class="plus-hero">
+        {% if upgrade %}
+        <h1 class="plus-title">Upgrade To Plus To Use This Feature</h1>
+        {% endif %}
+        {% if not upgrade %}
         <h1 class="plus-title">Library <span>Plus</span></h1>
         <p class="plus-subtitle">Elevate your game. Unlock the vault.</p>
+        {% endif %}
     </div>
 
     {% if error %}

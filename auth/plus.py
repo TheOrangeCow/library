@@ -50,11 +50,14 @@ def plus_page():
     username = session["username"]
     charge_monthly_if_due(username)
 
+
+
     plus_info = get_plus_info(username)
     return render_template(
         "auth/plus.html",
         theme=get_theme(username),
         username=username,
+        upgrade=request.args.get("upgrade") == "true",
         chips=get_chips(username),
         is_plus=is_plus(username),
         next_billing=plus_info.get("next_billing", 0),
