@@ -16,11 +16,13 @@ from crash.crash import crash_bp
 import os
 import logging
 from auth.plus import plus_bp
+from whitejack.whitejack import whitejack_bp
 
 app.register_blueprint(plus_bp)
 logger = logging.getLogger(__name__)
 
 
+app.register_blueprint(whitejack_bp)
 app.register_blueprint(enraged_bp)
 app.register_blueprint(poker_bp)
 app.register_blueprint(slots_bp)
