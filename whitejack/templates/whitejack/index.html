@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>White Jack</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· White Jack</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span>
+            <a class="logout" href="/">Back</a>
+        </span>
+    </div><br>
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
+        </div>
+    </nav>
+    <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card">
+            <h1 class="index-text">Rooms</h1>
+
+            <h2 class="index-text">Join a Public Room</h2>
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color: var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
+            </div>
+            <br>
+
+            <h2 class="index-text">Join Private Room</h2>
+            <p style="font-size:0.85rem;color: var(--gold-dim);">Have a code? Enter it below.</p>
+            <form method="POST">
+                <input class="index" type="text" name="room_code" placeholder="123456" /><br><br>
+                <button class="index" name="join" value="1">Join Room</button>
+            </form>
+            <br><br>
+
+            <h2 class="index-text">Create Room</h2>
+            <form method="POST">
+                <label style="font-size:0.85rem;color: var(--gold-dim);">
+                    <input class="index" type="checkbox" name="public" checked> Make this room public
+                </label><br><br>
+                <button class="index" name="create" value="1">Create Room</button>
+            </form>
+
+            {% if error %}
+            <div class="index-text">{{ error }}</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="rules" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Rules</h2>
+            <h3>Objective</h3>
+            <ul>
+                <li>Get your hand as close to <span class="highlight">0</span> as possible — without ever going
+                    below it.</li>
+                <li>You are only playing against the <span class="highlight">dealer</span>, not other players.</li>
+            </ul>
+
+            <h3>Card Values</h3>
+            <ul>
+                <li><span class="special">2–10</span>: Face value.</li>
+                <li><span class="special">J, Q, K</span>: Worth 10.</li>
+                <li><span class="special">Ace</span>: Always worth <span class="highlight">1</span> (never 11).</li>
+            </ul>
+
+            <h3>The Deal</h3>
+            <ul>
+                <li>Place your <span class="highlight">bet</span> before cards are dealt.</li>
+                <li>Everyone gets two starting cards. The dealer gets one face up, one <span class="highlight">face
+                        down</span>.</li>
+            </ul>
+
+            <h3>The Swap</h3>
+            <ul>
+                <li>Before locking in, you get <span class="special">one swap</span>: trade either of your two
+                    starting cards for a fresh one from the deck.</li>
+                <li>When you're happy with your two cards, <span class="highlight">lock in</span>. Their total
+                    becomes your starting number.</li>
+                <li>If your locked-in total is exactly <span class="highlight">0</span>, that's a <span
+                        class="special">White Jack</span> — an instant win paying 3:2.</li>
+            </ul>
+
+            <h3>Your Turn</h3>
+            <ul>
+                <li>Every card you draw after locking in is <span class="highlight">subtracted</span> from your
+                    total.</li>
+                <li><span class="special">Hit</span>: Draw a card and subtract its value from your total.</li>
+                <li><span class="special">Stand</span>: Keep your current total and end your turn.</li>
+                <li><span class="special">Double Down</span>: Double your bet, take exactly one more card, then
+                    stand. Only available right after locking in.</li>
+                <li>If a draw takes your total <span class="highlight">below 0</span>, you bust and lose
+                    immediately.</li>
+                <li>If a draw brings your total to exactly <span class="highlight">0</span>, you stop instantly with
+                    a perfect hand.</li>
+            </ul>
+
+            <h3>The Dealer</h3>
+            <ul>
+                <li>After all players have acted, the dealer reveals their hidden card.</li>
+                <li>The dealer <span class="highlight">must hit</span> while their total is above 4.</li>
+                <li>The dealer <span class="highlight">stands</span> once their total is 4 or below.</li>
+            </ul>
+
+            <h3>Outcomes</h3>
+            <ul>
+                <li><span class="special">Win</span>: End closer to 0 than the dealer — your bet pays 1:1.</li>
+                <li><span class="special">White Jack</span>: Lock in at exactly 0 on your starting two cards — pays
+                    <span class="highlight">3:2</span> (2.5× your bet).
+                </li>
+                <li><span class="special">Push</span>: Tie with the dealer — your bet is returned.</li>
+                <li><span class="special">Bust</span>: Drop below 0 — you lose your bet regardless of the dealer.
+                </li>
+                <li><span class="special">Dealer Bust</span>: Dealer drops below 0 — all non-bust players win.</li>
+            </ul>
+
+            <h3>Chips</h3>
+            <ul>
+                <li>You start with <span class="highlight">1000 chips</span> on registration.</li>
+                <li>Chips carry over between all games and sessions.</li>
+                <li>If you run out, you are removed from the room at the end of the round.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="strategy" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Strategy</h2>
+            <ul>
+                <li>Use your <span class="highlight">swap</span> on any card worth 8 or more — high cards are hard to
+                    work with when your goal is 0.</li>
+                <li>A locked total of <span class="highlight">2–4</span> is strong: small, safe hits can finish it
+                    off.</li>
+                <li>A locked total of <span class="highlight">10+</span> is risky — you'll need several hits, and
+                    every one risks overshooting below 0.</li>
+                <li><span class="highlight">Stand</span> early once you're within 1–2 of zero unless you know small
+                    cards remain in the deck.</li>
+                <li>The dealer keeps hitting above 4, so they're more likely to bust than to land low — let them take
+                    the risk if your total is already low.</li>
+                <li>Doubling down is best right after locking in on a small total (2–6), where one more card has a
+                    real shot at hitting 0 exactly.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script>
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
+
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+
+    function hide(el) {
+        const pages = ["rooms", "rules", "strategy"];
+        for (const page of pages) {
+            if (page !== el) {
+                document.getElementById(page).style.display = "none";
+            } else {
+                document.getElementById(page).style.display = "";
+            }
+        }
+    }
+
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+            hide(this.getAttribute('href').slice(1));
+        });
+    });
+
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
+        hide('rooms');
+    }
+
+    if (document.fonts) {
+        document.fonts.ready.then(init);
+    } else {
+        window.addEventListener('load', init);
+    }
+
+    window.addEventListener('resize', () => {
+        const cur = pill.querySelector('a.active');
+        if (cur) moveSlider(cur);
+    });
+
+    const socket = io();
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: `Lobby` });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === 'hidden') {
+            socket.emit('tab_hidden');
+        } else {
+            socket.emit('tab_visible');
+        }
+    });
+    function loadPublicRooms() {
+        fetch('/whitejack/rooms')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('public-rooms-list');
+                if (!data.rooms.length) {
+                    el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    return;
+                }
+                el.innerHTML = data.rooms.map(r => `
+                    <div style="display:flex;justify-content:space-between;align-items:center;
+                                padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                        <span style="color:var(--gold-dim);font-size:0.85rem;">
+                            Room <b style="color:var(--gold)">${r.code}</b>
+                            · ${r.names.join(', ') || 'Empty'}
+                        </span>
+                        <span style="color:var(--gold-dim);font-size:0.8rem;">${r.players}/${r.max} players</span>
+                        <form method="POST" style="margin:0;">
+                            <input type="hidden" name="room_code" value="${r.code}">
+                            <button class="index" type="submit" name="join" value="1"
+                                style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                                Join →
+                            </button>
+                        </form>
+                    </div>
+                `).join('');
+            });
+    }
+
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
+</script>
+
+</html>

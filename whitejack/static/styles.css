@@ -1,0 +1,54 @@
+@import url('/pooheads/static/style.css');
+@import url('/blackjack/static/style.css');
+
+.swap-hint {
+    font-size: 0.75rem;
+    color: var(--gold-dim);
+    text-align: center;
+    margin-bottom: 0.4rem;
+    font-style: italic;
+}
+
+#your-hand .bj-card.swappable {
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(240, 204, 114, 0.55), 0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+#your-hand .bj-card.swappable:hover {
+    transform: translateY(-4px);
+    transition: transform 0.15s ease;
+}
+
+#your-hand .bj-card.swap-used {
+    cursor: default;
+    opacity: 0.9;
+}
+
+.swap-pip {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: #0d0a00;
+    font-size: 0.55rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.result-perfect {
+    color: #6fe2ff;
+}
+
+.opp-status.perfect {
+    color: #6fe2ff;
+}
+
+.opp-status.whitejack {
+    color: #ffd97a;
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>White Jack · {{ roomCode }}</title>
+    <link rel="stylesheet" href="{{ url_for('whitejack.static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+
+    <div id="notif"></div>
+
+    <div id="header">
+        <h1>White Jack <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· {{ roomCode }}</span>
+        </h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span>
+            <button class="index" onclick="window.location.href='/whitejack'">Back</button>
+        </span>
+    </div>
+
+    <div id="arena">
+        <div id="table"></div>
+
+        <div id="dealer-zone">
+            <div class="dealer-label">Dealer</div>
+            <div id="dealer-hand" class="card-row"></div>
+            <div id="dealer-total" class="hand-total"></div>
+        </div>
+
+        <div id="opp-container"></div>
+
+        <div id="your-zone">
+            <div id="your-label-row">
+                <span id="your-name">{{ username }}</span>
+                <span id="turn-pill">YOUR TURN</span>
+            </div>
+            <div id="your-hand" class="card-row"></div>
+            <div id="your-total" class="hand-total"></div>
+            <div id="your-chips"></div>
+            <div id="action-area">
+                <div id="bet-area" style="display:none;">
+                    <input id="bet-input" type="number" min="1" class="index" placeholder="Bet amount" />
+                    <button class="index" onclick="placeBet()">Place Bet</button>
+                    <div id="quick-bets">
+                        <button class="index" onclick="quickBet(10)">10</button>
+                        <button class="index" onclick="quickBet(25)">25</button>
+                        <button class="index" onclick="quickBet(50)">50</button>
+                        <button class="index" onclick="quickBet(100)">100</button>
+                    </div>
+                </div>
+                <div id="swap-area" style="display:none;">
+                    <p class="swap-hint">Tap a card above to swap it (one swap total), then lock in.</p>
+                    <button class="index" onclick="doLock()">Lock In</button>
+                </div>
+                <div id="play-area" style="display:none;">
+                    <button class="index" onclick="doHit()">Hit</button>
+                    <button class="index" onclick="doStand()">Stand</button>
+                    <button class="index" id="double-btn" onclick="doDouble()">Double Down</button>
+                </div>
+            </div>
+            <div id="result-banner"></div>
+            <div id="new-round-btn" style="display:none;">
+                <button class="index" onclick="newRound()">New Round</button>
+            </div>
+        </div>
+
+        <div id="finished-bar"></div>
+    </div>
+
+    <div id="play-feed"></div>
+    <div id="user-list"></div>
+
+    <div id="chat-container" class="chat-window">
+        <div id="chat-header" class="chat-header">
+            <span style="color:var(--gold);">Game Chat</span>
+            <button onclick="resetChat()"
+                style="background:none;border:none;color:var(--gold);cursor:pointer;">X</button>
+        </div>
+        <div id="chat-messages" style="font-size:0.8rem;color:var(--gold);"></div>
+        <div class="chat-input-area">
+            <input type="text" class="index" id="chat-input" placeholder="Type a message...">
+            <button class="index" id="chat-send">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const roomCode = "{{ roomCode }}";
+        const username = "{{ username }}";
+    </script>
+    <!--
+        Loads the profanity / moderation word list.
+
+        This file contains a list of words used ONLY for client-side detection
+        of inappropriate or offensive language in chat messages.
+
+        Purpose:
+        - Improve chat safety
+        - Blur/filter messages containing flagged words
+        - Support moderation features in the UI
+
+        Note:
+        - This is not for displaying content, only for detection/filtering logic
+        - Loaded before main chat script so the list is available globally
+    -->
+    <script src="{{ url_for('static', filename='badword.js') }}"></script>
+    <script src="{{ url_for('whitejack.static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script src="{{ url_for('static', filename='chat.js') }}"></script>
+</body>
+
+</html>
