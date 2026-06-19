@@ -4,7 +4,7 @@
 <head>
     <title>White Jack · {{ roomCode }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('whitejack.static', filename='style.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
@@ -110,7 +110,7 @@
         - Loaded before main chat script so the list is available globally
     -->
     <script src="{{ url_for('static', filename='badword.js') }}"></script>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('whitejack.static', filename='script.js') }}"></script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
     <script src="{{ url_for('static', filename='chat.js') }}"></script>
 </body>
