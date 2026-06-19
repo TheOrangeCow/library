@@ -67,20 +67,84 @@
         </div>
 
 
+        <div id="rules" style="padding: 1rem 1.4rem; display: none;">
+            <div class="game-card index-text">
+                <h2>Rules</h2>
 
+                <h3>Game Setup</h3>
+                <ul>
+                    <li>Players join a room and place bets using their chips.</li>
+                    <li>The host starts the round.</li>
+                    <li>A 5-second countdown begins before the rocket launches.</li>
+                    <li>Once the round starts, betting is closed.</li>
+                </ul>
+
+                <h3>Objective</h3>
+                <ul>
+                    <li>Cash out before the rocket crashes.</li>
+                    <li>The longer you wait, the higher the multiplier becomes.</li>
+                    <li>If you fail to cash out before the crash, you lose your entire bet.</li>
+                </ul>
+
+                <h3>Betting</h3>
+                <ul>
+                    <li>You may place one bet per round.</li>
+                    <li>Bets can only be placed while the game is in the <span class="highlight">Lobby</span> or <span
+                            class="highlight">Countdown</span> phase.</li>
+                    <li>Your bet amount is deducted immediately when placed.</li>
+                </ul>
+
+                <h3>Flight Phase</h3>
+                <ul>
+                    <li>The multiplier starts at <span class="highlight">1.00x</span>.</li>
+                    <li>It continuously increases as the rocket flies.</li>
+                    <li>You may cash out at any time before the crash.</li>
+                    <li>Your winnings are calculated as <span class="highlight">Bet × Multiplier</span>.</li>
+                </ul>
+
+                <h3>Crashing</h3>
+                <ul>
+                    <li>The crash point is randomly generated each round.</li>
+                    <li>The rocket can crash at any multiplier from <span class="highlight">1.00x</span> upwards.</li>
+                    <li>If the rocket crashes before you cash out, your bet is lost.</li>
+                </ul>
+
+                <h3>Winning</h3>
+                <ul>
+                    <li>Successfully cash out before the crash to win chips.</li>
+                    <li>The higher the multiplier when you cash out, the larger your winnings.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="strategy" style="padding: 1rem 1.4rem; display: none;">
+            <div class="game-card index-text">
+                <h2>Strategy</h2>
+                <ul>
+                    <li>Small, consistent cashouts are usually safer than chasing huge multipliers.</li>
+                    <li>Many crashes happen at low multipliers, so don't get greedy.</li>
+                    <li>Set a target multiplier before the round starts and stick to it.</li>
+                    <li>Protect your bankroll by avoiding oversized bets.</li>
+                    <li>Remember that every round is independent; previous crashes do not affect future ones.</li>
+                    <li>If you're on a winning streak, consider securing profits rather than increasing risk.</li>
+                    <li>The longer you stay in, the greater the reward—but also the greater the chance of losing
+                        everything.</li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>
-    function loadPublicRooms() {
-        fetch('/crash/rooms')
-            .then(r => r.json())
-            .then(data => {
-                const el = document.getElementById('public-rooms-list');
-                if (!data.rooms.length) {
-                    el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
-                    return;
-                }
-                el.innerHTML = data.rooms.map(r => `
+        function loadPublicRooms() {
+            fetch('/crash/rooms')
+                .then(r => r.json())
+                .then(data => {
+                    const el = document.getElementById('public-rooms-list');
+                    if (!data.rooms.length) {
+                        el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                        return;
+                    }
+                    el.innerHTML = data.rooms.map(r => `
                 <div style="display:flex;justify-content:space-between;align-items:center;
                             padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
                     <span style="color:var(--gold-dim);font-size:0.85rem;">
@@ -96,11 +160,11 @@
                     </form>
                 </div>
             `).join('');
-            });
-    }
+                });
+        }
 
-    loadPublicRooms();
-    setInterval(loadPublicRooms, 5000);
+        loadPublicRooms();
+        setInterval(loadPublicRooms, 5000);
 
         const socket = io();
         socket.on("connect", () => {
