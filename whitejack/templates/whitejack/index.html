@@ -3,10 +3,12 @@
 
 <head>
     <title>White Jack</title>
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('whitejack.static', filename='style.css') }}">
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
         rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 
