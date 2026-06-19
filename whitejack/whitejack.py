@@ -9,7 +9,8 @@ from auth.auth import record_result, record_played_with_all
 from core import app, socketio
 
 whitejack_bp = Blueprint(
-    'whitejack', __name__,
+    'whitejack', 
+    __name__,
     template_folder='templates',
     static_folder='static',
     static_url_path='/whitejack/static'
