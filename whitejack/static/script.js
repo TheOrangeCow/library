@@ -101,7 +101,7 @@ function doLock() { socket.emit("wj_lock", { code: roomCode, username }); }
 function doHit() { socket.emit("wj_hit", { code: roomCode, username }); }
 function doStand() { socket.emit("wj_stand", { code: roomCode, username }); }
 function doDouble() { socket.emit("wj_double", { code: roomCode, username }); }
-function newRound() { socket.emit("wj_new_round", { code: roomCode, username }); }
+function newRound() { socket.emit("wj_new_round", { code: roomCode, username }); socket.emit("wj_lock", { code: roomCode, username });}
 
 function renderDealerCards(hand, container) {
     container.innerHTML = "";
