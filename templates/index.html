@@ -128,9 +128,10 @@
             <div class="game-card">
                 <h2>Crash</h2>
                 <p>
-                    Beta 
-                    Beta 
-                    Beta
+                    A fast-paced multiplayer gambling game where a rocket's multiplier keeps climbing until it suddenly
+                    crashes. Place your bet, watch the multiplier rise, and decide when to cash out. Leave too early and
+                    miss bigger profits; wait too long and lose everything. Simple to learn, exciting to play, and every
+                    round is a battle between greed and timing.
                 </p>
                 <a href="/crash">Play Slots →</a>
             </div>
@@ -470,7 +471,7 @@
     socket.on("receive_msg", (data) => {
         const msgDiv = document.getElementById("chat-messages");
 
-        msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.sender,data.type, data.target));
+        msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.sender, data.type, data.target));
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
 
