@@ -1,6 +1,12 @@
 @import url('/pooheads/static/style.css');
 @import url('/blackjack/static/style.css');
 
+#rooms .game-card,
+#rules .game-card,
+#strategy .game-card {
+    display: block;
+}
+
 .swap-hint {
     font-size: 0.75rem;
     color: var(--gold-dim);
