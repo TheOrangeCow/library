@@ -1,5 +1,6 @@
 from flask import Blueprint, request, session, redirect, url_for, render_template
 import json, os, hashlib, time, hmac
+import requests
 from dotenv import load_dotenv
 from datetime import datetime
 from auth.plus_checker import is_plus 
@@ -9,6 +10,11 @@ auth_bp = Blueprint('auth', __name__, template_folder='templates',static_folder=
 load_dotenv()
 
 CODE_SECRET  = os.getenv("CODE_SECRET")
+
+COW_ACCOUNTS = "https://theorangecow.org"
+COW_CLIENT_ID = "library"
+COW_CLIENT_SECRET = "dev-secret-library" #os.getenv("COW_CLIENT_SECRET")
+COW_REDIRECT_URI = "https://library.theorangecow.org/auth/cow/callback"
 
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
 
@@ -112,11 +118,73 @@ def login():
         password = request.form["password"].strip()
         data = load_users()
         user = data["users"].get(username)
+
+        if user and user.get("password") is None:
+            return render_template("auth/login.html", error="This account signs in with Login with Cow — use the button below.")
+
         if not user or user["password"] != hash_pw(password):
             return render_template("auth/login.html", error="Invalid credentials.")
         session["username"] = username
         return redirect(url_for("home"))
     return render_template("auth/login.html")
+
+@auth_bp.route("/cow/login")
+def cow_login():
+    return redirect(
+        f"{COW_ACCOUNTS}/sso/authorize?client_id={COW_CLIENT_ID}&redirect_uri={COW_REDIRECT_URI}"
+    )
+
+
+@auth_bp.route("/cow/callback")
+def cow_callback():
+    token = request.args.get("token")
+    if not token:
+        return render_template("auth/login.html", error="Cow sign-in didn't send back a token.")
+
+    try:
+        resp = requests.post(
+            f"{COW_ACCOUNTS}/sso/verify",
+            json={
+                "client_id": COW_CLIENT_ID,
+                "client_secret": COW_CLIENT_SECRET,
+                "token": token,
+            },
+            timeout=5,
+        )
+        result = resp.json()
+    except (requests.RequestException, ValueError):
+        return render_template("auth/login.html", error="Couldn't reach Cow accounts — try again.")
+
+    if resp.status_code != 200 or not result.get("ok"):
+        return render_template("auth/login.html", error="Cow sign-in could not be verified.")
+
+    username = result["username"]
+    data = load_users()
+
+    if username not in data["users"]:
+        data["users"][username] = {
+            "password": None,
+            "cow_linked": True,
+            "chips": 1000,
+            "stats": {
+                "games_played": 0,
+                "wins": 0,
+                "blackjacks": 0,
+                "biggest_win": 0,
+                "peak_chips": 1000
+            },
+            "history": [],
+            "friends": [],
+            "friend_requests": [],
+            "friend_requests_sent": [],
+            "achievements": [],
+        }
+        save_users(data)
+
+    session["username"] = username
+    return redirect(url_for("home"))
+
+
 
 @auth_bp.route("/set_theme", methods=["POST"])
 def set_theme():
