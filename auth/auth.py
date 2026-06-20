@@ -232,37 +232,43 @@ def settings():
         user = data["users"].get(username)
  
         if action == "change_username":
-            new_username = request.form.get("new_username", "").strip()
-            current_pw   = request.form.get("current_password_u", "").strip()
- 
-            if not new_username:
-                error = "New username cannot be empty."
-            elif user["password"] != hash_pw(current_pw):
-                error = "Current password is incorrect."
-            elif new_username in data["users"]:
-                error = "That username is already taken."
+            if user["password"] == None:
+                success = "You can'nt change your password here as your account is exterlaly manged"
             else:
-                data["users"][new_username] = data["users"].pop(username)
-                save_users(data)
-                session["username"] = new_username
-                username = new_username
-                success = f"Username changed to '{new_username}'."
+                new_username = request.form.get("new_username", "").strip()
+                current_pw   = request.form.get("current_password_u", "").strip()
+     
+                if not new_username:
+                    error = "New username cannot be empty."
+                elif user["password"] != hash_pw(current_pw):
+                    error = "Current password is incorrect."
+                elif new_username in data["users"]:
+                    error = "That username is already taken."
+                else:
+                    data["users"][new_username] = data["users"].pop(username)
+                    save_users(data)
+                    session["username"] = new_username
+                    username = new_username
+                    success = f"Username changed to '{new_username}'."
  
         elif action == "change_password":
-            current_pw  = request.form.get("current_password_p", "").strip()
-            new_pw      = request.form.get("new_password", "").strip()
-            confirm_pw  = request.form.get("confirm_password", "").strip()
- 
-            if user["password"] != hash_pw(current_pw):
-                error = "Current password is incorrect."
-            elif len(new_pw) < 4:
-                error = "New password must be at least 4 characters."
-            elif new_pw != confirm_pw:
-                error = "New passwords do not match."
+            if user["password"] == None:
+                success = "You can'nt change your password here as your account is exterlaly manged"
             else:
-                data["users"][username]["password"] = hash_pw(new_pw)
-                save_users(data)
-                success = "Password changed successfully."
+                current_pw  = request.form.get("current_password_p", "").strip()
+                new_pw      = request.form.get("new_password", "").strip()
+                confirm_pw  = request.form.get("confirm_password", "").strip()
+     
+                if user["password"] != hash_pw(current_pw):
+                    error = "Current password is incorrect."
+                elif len(new_pw) < 4:
+                    error = "New password must be at least 4 characters."
+                elif new_pw != confirm_pw:
+                    error = "New passwords do not match."
+                else:
+                    data["users"][username]["password"] = hash_pw(new_pw)
+                    save_users(data)
+                    success = "Password changed successfully."
  
     data = load_users()
     user_data = data["users"].get(username, {})
