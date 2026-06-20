@@ -14,7 +14,7 @@ CODE_SECRET  = os.getenv("CODE_SECRET")
 COW_ACCOUNTS = "https://theorangecow.org"
 COW_CLIENT_ID = "library"
 COW_CLIENT_SECRET = "dev-secret-library" #os.getenv("COW_CLIENT_SECRET")
-COW_REDIRECT_URI = "https://library.theorangecow.org/auth/cow/callback"
+COW_REDIRECT_URI = "https://library.theorangecow.org/cow/callback"
 
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
 
