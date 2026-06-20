@@ -233,7 +233,7 @@ def settings():
  
         if action == "change_username":
             if user["password"] == None:
-                success = "You can'nt change your password here as your account is exterlaly manged"
+                error = "You can't change your username here as your account is externally manged"
             else:
                 new_username = request.form.get("new_username", "").strip()
                 current_pw   = request.form.get("current_password_u", "").strip()
@@ -253,7 +253,7 @@ def settings():
  
         elif action == "change_password":
             if user["password"] == None:
-                success = "You can'nt change your password here as your account is exterlaly manged"
+                error = "You can't change your password here as your account is externally manged"
             else:
                 current_pw  = request.form.get("current_password_p", "").strip()
                 new_pw      = request.form.get("new_password", "").strip()
