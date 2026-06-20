@@ -79,6 +79,9 @@ def register():
         confirm  = request.form["confirm"].strip()
         join_code = request.form.get("join_code", "").strip().upper()
 
+        if username.endswith("_cow"):
+            return render_template("auth/register.html", error="Invalid username.")
+
         if join_code != get_join_code():
             return render_template("auth/register.html", error="Invalid or expired join code.")
         
@@ -158,7 +161,7 @@ def cow_callback():
     if resp.status_code != 200 or not result.get("ok"):
         return render_template("auth/login.html", error="Cow sign-in could not be verified.")
 
-    username = result["username"]
+    username = result["username"] + "_cow"
     data = load_users()
 
     if username not in data["users"]:
