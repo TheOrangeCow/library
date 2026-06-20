@@ -15,6 +15,22 @@
             justify-content: center;
             min-height: 100vh;
         }
+        .cowbut{
+          font-family: inherit;
+          border-radius: var(--radius-sm);
+          padding: 0.7rem 1.4rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.15s ease, opacity 0.15s ease;
+          border: 2px solid #ff5e1a;
+          background: #1a0a02 !important;
+          color: #ff5e1a;
+        }
+        
+        .cowbut:hover {
+          transform: translateY(-1px);
+          opacity: 0.92;
+        }
     </style>
 </head>
 
@@ -39,7 +55,7 @@
                 <button class="index" type="submit">Login</button>
             </div>
         </form>
-        <a href="{{ url_for('auth.cow_login') }}">Login with Cow</a>
+        <a href="{{ url_for('auth.cow_login') }}" class="cowbut">Login with Cow</a>
 
         <hr class="index">
         <p style="font-size:0.78rem; color:#7a6030; text-align:center;">
