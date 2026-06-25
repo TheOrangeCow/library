@@ -3,7 +3,7 @@ from flask_socketio import join_room, emit
 import json, os, random, threading
 from auth.auth import record_result
 from functools import wraps
-from auth.auth import record_result, record_played_with_all, get_theme
+from auth.auth import record_result, record_played_with_all, get_theme, is_plus
 from core import socketio
 
 sevens_bp = Blueprint(
