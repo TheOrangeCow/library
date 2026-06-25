@@ -6,7 +6,7 @@ from flask_socketio import join_room, leave_room, emit
 from functools import wraps
 
 from core import app, socketio
-from auth.auth import get_theme, get_chips, update_chips, record_result
+from auth.auth import get_theme, get_chips, update_chips, record_result, is_plus
 
 crash_bp = Blueprint(
     "crash",
@@ -38,12 +38,12 @@ def safe_room(code):
     if not r:
         return {}
     out = {
-        "code":       code,
-        "phase":      r["phase"],
+        "code": code,
+        "phase": r["phase"],
         "multiplier": r["multiplier"],
-        "countdown":  r["countdown"],
-        "players":    r["players"],
-        "host":       r["host"],
+        "countdown": r["countdown"],
+        "players": r["players"],
+        "host": r["host"],
         "bets": {
             u: {
                 "amount":     b["amount"],
@@ -237,6 +237,9 @@ def login_required(f):
 @login_required
 def index():
     username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+
     return render_template(
         "crash/index.html",
         username=username,
@@ -249,6 +252,10 @@ def index():
 def game():
     code = request.args.get("code")
     username = session["username"]
+
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+
     if not code or code not in rooms:
         return redirect(url_for("crash.index"))
     return render_template(
@@ -263,6 +270,10 @@ def game():
 @login_required
 def create():
     username = session["username"]
+
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+
     is_public = request.form.get("public") == "on"
     with rooms_lock:
         for _ in range(10):
@@ -288,6 +299,10 @@ def create():
 @login_required
 def join():
     username = session["username"]
+
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+        
     code = request.form.get("code", "").strip()
     with rooms_lock:
         if code not in rooms:
