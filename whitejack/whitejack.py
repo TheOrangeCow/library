@@ -4,7 +4,7 @@ from auth.auth import get_chips, update_chips, get_theme
 from functools import wraps
 import json, os, random, threading
 from auth.auth import record_result
-from auth.auth import record_result, record_played_with_all
+from auth.auth import record_result, record_played_with_all, is_plus
 
 from core import app, socketio
 
