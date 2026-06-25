@@ -455,22 +455,22 @@ def wj_new_round(data):
     if g.get("phase") in ("dealer", "done"):
         return
     g["players"] = [p for p in g["players"] if g["chips"].get(p, 0) > 0]
-    for p in g["players"]:
-        g["bets"][p] = 0
-        g["hands"][p] = []
-        g["running_total"][p] = 0
-        g["swaps_used"][p] = 0
-        g["status"][p] = "waiting"
-    g["dealer_hand"] = []
-    g["results"] = {}
-    g["phase"] = "betting"
-    g["turn"] = None
-    g["doubled"] = {}
-    g["dealer_total"] = None
-    g["dealer_busted"] = False
-    g["current_player_idx"] = 0
-    if len(g["deck"]) < 52:
-        g["deck"] = make_deck(6)
+    games["games"][code] = {
+        "players": g["players"],
+        "hands": {},
+        "chips": {},
+        "bets": {},
+        "status": {},
+        "running_total": {},
+        "dealer_hand": [],
+        "deck": make_deck(6),
+        "phase": "betting",
+        "turn": None,
+        "results": {},
+        "doubled": {},
+        "current_player_idx": 0,
+        "public": g["public"],
+            }
     save_json(GAME_FILE, games)
     socketio.emit("wj_state", g, to=code)
 
