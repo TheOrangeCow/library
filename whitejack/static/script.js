@@ -15,7 +15,7 @@ const OPP_SLOTS = [
 const CHIP_DENOMS = [100, 50, 25, 10, 5, 1];
 const CHIP_COLORS = {
     100: "chip-100", 50: "chip-50", 25: "chip-25",
-    10:  "chip-10",   5: "chip-5",   1: "chip-1"
+    10: "chip-10", 5: "chip-5", 1: "chip-1"
 };
 
 function cardImg(c) {
@@ -36,10 +36,10 @@ function baseTotal(hand) {
     return cardValue(hand[0]) - cardValue(hand[1]);
 }
 
-function showNotif(msg, dur=2500) {
+function showNotif(msg, dur = 2500) {
     const el = document.getElementById("notif");
     el.textContent = msg; el.style.display = "block";
-    clearTimeout(el._t); el._t = setTimeout(() => el.style.display="none", dur);
+    clearTimeout(el._t); el._t = setTimeout(() => el.style.display = "none", dur);
 }
 
 function showFeedToast(html) {
@@ -67,7 +67,7 @@ function makeChipStack(amount) {
     shown.forEach((denom, i) => {
         const c = document.createElement("div");
         c.className = `chip ${CHIP_COLORS[denom]}`;
-        c.style.left  = (i * 5) + "px";
+        c.style.left = (i * 5) + "px";
         c.style.animationDelay = (i * 0.07) + "s";
         c.textContent = denom >= 10 ? denom : "";
         wrap.appendChild(c);
@@ -101,7 +101,7 @@ function doLock() { socket.emit("wj_lock", { code: roomCode, username }); }
 function doHit() { socket.emit("wj_hit", { code: roomCode, username }); }
 function doStand() { socket.emit("wj_stand", { code: roomCode, username }); }
 function doDouble() { socket.emit("wj_double", { code: roomCode, username }); }
-function newRound() { socket.emit("wj_new_round", { code: roomCode, username }); socket.emit("wj_lock", { code: roomCode, username });}
+function newRound() { socket.emit("wj_new_round", { code: roomCode, username }); socket.emit("wj_lock", { code: roomCode, username }); }
 
 function renderDealerCards(hand, container) {
     container.innerHTML = "";
@@ -109,7 +109,7 @@ function renderDealerCards(hand, container) {
         const d = document.createElement("div");
         d.className = "bj-card";
         d.style.backgroundImage = cardImg(c);
-        d.style.animationDelay  = (i * 0.12) + "s";
+        d.style.animationDelay = (i * 0.12) + "s";
         container.appendChild(d);
     });
 }
@@ -121,7 +121,7 @@ function renderYourHand(hand, container, swapPhase, swapsUsed) {
         d.className = "bj-card";
         d.style.position = "relative";
         d.style.backgroundImage = cardImg(c);
-        d.style.animationDelay  = (i * 0.12) + "s";
+        d.style.animationDelay = (i * 0.12) + "s";
         if (swapPhase && i < 2) {
             if (swapsUsed < 1) {
                 d.classList.add("swappable");
@@ -135,15 +135,15 @@ function renderYourHand(hand, container, swapPhase, swapsUsed) {
 }
 
 function render(data) {
-    const phase      = data.phase;
-    const myHand     = data.hands?.[username]  || [];
-    const myStatus   = data.status?.[username];
-    const myChips    = data.chips?.[username]  ?? 0;
-    const myBet      = data.bets?.[username]   ?? 0;
-    const myTurn     = data.turn === username;
-    const mySwaps    = data.swaps_used?.[username] ?? 0;
-    const results    = data.results || {};
-    const myResult   = results[username];
+    const phase = data.phase;
+    const myHand = data.hands?.[username] || [];
+    const myStatus = data.status?.[username];
+    const myChips = data.chips?.[username] ?? 0;
+    const myBet = data.bets?.[username] ?? 0;
+    const myTurn = data.turn === username;
+    const mySwaps = data.swaps_used?.[username] ?? 0;
+    const results = data.results || {};
+    const myResult = results[username];
 
     const dealerHand = (phase === "swap" || phase === "playing")
         ? (data.dealer_hand_visible || [])
@@ -178,19 +178,16 @@ function render(data) {
 
     document.getElementById("turn-pill").classList.toggle("visible", myTurn);
 
-    const betArea     = document.getElementById("bet-area");
-    const swapArea     = document.getElementById("swap-area");
-    const playArea    = document.getElementById("play-area");
+    const betArea = document.getElementById("bet-area");
+    const playArea = document.getElementById("play-area");
     const newRoundBtn = document.getElementById("new-round-btn");
-    betArea.style.display     = "none";
-    swapArea.style.display    = "none";
-    playArea.style.display    = "none";
+    betArea.style.display = "none";
+    playArea.style.display = "none";
     newRoundBtn.style.display = "none";
 
     if (phase === "betting" && myStatus === "waiting") {
         betArea.style.display = "flex";
     } else if (swapPhaseActive) {
-        swapArea.style.display = "flex";
     } else if (phase === "playing" && myTurn && myStatus === "playing") {
         playArea.style.display = "flex";
         document.getElementById("double-btn").style.display =
@@ -204,34 +201,34 @@ function render(data) {
         const r = myResult.result;
         const msgs = {
             whitejack: `White Jack! +${myResult.winnings}`,
-            win:  `✓ Win! +${myResult.winnings}`,
+            win: `✓ Win! +${myResult.winnings}`,
             push: `↔ Push`,
             lose: `✗ Lose`,
             bust: `✗ Bust`,
         };
         if (!banner.textContent) {
             banner.textContent = msgs[r] || "";
-            banner.className   = `result-${r === "whitejack" ? "whitejack" : r} result-win-anim`;
+            banner.className = `result-${r === "whitejack" ? "whitejack" : r} result-win-anim`;
             showFeedToast(`<span class="fp">${username}</span> - ${msgs[r]}`);
         }
     } else if (phase !== "done") {
         banner.textContent = "";
-        banner.className   = "";
+        banner.className = "";
     }
 
     const oppContainer = document.getElementById("opp-container");
     oppContainer.innerHTML = "";
     const others = (data.players || []).filter(p => p !== username);
-    const slots  = OPP_SLOTS[Math.min(others.length - 1, 5)] || [];
+    const slots = OPP_SLOTS[Math.min(others.length - 1, 5)] || [];
 
     others.forEach((p, idx) => {
-        const pos      = slots[idx] || "pos-left-1";
+        const pos = slots[idx] || "pos-left-1";
         const isActive = data.turn === p;
-        const pBet     = data.bets?.[p]   ?? 0;
-        const pChips   = data.chips?.[p]  ?? 0;
-        const pHand    = data.hands?.[p]  || [];
-        const pResult  = results[p];
-        const pStatus  = data.status?.[p] || "";
+        const pBet = data.bets?.[p] ?? 0;
+        const pChips = data.chips?.[p] ?? 0;
+        const pHand = data.hands?.[p] || [];
+        const pResult = results[p];
+        const pStatus = data.status?.[p] || "";
 
         const zone = document.createElement("div");
         zone.className = `opp-zone ${pos}${isActive ? " active-zone" : ""}`;
@@ -254,7 +251,7 @@ function render(data) {
             const d = document.createElement("div");
             d.className = "opp-bj-card";
             d.style.backgroundImage = cardImg(c);
-            d.style.animationDelay  = (i * 0.1) + "s";
+            d.style.animationDelay = (i * 0.1) + "s";
             cardRow.appendChild(d);
         });
         zone.appendChild(cardRow);
@@ -263,13 +260,13 @@ function render(data) {
             const st = document.createElement("div");
             const r = pResult.result;
             st.className = `opp-status ${r}`;
-            const labels = { win:"WIN", lose:"LOSE", push:"PUSH", bust:"BUST", whitejack:"WHITE JACK" };
+            const labels = { win: "WIN", lose: "LOSE", push: "PUSH", bust: "BUST", whitejack: "WHITE JACK" };
             st.textContent = labels[r] || r.toUpperCase();
             zone.appendChild(st);
         } else if (pStatus && !["waiting", "bet_placed", "swapping"].includes(pStatus)) {
             const st = document.createElement("div");
             st.className = "opp-status";
-            st.textContent = pStatus.replace("_"," ").toUpperCase();
+            st.textContent = pStatus.replace("_", " ").toUpperCase();
             zone.appendChild(st);
         }
 
