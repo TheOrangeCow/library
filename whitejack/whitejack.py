@@ -104,7 +104,7 @@ def resolve_player(player_total, player_busted, dealer_total, dealer_busted):
 def get_state_for(g, username):
     import copy
     s = copy.deepcopy(g)
-    if g.get("phase") in ("swap", "playing"):
+    if g.get("phase") == "playing":
         if s.get("dealer_hand") and len(s["dealer_hand"]) >= 2:
             s["dealer_hand_visible"] = [s["dealer_hand"][0], "back"]
         else:
@@ -171,9 +171,12 @@ def deal_round(code, games):
         if card_value(c1) < card_value(c2):
             c1, c2 = c2, c1
         g["hands"][p] = [c1, c2]
+        g["running_total"][p] = card_value(c1) - card_value(c2)
         g["swaps_used"][p] = 0
-        g["status"][p] = "playing"
-        
+        if is_white_jack(g["hands"][p]):
+            g["status"][p] = "whitejack"
+        else:
+            g["status"][p] = "playing"
     g["dealer_hand"] = [deck.pop(), deck.pop()]
     g["phase"] = "playing"
     g["current_player_idx"] = 0
@@ -183,6 +186,8 @@ def deal_round(code, games):
     save_json(GAME_FILE, games)
     for p in g["players"]:
         socketio.emit("wj_state", get_state_for(g, p), to=code)
+
+    advance_if_done(code)
 
 
 @socketio.on("wj_swap")
@@ -446,6 +451,8 @@ def wj_new_round(data):
     games = load_json(GAME_FILE)
     g = games["games"].get(code)
     if not g:
+        return
+    if g.get("phase") in ("dealer", "done"):
         return
     g["players"] = [p for p in g["players"] if g["chips"].get(p, 0) > 0]
     for p in g["players"]:

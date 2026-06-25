@@ -114,22 +114,13 @@ function renderDealerCards(hand, container) {
     });
 }
 
-function renderYourHand(hand, container, swapPhase, swapsUsed) {
+function renderYourHand(hand, container) {
     container.innerHTML = "";
     (hand || []).forEach((c, i) => {
         const d = document.createElement("div");
         d.className = "bj-card";
-        d.style.position = "relative";
         d.style.backgroundImage = cardImg(c);
         d.style.animationDelay = (i * 0.12) + "s";
-        if (swapPhase && i < 2) {
-            if (swapsUsed < 1) {
-                d.classList.add("swappable");
-                d.onclick = () => doSwap();
-            } else {
-                d.classList.add("swap-used");
-            }
-        }
         container.appendChild(d);
     });
 }
@@ -158,12 +149,9 @@ function render(data) {
         dealerTotalEl.textContent = v !== "" ? `${v} + ?` : "";
     }
 
-    const swapPhaseActive = phase === "swap" && myTurn && myStatus === "swapping";
-    renderYourHand(myHand, document.getElementById("your-hand"), swapPhaseActive, mySwaps);
+    renderYourHand(myHand, document.getElementById("your-hand"));
 
-    const myTotal = (phase === "swap")
-        ? baseTotal(myHand)
-        : (data.running_total?.[username] ?? baseTotal(myHand));
+    const myTotal = data.running_total?.[username] ?? baseTotal(myHand);
     document.getElementById("your-total").textContent =
         myHand.length ? `${myTotal}${myTotal < 0 ? " BUST" : ""}` : "";
 
