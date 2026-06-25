@@ -2,139 +2,149 @@
 <html data-theme="{{ theme }}">
 
 <head>
-  <title>Profile</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
-    rel="stylesheet">
-  <style>
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-  </style>
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+    </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 
 <body>
-  <div style="max-width: 640px; margin: 2rem auto; padding: 0 1.2rem;">
+    <div style="max-width: 640px; margin: 2rem auto; padding: 0 1.2rem;">
 
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.6rem;">
-      <h1 style="font-family:'Cinzel',serif; font-size:1.2rem; letter-spacing:0.14em; text-transform:uppercase;">
-        My Profile
-      </h1>
-      <div style="font-size:0.82rem; color: var(--gold-dim); font-style:italic;">
-        Logged in as <b style="color:var(--gold); font-style:normal;">{{ username }}</b>
-        &nbsp;·&nbsp;
-        <span style="color:var(--gold);">{{ chips }}</span>
-      </div>
-    </div>
-
-    {% if error %}
-    <div class="lobby-error">{{ error }}</div>
-    {% endif %}
-    {% if success %}
-    <div
-      style="color:#80d090; font-size:0.82rem; margin-bottom:0.9rem; border:1px solid #306030; border-radius:4px; padding:0.3rem 0.6rem; background:rgba(50,160,50,0.08);">
-      ✓ {{ success }}
-    </div>
-    {% endif %}
-
-    <div class="game-card">
-      <h2>Change Username</h2>
-      <p>Pick a new display name. You'll need to confirm with your current password.</p>
-      <form method="POST">
-        <input type="hidden" name="action" value="change_username">
-        <div class="field">
-          <label>New Username</label>
-          <input class="index" type="text" name="new_username" placeholder="new_handle" required>
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.6rem;">
+            <h1 style="font-family:'Cinzel',serif; font-size:1.2rem; letter-spacing:0.14em; text-transform:uppercase;">
+                My Profile
+            </h1>
+            <div style="font-size:0.82rem; color: var(--gold-dim); font-style:italic;">
+                Logged in as <b style="color:var(--gold); font-style:normal;">{{ username }}</b>
+                &nbsp;·&nbsp;
+                <span style="color:var(--gold);">{{ chips }}</span>
+            </div>
         </div>
-        <div class="field">
-          <label>Current Password</label>
-          <input class="index" type="password" name="current_password_u" placeholder="confirm your identity" required>
-        </div>
-        <div class="btn-row" style="justify-content:flex-start;">
-          <button class="index" type="submit">Update Username</button>
-        </div>
-      </form>
-    </div>
-    <br>
-    <div class="game-card">
-      <h2>Change Password</h2>
-      <p>Choose a new password. Must be at least 4 characters.</p>
-      <form method="POST">
-        <input type="hidden" name="action" value="change_password">
-        <div class="field">
-          <label>Current Password</label>
-          <input class="index" type="password" name="current_password_p" placeholder="your current password" required>
-        </div>
-        <div class="field">
-          <label>New Password</label>
-          <input class="index" type="password" name="new_password" placeholder="at least 4 characters" required>
-        </div>
-        <div class="field">
-          <label>Confirm New Password</label>
-          <input class="index" type="password" name="confirm_password" placeholder="repeat new password" required>
-        </div>
-        <div class="btn-row" style="justify-content:flex-start;">
-          <button class="index" type="submit">Update Password</button>
-        </div>
-      </form>
-    </div>
-    <br>
-    <div class="game-card">
-      <h2>Theme</h2>
-      <p>Choose your colour theme.</p>
-      <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
-        <button class="index" onclick="setTheme('')">Gold</button>
-        <button class="index" onclick="setTheme('blue')">Blue</button>
-        <button class="index" onclick="setTheme('green')">Green</button>
-        <button class="index" onclick="setTheme('red')">Red</button>
-        <button class="index" onclick="setTheme('rose')">Rose</button>
-        <button class="index" onclick="setTheme('violet')">Violet</button>
-        <button class="index" onclick="setTheme('silver')">Silver</button>
-      </div>
-    </div>
 
-    <script>
-      async function setTheme(theme) {
-        const response = await fetch('/set_theme', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ theme })
-        });
+        {% if error %}
+        <div class="lobby-error">{{ error }}</div>
+        {% endif %}
+        {% if success %}
+        <div
+            style="color:#80d090; font-size:0.82rem; margin-bottom:0.9rem; border:1px solid #306030; border-radius:4px; padding:0.3rem 0.6rem; background:rgba(50,160,50,0.08);">
+            ✓ {{ success }}
+        </div>
+        {% endif %}
 
-        const data = await response.json();
+        <div class="game-card">
+            <h2>Change Username</h2>
+            <p>Pick a new display name. You'll need to confirm with your current password.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="change_username">
+                <div class="field">
+                    <label>New Username</label>
+                    <input class="index" type="text" name="new_username" placeholder="new_handle" required>
+                </div>
+                <div class="field">
+                    <label>Current Password</label>
+                    <input class="index" type="password" name="current_password_u" placeholder="confirm your identity"
+                        required>
+                </div>
+                <div class="btn-row" style="justify-content:flex-start;">
+                    <button class="index" type="submit">Update Username</button>
+                </div>
+            </form>
+        </div>
+        <br>
+        <div class="game-card">
+            <h2>Change Password</h2>
+            <p>Choose a new password. Must be at least 4 characters.</p>
+            <form method="POST">
+                <input type="hidden" name="action" value="change_password">
+                <div class="field">
+                    <label>Current Password</label>
+                    <input class="index" type="password" name="current_password_p" placeholder="your current password"
+                        required>
+                </div>
+                <div class="field">
+                    <label>New Password</label>
+                    <input class="index" type="password" name="new_password" placeholder="at least 4 characters"
+                        required>
+                </div>
+                <div class="field">
+                    <label>Confirm New Password</label>
+                    <input class="index" type="password" name="confirm_password" placeholder="repeat new password"
+                        required>
+                </div>
+                <div class="btn-row" style="justify-content:flex-start;">
+                    <button class="index" type="submit">Update Password</button>
+                </div>
+            </form>
+        </div>
+        <br>
+        <div class="game-card">
+            <h2>Theme</h2>
+            <p>Choose your colour theme.</p>
+            <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+                <button class="index" onclick="setTheme('')">Gold</button>
+                <button class="index" onclick="setTheme('blue')">Blue</button>
+                <button class="index" onclick="setTheme('green')">Green</button>
+                <button class="index" onclick="setTheme('red')">Red</button>
+                <button class="index" onclick="setTheme('rose')">Rose</button>
+                <button class="index" onclick="setTheme('violet')">Violet</button>
+                <button class="index" onclick="setTheme('silver')">Silver</button>
+            </div>
+        </div>
 
-        if (data.ok) {
-          document.documentElement.setAttribute('data-theme', theme);
-        } else {
-          alert(data.error);
-        }
-      }
-      const socket = io();
-      socket.on("connect", () => {
-        socket.emit("set_page", { page: `Profile` });
-      });
-    </script>
-    <br>
-    {% if is_admin %}
-    <div class="game-card" style="border-color:var(--gold);">
-      <h2>Admin Panel</h2>
-      <a href="{{ url_for('auth.admin') }}">Open Admin Panel</a>
+        <script>
+            async function setTheme(theme) {
+                const response = await fetch('/set_theme', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ theme })
+                });
+
+                const data = await response.json();
+
+                if (data.ok) {
+                    document.documentElement.setAttribute('data-theme', theme);
+                } else {
+                    if (data.error == "You must have Plus to use this theme."){
+                        window.location.href="https://library.theorangecow.org/plus?upgrade=true"
+
+                    }else{
+                        alert(data.error);
+                    }
+
+                }
+            }
+            const socket = io();
+            socket.on("connect", () => {
+                socket.emit("set_page", { page: `Profile` });
+            });
+        </script>
+        <br>
+        {% if is_admin %}
+        <div class="game-card" style="border-color:var(--gold);">
+            <h2>Admin Panel</h2>
+            <a href="{{ url_for('auth.admin') }}">Open Admin Panel</a>
+        </div>
+        {% endif %}
+
+        <div style="margin-top:0.5rem;">
+            <a class="logout" href="/profile">Back to Profile</a>
+        </div>
+
     </div>
-    {% endif %}
-
-    <div style="margin-top:0.5rem;">
-      <a class="logout" href="/profile">Back to Profile</a>
-    </div>
-
-  </div>
 </body>
 
 </html>
