@@ -187,7 +187,6 @@ function render(data) {
 
     if (phase === "betting" && myStatus === "waiting") {
         betArea.style.display = "flex";
-    } else if (swapPhaseActive) {
     } else if (phase === "playing" && myTurn && myStatus === "playing") {
         playArea.style.display = "flex";
         document.getElementById("double-btn").style.display =
