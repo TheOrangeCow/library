@@ -391,8 +391,8 @@ def run_dealer(code):
     g["phase"] = "dealer"
     dealer_total = base_total(g["dealer_hand"])
     dealer_white_jack = is_white_jack(g["dealer_hand"])
-    dealer_busted = False
-    if not dealer_white_jack:
+    dealer_busted = is_bust(dealer_total)
+    if not dealer_white_jack and not dealer_busted:
         while dealer_should_hit(dealer_total):
             card = g["deck"].pop()
             g["dealer_hand"].append(card)
