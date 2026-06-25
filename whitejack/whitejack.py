@@ -471,6 +471,9 @@ def handle_white_msg(data):
 @whitejack_bp.route("/whitejack/rooms")
 @login_required
 def public_rooms():
+    username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
     games = load_json(GAME_FILE)
     rooms = []
     for code, g in games.get("games", {}).items():
@@ -488,6 +491,8 @@ def public_rooms():
 @login_required
 def index():
     username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
     games = load_json(GAME_FILE)
 
     if request.method == "POST":
@@ -534,6 +539,8 @@ def index():
 def game():
     code = request.args.get("code")
     username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
     if not code:
         return redirect(url_for("whitejack.index"))
     return render_template("whitejack/game.html", theme=get_theme(username), roomCode=code, username=username)

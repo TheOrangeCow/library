@@ -1,7 +1,7 @@
 from flask import Blueprint, request, session, render_template, redirect, url_for
 from flask_socketio import join_room, emit
 from functools import wraps
-from auth.auth import get_theme, record_result, record_played_with_all
+from auth.auth import get_theme, record_result, record_played_with_all, is_plus
 import json, os, random, re, threading
 
 from core import app, socketio
@@ -420,6 +420,9 @@ def handle_enraged_msg(data):
 @login_required
 def index():
     username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+
     games = load_json(GAME_FILE)
 
     if request.method == "POST":
@@ -473,6 +476,11 @@ def index():
 @enraged_bp.route("/enraged/rooms")
 @login_required
 def public_rooms():
+
+    username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+    
     games = load_json(GAME_FILE)
     rooms = []
     for code, g in games.get("games", {}).items():
@@ -491,6 +499,9 @@ def public_rooms():
 def game():
     code = request.args.get("code")
     username = session.get("username")
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+    
     if not code or not username:
         return redirect(url_for("enraged.index"))
     return render_template("enraged/game.html",

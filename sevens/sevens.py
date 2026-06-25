@@ -287,6 +287,8 @@ def get_public_rooms(games):
 @login_required
 def index():
     username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
 
     if request.method == "POST":
         games = load_json(GAME_FILE)
@@ -344,6 +346,9 @@ def index():
 def game():
     code = request.args.get("code")
     username = session["username"]
+    if not is_plus(username):
+        return redirect("https://library.theorangecow.org/plus?upgrade=true")
+    
     if not code or not username:
         return redirect(url_for("sevens.index"))
     return render_template("sevens/game.html", theme=get_theme(username), roomCode=code, username=username)
