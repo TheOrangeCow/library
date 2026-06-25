@@ -172,7 +172,10 @@ def deal_round(code, games):
             c1, c2 = c2, c1
         g["hands"][p] = [c1, c2]
         g["swaps_used"][p] = 0
-        g["status"][p] = "swapping"
+        if is_white_jack(g["hands"][p]):
+            g["status"][p] = "whitejack"
+        else:
+            g["status"][p] = "playing"
     g["dealer_hand"] = [deck.pop(), deck.pop()]
     g["phase"] = "swap"
     g["current_player_idx"] = 0
