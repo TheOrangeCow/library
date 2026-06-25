@@ -72,7 +72,9 @@ def card_value(card):
 
 
 def base_total(hand):
-    return sum(card_value(c) for c in hand)
+    if len(hand) < 2:
+        return sum(card_value(c) for c in hand)
+    return card_value(hand[0]) - card_value(hand[1])
 
 
 def is_white_jack(hand):
@@ -165,7 +167,10 @@ def deal_round(code, games):
     g = games["games"][code]
     deck = g["deck"]
     for p in g["players"]:
-        g["hands"][p] = [deck.pop(), deck.pop()]
+        c1, c2 = deck.pop(), deck.pop()
+        if card_value(c1) < card_value(c2):
+            c1, c2 = c2, c1
+        g["hands"][p] = [c1, c2]
         g["swaps_used"][p] = 0
         g["status"][p] = "swapping"
     g["dealer_hand"] = [deck.pop(), deck.pop()]
