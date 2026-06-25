@@ -465,6 +465,10 @@ def wj_new_round(data):
     g["results"] = {}
     g["phase"] = "betting"
     g["turn"] = None
+    g["doubled"] = {}
+    g["dealer_total"] = None
+    g["dealer_busted"] = False
+    g["current_player_idx"] = 0
     if len(g["deck"]) < 52:
         g["deck"] = make_deck(6)
     save_json(GAME_FILE, games)
