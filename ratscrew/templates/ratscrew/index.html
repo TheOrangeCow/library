@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html data-theme="{{ theme }}">
+
+<head>
+    <title>Egyptian Ratscrew</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('ratscrew.static', filename='style.css') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+
+    <div id="header">
+        <h1>Library <span style="font-weight:400;color: var(--gold);font-size:0.85rem;">· Ratscrew</span></h1>
+        <span class="you-label">Playing as <b>{{ username }}</b></span>
+        <span>
+            <a class="logout" href="/">Back</a>
+        </span>
+    </div><br>
+
+    <nav class="nav">
+        <div class="nav-pill" id="nav-pill">
+            <div class="slider" id="nav-slider"></div>
+            <a href="#rooms">Rooms</a>
+            <a href="#rules">Rules</a>
+            <a href="#strategy">Strategy</a>
+        </div>
+    </nav>
+    <div id="rooms" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card">
+            <h1 style="color: var(--gold);">Rooms</h1><br>
+
+            <div id="public-rooms-list" style="margin-bottom:1rem;">
+                <p style="color: var(--gold-dim);font-size:0.85rem;">Loading rooms...</p>
+            </div>
+            <br>
+            <h2>Join Private Room</h2>
+            <p style="font-size:0.85rem;color: var(--gold-dim);">Have a code? Enter it below to join a private or public room.
+            </p>
+            <form method="POST">
+                <input class="index" name="room_code" placeholder="Room Code" /><br><br>
+                <button class="index" type="submit" name="join">Join Game</button>
+            </form>
+            <br><br>
+            <h2>Create Room</h2>
+            <form method="POST">
+                <label style="font-size:0.85rem;color: var(--gold-dim);">
+                    <input class="index" type="checkbox" name="public" checked> Make this room public
+                </label><br><br>
+                <button class="index" type="submit" name="create">Create Game</button>
+            </form>
+            {% if error %}
+            <p style="color: var(--gold)">{{ error }}</p>
+            {% endif %}
+            <p>Rooms will only last 30 mins if not started and started rooms will only last 24 hours</p>
+        </div>
+    </div>
+
+    <div id="rules" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Rules</h2>
+            <h3>Game Setup</h3>
+            <ul>
+                <li>The deck is dealt out evenly to all players, <span class="highlight">face down</span> — this is
+                    each player's draw pile. Nobody looks at their own cards.</li>
+                <li>The first player in the room goes first.</li>
+            </ul>
+
+            <h3>Objective</h3>
+            <ul>
+                <li>Be the last player left holding cards. Run out of cards on your turn and you're eliminated.</li>
+            </ul>
+
+            <h3>Playing</h3>
+            <ul>
+                <li>On your turn, click <span class="highlight">Play</span> to flip the top card of your draw pile
+                    face-up onto the center pile.</li>
+                <li><span class="special">Jack, Queen, King, Ace</span> are <span class="highlight">power cards</span>.
+                    Playing one forces the next player to "beat the challenge" by playing that many plain cards
+                    (J=1, Q=2, K=3, A=4) before another power card shows up.</li>
+                <li>If the challenged player plays a power card themselves, the challenge resets to them with a new
+                    count — and passes on down the line.</li>
+                <li>If the challenged player runs out their count without playing a power card, the player who played
+                    the last power card wins the whole center pile.</li>
+            </ul>
+
+            <h3>Slapping</h3>
+            <ul>
+                <li>Anyone, anytime — not just on your turn — can <span class="highlight">slap the pile</span> by
+                    pressing the <span class="highlight">Slap!</span> button or the <span class="highlight">spacebar</span>.</li>
+                <li><span class="special">Doubles</span>: the top two cards on the pile are the same rank.</li>
+                <li><span class="special">Sandwiches</span>: the top card and the card two below it are the same
+                    rank (with a different card in between).</li>
+                <li>Slap correctly and you scoop the whole pile onto the bottom of your draw pile.</li>
+                <li>Slap when it's <i>not</i> slappable and you burn the top card of your own pile onto the center
+                    pile as a penalty.</li>
+            </ul>
+
+            <h3>Winning</h3>
+            <ul>
+                <li>The last player with cards left in their pile wins the room.</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="strategy" style="padding: 1rem 1.4rem; display: none;">
+        <div class="game-card index-text">
+            <h2>Strategy</h2>
+            <ul>
+                <li>Watch the center pile constantly — slapping is the fastest way to build your stack.</li>
+                <li>Don't get slap-happy: a bad slap costs you a card.</li>
+                <li>When you're losing a challenge, root for power cards from other players to bail you out.</li>
+                <li>Sandwiches sneak past distracted opponents — watch three cards deep, not just two.</li>
+                <li>Stacking cards quietly is fine — surviving matters more than hoarding fast.</li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script>
+    const pill = document.getElementById('nav-pill');
+    const slider = document.getElementById('nav-slider');
+
+    function moveSlider(el) {
+        slider.style.left = el.offsetLeft + 'px';
+        slider.style.width = el.offsetWidth + 'px';
+    }
+
+    function hide(el) {
+        const pages = ["rooms", "rules", "strategy"];
+        for (const page of pages) {
+            document.getElementById(page).style.display = (page === el) ? "" : "none";
+        }
+    }
+
+    pill.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function () {
+            pill.querySelectorAll('a').forEach(a => a.classList.remove('active'));
+            this.classList.add('active');
+            moveSlider(this);
+            hide(this.getAttribute('href').slice(1));
+        });
+    });
+
+    function init() {
+        const first = pill.querySelector('a');
+        first.classList.add('active');
+        moveSlider(first);
+        hide('rooms');
+    }
+
+    if (document.fonts) {
+        document.fonts.ready.then(init);
+    } else {
+        window.addEventListener('load', init);
+    }
+
+    window.addEventListener('resize', () => {
+        const cur = pill.querySelector('a.active');
+        if (cur) moveSlider(cur);
+    });
+
+    function loadPublicRooms() {
+        fetch('/ratscrew/rooms')
+            .then(r => r.json())
+            .then(data => {
+                const el = document.getElementById('public-rooms-list');
+                if (!data.rooms.length) {
+                    el.innerHTML = '<p style="color: var(--gold-dim);font-size:0.85rem;font-style:italic;">No open public rooms right now.</p>';
+                    return;
+                }
+                el.innerHTML = data.rooms.map(r => `
+                <div style="display:flex;justify-content:space-between;align-items:center;
+                            padding:0.5rem 0;border-bottom:1px solid rgba(212,168,67,0.1);">
+                    <span style="color:var(--gold-dim);font-size:0.85rem;">
+                        Room <b style="color:var(--gold)">${r.code}</b>
+                        · ${r.names.join(', ') || 'Empty'}
+                    </span>
+                    <span style="color: var(--gold-dim);font-size:0.8rem;">${r.players}/${r.max} players</span>
+                    <form method="POST" style="margin:0;">
+                        <input type="hidden" name="room_code" value="${r.code}">
+                        <button class="index" type="submit" name="join"
+                            style="font-size:0.75rem;padding:0.2rem 0.7rem;">
+                            Join →
+                        </button>
+                    </form>
+                </div>
+            `).join('');
+            });
+    }
+
+    loadPublicRooms();
+    setInterval(loadPublicRooms, 5000);
+    const socket = io();
+    socket.on("connect", () => {
+        socket.emit("set_page", { page: `Lobby` });
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === 'hidden') {
+            socket.emit('tab_hidden');
+        } else {
+            socket.emit('tab_visible');
+        }
+    });
+</script>
+
+</html>
