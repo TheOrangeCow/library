@@ -76,7 +76,7 @@ socket.on("slapResult", (data) => {
         if (data.user === username) showNotif("Nice slap!");
     } else {
         const who = data.user === username ? "<span class='fp'>You</span>" : `<span class='fp'>${data.user}</span>`;
-        showFeedToast(`${who} slapped too soon — burned a card`, "slap-bad");
+        showFeedToast(`${who} slapped too soon - burned a card`, "slap-bad");
         if (data.user === username) showNotif("Bad slap! You burned a card.");
     }
 });
@@ -141,7 +141,7 @@ function render(data) {
     const ch = data.challenge;
     if (ch && ch.active) {
         const who = ch.owner === you ? "you" : ch.owner;
-        chEl.textContent = `${ch.rank} played by ${who} — ${ch.count} card${ch.count !== 1 ? 's' : ''} to beat it`;
+        chEl.textContent = `${ch.rank} played by ${who} - ${ch.count} card${ch.count !== 1 ? 's' : ''} to beat it`;
         chEl.classList.toggle("urgent", ch.count === 1);
     } else {
         chEl.textContent = "";
