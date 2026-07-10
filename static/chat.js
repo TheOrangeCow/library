@@ -91,7 +91,7 @@ document.addEventListener("visibilitychange", () => {
 
 socket.on(chatreceiveid, (data) => {
     const msgDiv = document.getElementById("chat-messages");
-    msgDiv.appendChild(buildMessage(data.msg, data.sender === username));
+    msgDiv.appendChild(buildMessage(data.msg, data.sender === username, data.sender));
     msgDiv.scrollTop = msgDiv.scrollHeight;
 });
 
