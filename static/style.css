@@ -430,7 +430,7 @@ button.index:hover {
 
 .game-card {
     position: relative;
-    display: flex;
+    display: block;
     align-items: center;
     gap: 1.4rem;
 
