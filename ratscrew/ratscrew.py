@@ -1,4 +1,4 @@
-from flask import Flask, request, session, render_template, redirect, url_for
+"""from flask import Flask, request, session, render_template, redirect, url_for
 from flask_socketio import SocketIO, join_room, emit
 import json, os, random, re, threading, time
 from flask import Blueprint
@@ -104,8 +104,6 @@ def next_player(g, cur):
 
 
 def award_pile(g, winner):
-    """Winner of a challenge (or pile burn) collects the whole center pile
-    onto the bottom of their draw pile."""
     pile = g["center"]
     g["center"] = []
     g["piles"].setdefault(winner, [])
@@ -123,9 +121,6 @@ def is_slappable(center):
 
 
 def advance_to_next_living(g):
-    """If it's now someone's turn but they have no cards left, eliminate
-    them and pass the turn on, repeating until a player with cards is up
-    (or only one player remains)."""
     guard = 0
     while g["players"] and guard < 20:
         guard += 1
@@ -440,4 +435,4 @@ def ratscrew_game():
         roomCode=code,
         theme=get_theme(username),
         username=username
-    )
+    )"""
