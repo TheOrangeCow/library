@@ -39,111 +39,113 @@
         </div>
     </nav>
     <div id="games" style="display: none;">
-        <h1 style="padding: 1rem 1.4rem;">Games</h1>
+        <div style="padding: 0.8rem 1.4rem; display: flex; gap: 1rem; flex-wrap: wrap;"></div>
+            <h1 style="padding: 1rem 1.4rem;">Games</h1>
 
-        <div id="search-wrap">
-            <input id="search-input" type="text" placeholder="Search games…" oninput="filterGames(this.value)" />
-        </div><br>
+            <div id="search-wrap">
+                <input id="search-input" type="text" placeholder="Search games…" oninput="filterGames(this.value)" />
+            </div><br>
 
-        <div id="pooheads" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Pooheads</h2>
-                <p>
-                    A fast and chaotic shedding game. Play cards equal or higher than the pile,
-                    use special cards to reset, burn, or skip - and whatever you do, don't be
-                    the last one left holding cards. Works through your hand, face-up, then
-                    face-down cards blindly. Luck meets tactics.
-                </p>
-                <a href="/pooheads">Play Pooheads →</a>
+            <div id="pooheads" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Pooheads</h2>
+                    <p>
+                        A fast and chaotic shedding game. Play cards equal or higher than the pile,
+                        use special cards to reset, burn, or skip - and whatever you do, don't be
+                        the last one left holding cards. Works through your hand, face-up, then
+                        face-down cards blindly. Luck meets tactics.
+                    </p>
+                    <a href="/pooheads">Play Pooheads →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="enraged" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Enraged Pooheads</h2>
-                <p>
-                    Pooheads stripped to its violent core. No face-up, no face-down 
-                    just a blind pile of cards you flip one at a time. Play it or eat the
-                    pile. Shuffle once per turn if you dare. Special cards still wreak
-                    havoc, and the Joker rotates everyone's entire pile. Pure chaos,
-                    zero safety net. Requires a plus account.
-                </p>
-                <a href="/enraged">Play Enraged Pooheads →</a>
+            <div id="enraged" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Enraged Pooheads</h2>
+                    <p>
+                        Pooheads stripped to its violent core. No face-up, no face-down 
+                        just a blind pile of cards you flip one at a time. Play it or eat the
+                        pile. Shuffle once per turn if you dare. Special cards still wreak
+                        havoc, and the Joker rotates everyone's entire pile. Pure chaos,
+                        zero safety net. Requires a plus account.
+                    </p>
+                    <a href="/enraged">Play Enraged Pooheads →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="sevens" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Sevens</h2>
-                <p>
-                    A calm but cunning sequencing game. Build four suit sequences outward
-                    from the 7s - low cards climb toward the Ace, high cards descend toward
-                    the King. You can only play what fits, and passing costs you. The first
-                    to empty their hand wins. Requires a plus account.
-                </p>
-                <a href="/sevens">Play Sevens →</a>
+            <div id="sevens" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Sevens</h2>
+                    <p>
+                        A calm but cunning sequencing game. Build four suit sequences outward
+                        from the 7s - low cards climb toward the Ace, high cards descend toward
+                        the King. You can only play what fits, and passing costs you. The first
+                        to empty their hand wins. Requires a plus account.
+                    </p>
+                    <a href="/sevens">Play Sevens →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="blackjack" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Blackjack</h2>
-                <p>
-                    Beat the dealer to 21 without going bust. Place your bet,
-                    take a hit or stand - and if you're feeling bold, double down
-                    for twice the reward. A bot dealer plays strict basic theory,
-                    so the edge is slim. Chips carry over between games, so play smart.
-                    You have {{ chips }} chips.
-                </p>
-                <a href="/blackjack">Play Blackjack →</a>
+            <div id="blackjack" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Blackjack</h2>
+                    <p>
+                        Beat the dealer to 21 without going bust. Place your bet,
+                        take a hit or stand - and if you're feeling bold, double down
+                        for twice the reward. A bot dealer plays strict basic theory,
+                        so the edge is slim. Chips carry over between games, so play smart.
+                        You have {{ chips }} chips.
+                    </p>
+                    <a href="/blackjack">Play Blackjack →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="poker" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Poker</h2>
-                <p>
-                    Texas Hold'em at its finest. Place your blinds, play your hole cards
-                    and bluff, call, or raise your way to the pot. Five community cards
-                    decide your fate - but the right bet at the right moment can take
-                    it all without showing a single card.
-                </p>
-                <a href="/poker">Play Poker →</a>
+            <div id="poker" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Poker</h2>
+                    <p>
+                        Texas Hold'em at its finest. Place your blinds, play your hole cards
+                        and bluff, call, or raise your way to the pot. Five community cards
+                        decide your fate - but the right bet at the right moment can take
+                        it all without showing a single card.
+                    </p>
+                    <a href="/poker">Play Poker →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="slots" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Slots</h2>
-                <p>
-                    Pull the lever and pray. Match three symbols to win -
-                    cherries pay small, diamonds pay big, and a triple 7
-                    or Joker hits the jackpot. Simple, fast, and dangerously addictive.
-                </p>
-                <a href="/slots">Play Slots →</a>
+            <div id="slots" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Slots</h2>
+                    <p>
+                        Pull the lever and pray. Match three symbols to win -
+                        cherries pay small, diamonds pay big, and a triple 7
+                        or Joker hits the jackpot. Simple, fast, and dangerously addictive.
+                    </p>
+                    <a href="/slots">Play Slots →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="crash" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>Crash</h2>
-                <p>
-                    A fast-paced multiplayer gambling game where a rocket's multiplier keeps climbing until it suddenly
-                    crashes. Place your bet, watch the multiplier rise, and decide when to cash out. Leave too early and
-                    miss bigger profits; wait too long and lose everything. Simple to learn, exciting to play, and every
-                    round is a battle between greed and timing. Requires a plus account.
-                </p>
-                <a href="/crash">Play Crash →</a>
+            <div id="crash" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>Crash</h2>
+                    <p>
+                        A fast-paced multiplayer gambling game where a rocket's multiplier keeps climbing until it suddenly
+                        crashes. Place your bet, watch the multiplier rise, and decide when to cash out. Leave too early and
+                        miss bigger profits; wait too long and lose everything. Simple to learn, exciting to play, and every
+                        round is a battle between greed and timing. Requires a plus account.
+                    </p>
+                    <a href="/crash">Play Crash →</a>
+                </div>
             </div>
-        </div>
 
-        <div id="crash" style="padding: 1rem 1.4rem;">
-            <div class="game-card">
-                <h2>White jack</h2>
-                <p>
-                    Beata. Requires a plus account.
-                </p>
-                <a href="/whitejack">Play White Jack →</a>
+            <div id="crash" style="padding: 1rem 1.4rem;">
+                <div class="game-card">
+                    <h2>White jack</h2>
+                    <p>
+                        Beata. Requires a plus account.
+                    </p>
+                    <a href="/whitejack">Play White Jack →</a>
+                </div>
             </div>
         </div>
     </div>
