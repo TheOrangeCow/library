@@ -17,7 +17,7 @@ import os
 import logging
 from auth.plus import plus_bp
 from whitejack.whitejack import whitejack_bp
-from ratscrew.ratscrew import ratscrew_bp
+#from ratscrew.ratscrew import ratscrew_bp
 
 app.register_blueprint(plus_bp)
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ app.register_blueprint(slots_bp)
 app.register_blueprint(blackjack_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(pooheads_bp)
-app.register_blueprint(ratscrew_bp)
+#app.register_blueprint(ratscrew_bp)
 app.register_blueprint(sevens_bp)
 app.register_blueprint(crash_bp)
 
