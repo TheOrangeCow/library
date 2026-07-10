@@ -518,6 +518,7 @@ button.index:hover {
 #friends,
 #users,
 #changelog,
+.game-card
 #bug{
     display: block;
     flex: 1;
