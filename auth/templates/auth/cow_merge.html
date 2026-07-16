@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Confirm Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icon.ico') }}">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="lobby-box">
+        <h2>Is this you?</h2>
+
+        <p style="text-align:center;">
+            An account named <strong>{{ username }}</strong> already exists.
+            If this is your account, enter its password to link it to Cow sign-in.
+        </p>
+
+        {% if error %}
+        <div class="lobby-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <input type="hidden" name="action" value="merge">
+            <div class="field">
+                <label>Password for {{ username }}</label>
+                <input class="index" type="password" name="password" required autofocus />
+            </div>
+            <div class="btn-row">
+                <button class="index" type="submit">Yes, this is me - merge</button>
+            </div>
+        </form>
+
+        <br>
+
+        <form method="POST">
+            <input type="hidden" name="action" value="skip">
+            <button class="index" type="submit">No, that's not me</button>
+        </form>
+
+        <hr class="index">
+        <p style="font-size:0.78rem; color:#7a6030; text-align:center;">
+            Not sure? Go back to <a href="{{ url_for('auth.login') }}" style="color:var(--gold);">login</a>.
+        </p>
+    </div>
+</body>
+
+</html>

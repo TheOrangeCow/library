@@ -123,7 +123,7 @@ def login():
         user = data["users"].get(username)
 
         if user and user.get("password") is None:
-            return render_template("auth/login.html", error="This account signs in with Login with Cow — use the button below.")
+            return render_template("auth/login.html", error="This account signs in with Login with Cow - use the button below.")
 
         if not user or user["password"] != hash_pw(password):
             return render_template("auth/login.html", error="Invalid credentials.")
@@ -156,14 +156,23 @@ def cow_callback():
         )
         result = resp.json()
     except (requests.RequestException, ValueError):
-        return render_template("auth/login.html", error="Couldn't reach Cow accounts — try again.")
+        return render_template("auth/login.html", error="Couldn't reach Cow accounts - try again.")
 
     if resp.status_code != 200 or not result.get("ok"):
         return render_template("auth/login.html", error="Cow sign-in could not be verified.")
 
-    username = result["username"] + "_cow"
+    raw_username = result["username"]
     data = load_users()
 
+    if raw_username in data["users"] and data["users"][raw_username].get("cow_linked"):
+        session["username"] = raw_username
+        return redirect(url_for("home"))
+
+    if raw_username in data["users"]:
+        session["cow_pending_username"] = raw_username
+        return redirect(url_for("auth.cow_merge"))
+
+    username = raw_username + "_cow"
     if username not in data["users"]:
         data["users"][username] = {
             "password": None,
@@ -187,7 +196,64 @@ def cow_callback():
     session["username"] = username
     return redirect(url_for("home"))
 
+@auth_bp.route("/cow/merge", methods=["GET", "POST"])
+def cow_merge():
+    raw_username = session.get("cow_pending_username")
+    if not raw_username:
+        return redirect(url_for("auth.login"))
 
+    data = load_users()
+
+    if raw_username not in data["users"]:
+        session.pop("cow_pending_username", None)
+        return redirect(url_for("auth.login"))
+
+    error = None
+
+    if request.method == "POST":
+        action = request.form.get("action")
+
+        if action == "skip":
+            session.pop("cow_pending_username", None)
+            cow_username = raw_username + "_cow"
+            if cow_username not in data["users"]:
+                data["users"][cow_username] = {
+                    "password": None,
+                    "cow_linked": True,
+                    "chips": 1000,
+                    "stats": {
+                        "games_played": 0,
+                        "wins": 0,
+                        "blackjacks": 0,
+                        "biggest_win": 0,
+                        "peak_chips": 1000
+                    },
+                    "history": [],
+                    "friends": [],
+                    "friend_requests": [],
+                    "friend_requests_sent": [],
+                    "achievements": [],
+                }
+                save_users(data)
+            session["username"] = cow_username
+            return redirect(url_for("home"))
+
+        elif action == "merge":
+            password = request.form.get("password", "").strip()
+            user = data["users"][raw_username]
+
+            if user.get("password") is None:
+                error = "This account can't be verified with a password."
+            elif user["password"] != hash_pw(password):
+                error = "Incorrect password."
+            else:
+                data["users"][raw_username]["cow_linked"] = True
+                save_users(data)
+                session.pop("cow_pending_username", None)
+                session["username"] = raw_username
+                return redirect(url_for("home"))
+
+    return render_template("auth/cow_merge.html", username=raw_username, error=error)
 
 @auth_bp.route("/set_theme", methods=["POST"])
 def set_theme():
@@ -324,7 +390,7 @@ def datetimeformat(value):
     try:
         return datetime.fromtimestamp(int(value)).strftime("%d %b %Y %H:%M")
     except:
-        return "—"
+        return "-"
 
 
 @auth_bp.route("/u/<target>")
